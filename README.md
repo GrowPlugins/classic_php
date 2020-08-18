@@ -4,4 +4,4 @@ A collection of classes that can be included in any project to help in doing eve
 Classes found in Classic.php are:
 
 * Validation Classes
-** validate_mysql
+  * validate_mysql
