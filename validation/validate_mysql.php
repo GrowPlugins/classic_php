@@ -2,11 +2,17 @@
 
 namespace ClassicPHP {
 
+    require_once( '../data_types/array_processing.php' );
+
     class ValidateMySQL {
 
-        __construct() {
+        private $pdo;
+        private $arrays;
 
-            //
+        function __construct( $pdo_connection ) {
+
+            $this->pdo = $pdo_connection;
+            $this->arrays = new ArrayProcessing();
         }
 
         /*
@@ -46,6 +52,17 @@ namespace ClassicPHP {
             DROP table
         */
 
+        /** @method validate_table_names
+         * Compares one or more table names to tables that exist in the
+         * database. Returns either the input array of table names with
+         * those that don't exist removed, or false, depending on the
+         * return type specified in the arguments list.
+         * @param mixed string[] string $table_names
+         * @param string $return_type
+         * @return string[]
+         * @return string
+         * @return boolean
+         */
         function validate_table_names(
             $table_names,
             $return_type = 'array' ) {
@@ -53,24 +70,32 @@ namespace ClassicPHP {
             /* Definition ************************************************/
             $pdo_statement;         // PDO_Statement object
             $existing_tables;       // Tables array (assoc)
+            $returned_records;      // Temporary records variable
             $table_found;           // Whether table exists
-            $return_string;         // String to return if returning string
+            $return_string = '';    // String to return if returning string
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
             $return_type = $this->validate_argument_return_type(
                 $return_type );
 
-            /* Query Available Tables -----------------------------------*/
             $table_names = $this->validate_argument_values_array(
                 $table_names,
-                $return_type );
+                'array' );
 
+            /* Query Available Tables -----------------------------------*/
+            /* Query Table Records */
             $pdo_statement = $this->pdo->query( 'SHOW TABLES' );
 
             $pdo_statement->execute();
 
-            $existing_tables = $pdo_statement->fetch ( PDO::FETCH_ASSOC );
+            $returned_records = $pdo_statement->fetchAll( \PDO::FETCH_NUM );
+
+            /* Gather Table Names from Table Records */
+            foreach ( $returned_records as $returned_record ) {
+
+                $existing_tables[] = $returned_record[0];
+            }
 
             /* Compare $table_names to Available Tables -----------------*/
             foreach ( $table_names as $table_name_key => $table_name ) {
@@ -94,7 +119,8 @@ namespace ClassicPHP {
                         'array' === $return_type
                         || 'string' === $return_type ) {
 
-                        $this->remove_array_value(
+                        // Mark Null for Future Removal
+                        $this->arrays->mark_array_value_null(
                             $table_names,
                             $table_name_key );
                     }
@@ -105,6 +131,15 @@ namespace ClassicPHP {
                 }
             }
 
+            /* Remove Tables That Don't Exist */
+            $this->arrays->remove_null_array_values( $field_names );
+
+            /* Return False No Matter What If $table_names is Now Empty */
+            if ( 1 > count( $table_names ) ) {
+
+                return false;
+            }
+
             /* Return ****************************************************/
             if ( 'array' === $return_type ) {
 
@@ -112,10 +147,17 @@ namespace ClassicPHP {
             }
             elseif ( 'string' === $return_type ) {
 
-                /*foreach ( $table_names as $table_name ) {
+                /* Generate $return_string */
+                foreach ( $table_names as $table_name ) {
 
-                    $return_string .= $table_name
-                }*/
+                    $return_string .= $table_name . ', ';
+                }
+
+                // Remove Trailing ', '
+                $return_string = substr(
+                    $return_string,
+                    0,
+                    strlen( $return_string ) - 2 );
 
                 return $return_string;
             }
@@ -125,18 +167,139 @@ namespace ClassicPHP {
             }
         }
 
-        function validate_field_names( $field_names ) {
+        /** @method validate_field_names
+         * Compares one or more table names to tables that exist in the
+         * database. Returns either the input array of table names with
+         * those that don't exist removed, or false, depending on the
+         * return type specified in the arguments list.
+         * @param mixed string[] string $table_names
+         * @param string $return_type
+         * @return string[]
+         * @return string
+         * @return boolean
+         */
+        function validate_field_names(
+            $field_names,
+            $table_name,
+            $return_type = 'array',
+            $validate_field_name = false) {
 
             /* Definition ************************************************/
-            $pdo_statement;     // PDO_Statement object
-            $tables;            // Tables array (assoc);
+            $pdo_statement;         // PDO_Statement object
+            $existing_fields;       // Fields array (assoc)
+            $returned_records;      // Temporary records variable
+            $field_found;           // Whether field exists
+            $return_string = '';    // String to return if returning string
 
             /* Processing ************************************************/
-            $pdo_statement = $this->pdo->query('SHOW TABLES');
+            /* Validation -----------------------------------------------*/
+            /* Validate $return_type */
+            $return_type = $this->validate_argument_return_type(
+                $return_type );
+
+            /* Validate field_names */
+            $field_names = $this->validate_argument_values_array(
+                $field_names,
+                $return_type );
+
+            /* Validate $validate_field_name */
+            if ( true !== $validate_field_name ) {
+
+                $validate_field_name = false;
+            }
+
+            /* Validate $field_name If $validate_field_name is True */
+            if ( $validate_field_name ) {
+
+                $table_name = $this->validate_table_names(
+                    $table_name,
+                    'string' );
+            }
+
+            /* Query Available Fields -----------------------------------*/
+            /* Query Field Records */
+            $pdo_statement = $this->pdo->query(
+                'SHOW COLUMNS FROM ' . $table_name );
 
             $pdo_statement->execute();
 
-            $tables = $pdo_statement->fetch(PDO::FETCH_ASSOC);
+            $returned_records =
+                $pdo_statement->fetchAll( \PDO::FETCH_NUM );
+
+            /* Gather Field Names from Field Records */
+            foreach ( $returned_records as $returned_record ) {
+
+                $existing_fields[] = $returned_record[0];
+            }
+
+            /* Compare $field_names to Available Fields -----------------*/
+            foreach ( $field_names as $field_name_key => $field_name ) {
+
+                /* Search for Each Table Name in Existing Tables */
+                $field_found = false;
+
+                foreach ( $existing_fields as $existing_field ) {
+
+                    if ( $field_name === $existing_field ) {
+
+                        $field_found = true;
+                        break;
+                    }
+                }
+
+                /* Handle Instance Where Field Doesn't Exist */
+                if ( ! $field_found ) {
+
+                    if (
+                        'array' === $return_type
+                        || 'string' === $return_type ) {
+
+                        // Mark Null for Future Removal
+                        $this->arrays->mark_array_value_null(
+                            $field_names,
+                            $field_name_key );
+                    }
+                    else {
+
+                        return false;
+                    }
+                }
+            }
+
+            /* Remove Fields That Don't Exist */
+            $this->arrays->remove_null_array_values( $field_names );
+
+            /* Return False No Matter What If $field_names is Now Empty */
+            if ( 1 > count( $field_names ) ) {
+
+                return false;
+            }
+
+            /* Return ****************************************************/
+            if ( 'array' === $return_type ) {
+
+                return $field_names;
+            }
+            elseif ( 'string' === $return_type ) {
+
+                /* Generate $return_string */
+                foreach ( $field_names as $field_name ) {
+
+                    $return_string .= $field_name . ', ';
+                }
+
+                // Remove Trailing ', '
+                $return_string = substr(
+                    $return_string,
+                    0,
+                    strlen( $return_string ) - 2 );
+
+                return $return_string;
+            }
+            else {
+
+                return true;
+            }
         }
 
         private function validate_argument_return_type( $return_type ) {
@@ -188,143 +351,6 @@ namespace ClassicPHP {
 
             /* Return ****************************************************/
             return $values_array;
-        }
-
-        private function remove_array_value( &$array, $key ) {
-
-        /* Processing ****************************************************/
-            /* Use unset() Only If Array Key is String Data Type */
-            if ( is_string( $key ) ) {
-
-                unset( $array[ $key ] );
-            }
-            else {
-
-                array_splice( $array, $key );
-            }
-
-            /* Return ****************************************************/
-            return $array;
-        }
-
-        /** @method validate_array()
-         * Verifies that a variable is an array, and (opotionally)
-         * that every element in that array is of a specific type.
-         * @param mixed $array
-         * @param string $array_data_type_required
-         * @return bool
-         */
-        private function validate_array(
-            $array,
-            $array_data_type_required = 'none') {
-
-            /* Definition ********************************************/
-            $allowed_data_type_values = [
-                'none',
-                'string',
-                'char',
-                'int',
-                'integer',
-                'long',
-                'float',
-                'double',
-                'real',
-                'bool',
-                'null',
-            ];      // Values allowed in $array_data_type_required
-            $allowed_value_found = false;
-            $array_data_types_allowed = true;
-
-            /* Processing ********************************************/
-            /* Validation -------------------------------------------*/
-            /* Force $array_data_type_required to Be Allowed Value */
-            // Determine If $array_data_type_required is Allowed Value
-            foreach ($allowed_data_type_values as $allowed_data_type) {
-
-                if ($array_data_type_required === $allowed_data_type) {
-
-                    $allowed_value_found = true;
-                }
-            }
-
-            // Force $array_data_type_required as Null Unless Allowed
-            if (!$allowed_value_found) {
-
-                $array_data_type_required = 'none';
-            }
-
-            /* Check Array for Validity -----------------------------*/
-            /* Validate Array If Array */
-            if (is_array($array)) {
-
-                // Validate String Array
-                if (
-                    $array_data_type_required === 'string'
-                    || $array_data_type_required === 'char') {
-
-                    foreach ($array as $element) {
-
-                        if (!is_string($element)) {
-
-                            return false;
-                        }
-                    }
-                }
-
-                // Validate Int Array
-                elseif (
-                    $array_data_type_required === 'int'
-                    || $array_data_type_required === 'integer'
-                    || $array_data_type_required === 'long') {
-
-                    foreach ($array as $element) {
-
-                        if (!is_int($element)) {
-
-                            return false;
-                        }
-                    }
-                }
-
-                // Validate Float Array
-                elseif (
-                    || $array_data_type_required === 'float'
-                    || $array_data_type_required === 'double'
-                    || $array_data_type_required === 'real') {
-
-                    foreach ($array as $element) {
-
-                        if (!is_float($element)) {
-
-                            return false;
-                        }
-                    }
-                }
-
-                // Validate Boolean Array
-                elseif (
-                    || $array_data_type_required === 'bool') {
-
-                    foreach ($array as $element) {
-
-                        if (!is_bool($element)) {
-
-                            return false;
-                        }
-                    }
-                }
-
-                // Otherwise is Valid
-            }
-
-            /* If Not Array Return False */
-            else {
-
-                return false;
-            }
-
-            /* Return ************************************************/
-            return true;
         }
     }
 }
