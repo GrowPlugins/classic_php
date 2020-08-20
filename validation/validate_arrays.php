@@ -11,7 +11,7 @@ namespace ClassicPHP {
          * @param string $array_data_type_required
          * @return bool
          */
-        private function validate_array(
+        public function validate_array(
             $array,
             $array_data_type_required = 'none') {
 
