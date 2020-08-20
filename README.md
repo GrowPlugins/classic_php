@@ -5,3 +5,6 @@ Classes found in Classic.php are:
 
 * Validation Classes
   * validate_mysql
+  * validate_arrays
+* Data Type Specific Classes
+  * array_processing
