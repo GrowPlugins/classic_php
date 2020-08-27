@@ -13,7 +13,7 @@ namespace ClassicPHP {
          */
         public function validate_array(
             $array,
-            $array_data_type_required = 'none') {
+            $array_data_type_required = 'none' ) {
 
             /* Definition ********************************************/
             $allowed_data_type_values = [
@@ -36,32 +36,35 @@ namespace ClassicPHP {
             /* Validation -------------------------------------------*/
             /* Force $array_data_type_required to Be Allowed Value */
             // Determine If $array_data_type_required is Allowed Value
-            foreach ($allowed_data_type_values as $allowed_data_type) {
+            foreach (
+                $allowed_data_type_values as $allowed_data_type ) {
 
-                if ($array_data_type_required === $allowed_data_type) {
+                if (
+                    $array_data_type_required ===
+                        $allowed_data_type ) {
 
                     $allowed_value_found = true;
                 }
             }
 
             // Force $array_data_type_required as Null Unless Allowed
-            if (!$allowed_value_found) {
+            if ( ! $allowed_value_found ) {
 
                 $array_data_type_required = 'none';
             }
 
             /* Check Array for Validity -----------------------------*/
             /* Validate Array If Array */
-            if (is_array($array)) {
+            if ( is_array( $array ) ) {
 
                 // Validate String Array
                 if (
                     $array_data_type_required === 'string'
-                    || $array_data_type_required === 'char') {
+                    || $array_data_type_required === 'char' ) {
 
-                    foreach ($array as $element) {
+                    foreach ( $array as $element ) {
 
-                        if (!is_string($element)) {
+                        if ( ! is_string( $element ) ) {
 
                             return false;
                         }
@@ -74,9 +77,9 @@ namespace ClassicPHP {
                     || $array_data_type_required === 'integer'
                     || $array_data_type_required === 'long') {
 
-                    foreach ($array as $element) {
+                    foreach ( $array as $element ) {
 
-                        if (!is_int($element)) {
+                        if ( ! is_int( $element ) ) {
 
                             return false;
                         }
@@ -87,11 +90,11 @@ namespace ClassicPHP {
                 elseif (
                     $array_data_type_required === 'float'
                     || $array_data_type_required === 'double'
-                    || $array_data_type_required === 'real') {
+                    || $array_data_type_required === 'real' ) {
 
-                    foreach ($array as $element) {
+                    foreach ( $array as $element ) {
 
-                        if (!is_float($element)) {
+                        if ( ! is_float( $element ) ) {
 
                             return false;
                         }
@@ -100,11 +103,11 @@ namespace ClassicPHP {
 
                 // Validate Boolean Array
                 elseif (
-                    $array_data_type_required === 'bool') {
+                    $array_data_type_required === 'bool' ) {
 
-                    foreach ($array as $element) {
+                    foreach ( $array as $element ) {
 
-                        if (!is_bool($element)) {
+                        if ( ! is_bool( $element ) ) {
 
                             return false;
                         }
