@@ -59,8 +59,8 @@ namespace ClassicPHP {
 
                 // Validate String Array
                 if (
-                    $array_data_type_required === 'string'
-                    || $array_data_type_required === 'char' ) {
+                    'string' === $array_data_type_required
+                    || 'char' === $array_data_type_required ) {
 
                     foreach ( $array as $element ) {
 
@@ -73,9 +73,9 @@ namespace ClassicPHP {
 
                 // Validate Int Array
                 elseif (
-                    $array_data_type_required === 'int'
-                    || $array_data_type_required === 'integer'
-                    || $array_data_type_required === 'long') {
+                    'int' === $array_data_type_required
+                    || 'integer' === $array_data_type_required
+                    || 'long' === $array_data_type_required) {
 
                     foreach ( $array as $element ) {
 
@@ -88,9 +88,9 @@ namespace ClassicPHP {
 
                 // Validate Float Array
                 elseif (
-                    $array_data_type_required === 'float'
-                    || $array_data_type_required === 'double'
-                    || $array_data_type_required === 'real' ) {
+                    'float' === $array_data_type_required
+                    || 'double' === $array_data_type_required
+                    || 'real' === $array_data_type_required ) {
 
                     foreach ( $array as $element ) {
 
@@ -103,7 +103,7 @@ namespace ClassicPHP {
 
                 // Validate Boolean Array
                 elseif (
-                    $array_data_type_required === 'bool' ) {
+                    'bool' === $array_data_type_required ) {
 
                     foreach ( $array as $element ) {
 
