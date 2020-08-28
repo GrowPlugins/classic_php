@@ -2,7 +2,16 @@
 
 namespace ClassicPHP {
 
-    require_once( '../data_types/array_processing.php' );
+    if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
+
+        $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
+
+        define( 'CLASSIC_PHP_DIR', $dir );
+
+        unset( $dir );
+    }
+
+    require_once( CLASSIC_PHP_DIR . '/data_types/array_processing.php' );
 
     class ValidateMySQL {
 
