@@ -5,8 +5,8 @@ namespace ClassicPHP {
     class ValidateArrays {
 
         /** @method validate_array()
-         * Verifies that a variable is an array, and (opotionally)
-         * that every element in that array is of a specific type.
+         * Verifies that a variable is an array, and (optionally) that
+         * every element in that array is of a specific type.
          * @param mixed $array
          * @param string $array_data_type_required
          * @return bool
@@ -47,7 +47,7 @@ namespace ClassicPHP {
                 }
             }
 
-            // Force $array_data_type_required as Null Unless Allowed
+            // Force $array_data_type_required as 'none' Unless Allowed
             if ( ! $allowed_value_found ) {
 
                 $array_data_type_required = 'none';

@@ -28,7 +28,6 @@ namespace ClassicPHP {
             $vardump = '';
             $error_message = '';
             $error_type;
-            $backtrace_index = 1;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -79,31 +78,42 @@ namespace ClassicPHP {
             /* Append Backtrace Data */
             $error_message .= "Backtrace:\n";
 
-            foreach( $backtrace as $trace ) {
+            for( $i = 0; $i < count( $backtrace ); $i++ ) {
 
-                $error_message .= $backtrace_index . '. ';
+                // Output Backtrace Index
+                $error_message .= ( $i + 1) . '. ';
 
-                if ( isset( $trace['class'] ) ) {
+                // Output Class and Function in Backtrace
+                if ( isset( $backtrace[ $i ]['class'] ) ) {
 
-                    $error_message .= $trace['class'] . '::';
+                    $error_message .= $backtrace[ $i ]['class'] . '::';
                 }
 
                 $error_message .=
-                    $trace['function'] . '() was called from '
-                    . $trace['file'] . ' line ' . $trace['line'];
+                    $backtrace[ $i ]['function'] . '()';
 
-                if ( count( $backtrace ) > $backtrace_index ) {
+                // Output Location Called From
+                if ( 0 < $i ) {
 
-                    $error_message .= ", after\n";
+                    $error_message .=
+                        ' at ' . $backtrace[ $i - 1 ]['file']
+                        . ', line ' . $backtrace[ $i ]['line'];
+                }
+
+                // Conditionally Output Last of Called From Sentence
+                if ( $i + 1 < count( $backtrace ) ) {
+
+                    if ( 0 < $i ) {
+
+                        $error_message .= ', which';
+                    }
+
+                    $error_message .= " was called by\n";
                 }
                 else {
 
                     $error_message .= ";\n";
                 }
-
-
-
-                    $backtrace_index++;
             }
 
             /* Append Var Dump Data */

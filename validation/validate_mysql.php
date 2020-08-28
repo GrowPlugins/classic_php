@@ -22,6 +22,8 @@ namespace ClassicPHP {
 
             $this->pdo = $pdo_connection;
             $this->arrays = new ArrayProcessing();
+
+            $this->error = new ErrorHandling();
         }
 
         /*
@@ -140,8 +142,10 @@ namespace ClassicPHP {
                 }
             }
 
+            $this->error->throw_error('help', 'error', $table_names, true, true);
+
             /* Remove Tables That Don't Exist */
-            $this->arrays->remove_null_array_values( $field_names );
+            $this->arrays->remove_null_array_values( $table_names );
 
             /* Return False No Matter What If $table_names is Now Empty */
             if ( 1 > count( $table_names ) ) {
