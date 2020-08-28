@@ -32,7 +32,10 @@ namespace ClassicPHP {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
-            /* Validate $error_level */
+            /* Force $error_description As String */
+            $error_description = strval( $error_description );
+
+            /* Force $error_level to be 'warning', 'notice', or 'error' */
             if ( 'warning' === $error_level ) {
 
                 $error_type = E_USER_WARNING;
@@ -46,13 +49,13 @@ namespace ClassicPHP {
                 $error_type = E_USER_ERROR;
             }
 
-            /* Validate $echo */
+            /* Verify $echo is Bool */
             if ( true !== $echo ) {
 
                 $echo = false;
             }
 
-            /* Validate $output_pre_wrapper */
+            /* Verify $output_pre_wrapper is Bool */
             if ( true !== $output_pre_wrapper ) {
 
                 $output_pre_wrapper = false;
