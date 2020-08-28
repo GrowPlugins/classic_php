@@ -6,8 +6,8 @@ namespace ClassicPHP {
 
         public function throw_error(
             $error_description,
-            $variables = [],
             $error_level = 'warning',
+            $variables = [],
             $echo = false,
             $output_pre_wrapper = false ) {
 
