@@ -4,6 +4,17 @@ namespace ClassicPHP {
 
     class ErrorHandling {
 
+        /** @method throw_error
+         * Allows you to throw an error or echo one. The error can include
+         * information about variables related to the error. If error
+         * handling is set to echo the error to the screen, echoing can be
+         * put within a <pre> element for nicer display.
+         * @param string $error_description
+         * @param string $error_level
+         * @param mixed[] $variables
+         * @param bool $echo
+         * @param bool $output_pre_wrapper
+         */
         public function throw_error(
             $error_description,
             $error_level = 'warning',
@@ -104,12 +115,14 @@ namespace ClassicPHP {
                 if ( false === $output_pre_wrapper ) {
 
                     trigger_error(
-                        htmlentities( $error_message ) , $error_type );
+                        htmlentities( $error_message ),
+                        $error_type );
                 }
                 else {
                     echo '<pre>';
                     trigger_error(
-                        htmlentities( $error_message ) , $error_type );
+                        htmlentities( $error_message ),
+                        $error_type );
                     echo '</pre>';
                 }
             }
