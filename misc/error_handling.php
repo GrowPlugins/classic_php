@@ -97,7 +97,7 @@ namespace ClassicPHP {
 
                     $error_message .=
                         ' at ' . $backtrace[ $i - 1 ]['file']
-                        . ', line ' . $backtrace[ $i ]['line'];
+                        . ', line ' . $backtrace[ $i - 1 ]['line'];
                 }
 
                 // Conditionally Output Last of Called From Sentence
