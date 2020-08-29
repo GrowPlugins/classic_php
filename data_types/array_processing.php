@@ -78,12 +78,17 @@ namespace ClassicPHP {
         public function remove_null_array_values( &$array ) {
 
             /* Processing ************************************************/
-            foreach( $array as $array_key => $element ) {
+            /* Iterate Through $array via Array Pointer to Mimic
+                foreach Loop, While Recognizing Changes to Array Size */
+            while( null !== key( $array ) ) {
 
-                if ( null === $element ) {
+                if ( null === current( $array ) ) {
 
-                    $this->remove_array_value( $array, $array_key );
+                    $this->remove_array_value( $array, key( $array ) );
                 }
+
+                // Increment Pointer Position
+                next( $array );
             }
 
             /* Return ****************************************************/

@@ -142,8 +142,6 @@ namespace ClassicPHP {
                 }
             }
 
-            $this->error->throw_error('help', 'error', $table_names, true, true);
-
             /* Remove Tables That Don't Exist */
             $this->arrays->remove_null_array_values( $table_names );
 
@@ -281,6 +279,8 @@ namespace ClassicPHP {
 
             /* Remove Fields That Don't Exist */
             $this->arrays->remove_null_array_values( $field_names );
+
+            $this->error->throw_error('help', 'warning', $field_names, true, true);
 
             /* Return False No Matter What If $field_names is Now Empty */
             if ( 1 > count( $field_names ) ) {
