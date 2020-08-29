@@ -112,7 +112,10 @@ namespace ClassicPHP {
                 }
                 else {
 
-                    $error_message .= ";\n";
+                    $error_message .=
+                        ", which originated from\n" . ( $i + 2 ) . '. '
+                        . $backtrace[ $i ]['file'] . ', line '
+                        . $backtrace[ $i ]['line'] . "\n";
                 }
             }
 
