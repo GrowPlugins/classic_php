@@ -2,6 +2,8 @@
 
 namespace ClassicPHP {
 
+    use \PDO;
+
     if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
         $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
@@ -15,10 +17,12 @@ namespace ClassicPHP {
 
     class ValidateMySQL {
 
+        use PDO;
+
         private $pdo;
         private $arrays;
 
-        function __construct( $pdo_connection ) {
+        function __construct( PDO $pdo_connection ) {
 
             $this->pdo = $pdo_connection;
             $this->arrays = new ArrayProcessing();
@@ -100,7 +104,7 @@ namespace ClassicPHP {
 
             $pdo_statement->execute();
 
-            $returned_records = $pdo_statement->fetchAll( \PDO::FETCH_NUM );
+            $returned_records = $pdo_statement->fetchAll( PDO::FETCH_NUM );
 
             /* Gather Table Names from Table Records */
             foreach ( $returned_records as $returned_record ) {
@@ -237,7 +241,7 @@ namespace ClassicPHP {
             $pdo_statement->execute();
 
             $returned_records =
-                $pdo_statement->fetchAll( \PDO::FETCH_NUM );
+                $pdo_statement->fetchAll( PDO::FETCH_NUM );
 
             /* Gather Field Names from Field Records */
             foreach ( $returned_records as $returned_record ) {
