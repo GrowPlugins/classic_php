@@ -13,7 +13,7 @@ namespace ClassicPHP {
          */
         public function validate_array(
             $array,
-            $array_data_type_required = 'none' ) {
+            string $array_data_type_required = 'none' ) {
 
             /* Definition ********************************************/
             $allowed_data_type_values = [
