@@ -16,11 +16,11 @@ namespace ClassicPHP {
          * @param bool $output_pre_wrapper
          */
         public function throw_error(
-            $error_description,
-            $error_level = 'warning',
+            string $error_description,
+            string $error_level = 'warning',
             $variables = [],
-            $echo = false,
-            $output_pre_wrapper = false ) {
+            bool $echo = false,
+            bool $output_pre_wrapper = false ) {
 
             /* Declaration ***********************************************/
             $backtrace =
@@ -31,9 +31,6 @@ namespace ClassicPHP {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
-            /* Force $error_description As String */
-            $error_description = strval( $error_description );
-
             /* Force $error_level to be 'warning', 'notice', or 'error' */
             if ( 'warning' === $error_level ) {
 
@@ -46,18 +43,6 @@ namespace ClassicPHP {
             else {
 
                 $error_type = E_USER_ERROR;
-            }
-
-            /* Verify $echo is Bool */
-            if ( true !== $echo ) {
-
-                $echo = false;
-            }
-
-            /* Verify $output_pre_wrapper is Bool */
-            if ( true !== $output_pre_wrapper ) {
-
-                $output_pre_wrapper = false;
             }
 
             /* Gather Information About Input Variable(s) ---------------*/
