@@ -12,7 +12,7 @@ namespace ClassicPHP {
          * @param mixed string int $key
          * @return mixed[] $array
          */
-        public function remove_array_value( &$array, $key ) {
+        public function remove_array_value( array &$array, $key ) {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -47,7 +47,7 @@ namespace ClassicPHP {
          * @param mixed string int $key
          * @return mixed[] $array
          */
-        public function mark_array_value_null( &$array, $key ) {
+        public function mark_array_value_null( array &$array, $key ) {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -75,7 +75,7 @@ namespace ClassicPHP {
          * @param mixed string int $key
          * @return mixed[] $array
          */
-        public function remove_null_array_values( &$array ) {
+        public function remove_null_array_values( array &$array ) {
 
             /* Processing ************************************************/
             /* Iterate Through $array via Array Pointer to Mimic
