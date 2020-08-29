@@ -80,7 +80,7 @@ namespace ClassicPHP {
          */
         function validate_table_names(
             $table_names,
-            $return_type = 'array' ) {
+            string $return_type = 'array' ) {
 
             /* Definition ************************************************/
             $pdo_statement;         // PDO_Statement object
@@ -197,9 +197,9 @@ namespace ClassicPHP {
          */
         function validate_field_names(
             $field_names,
-            $table_name,
-            $return_type = 'array',
-            $validate_table_name = false) {
+            string $table_name,
+            string $return_type = 'array',
+            bool $validate_table_name = false) {
 
             /* Definition ************************************************/
             $pdo_statement;         // PDO_Statement object
@@ -218,12 +218,6 @@ namespace ClassicPHP {
             $field_names = $this->validate_argument_values_array(
                 $field_names,
                 $return_type );
-
-            /* Validate $validate_table_name */
-            if ( true !== $validate_table_name ) {
-
-                $validate_table_name = false;
-            }
 
             /* Validate $field_name If $validate_table_name is True */
             if ( $validate_table_name ) {
@@ -319,11 +313,12 @@ namespace ClassicPHP {
             }
         }
 
-        private function validate_argument_return_type( $return_type ) {
+        private function validate_argument_return_type(
+            string $return_type ) {
 
             /* Processing ************************************************/
             /* Prevent Case Invalidation */
-            $return_type = strtolower( strval( $return_type ) );
+            $return_type = strtolower( $return_type );
 
             /* Validate String Value */
             if (
@@ -341,7 +336,7 @@ namespace ClassicPHP {
 
         private function validate_argument_values_array(
             $values_array,
-            $return_type = 'array') {
+            string $return_type = 'array') {
 
             /* Processing ************************************************/
             /* Verify Array if Array */
