@@ -69,7 +69,7 @@ namespace ClassicPHP {
          * those that don't exist removed, or false, depending on the
          * return type specified in the arguments list.
          * @param mixed string[] string $table_names
-         * @param string $return_type
+         * @param string $return_type -- array, string, bool/boolean
          * @return string[]
          * @return string
          * @return boolean
@@ -179,12 +179,14 @@ namespace ClassicPHP {
         }
 
         /** @method validate_field_names
-         * Compares one or more table names to tables that exist in the
-         * database. Returns either the input array of table names with
-         * those that don't exist removed, or false, depending on the
-         * return type specified in the arguments list.
-         * @param mixed string[] string $table_names
-         * @param string $return_type
+         * Compares one or more field names to fields that exist in the
+         * specified database table. Returns either the input array of
+         * field names with those that don't exist removed, or false,
+         * depending on the return type specified in the arguments list.
+         * @param mixed string[] string $field_names
+         * @param string $table_name
+         * @param string $return_type -- array, string, bool/boolean
+         * @param bool $validate_field_name
          * @return string[]
          * @return string
          * @return boolean
@@ -193,7 +195,7 @@ namespace ClassicPHP {
             $field_names,
             $table_name,
             $return_type = 'array',
-            $validate_field_name = false) {
+            $validate_table_name = false) {
 
             /* Definition ************************************************/
             $pdo_statement;         // PDO_Statement object
@@ -213,14 +215,14 @@ namespace ClassicPHP {
                 $field_names,
                 $return_type );
 
-            /* Validate $validate_field_name */
-            if ( true !== $validate_field_name ) {
+            /* Validate $validate_table_name */
+            if ( true !== $validate_table_name ) {
 
-                $validate_field_name = false;
+                $validate_table_name = false;
             }
 
-            /* Validate $field_name If $validate_field_name is True */
-            if ( $validate_field_name ) {
+            /* Validate $field_name If $validate_table_name is True */
+            if ( $validate_table_name ) {
 
                 $table_name = $this->validate_table_names(
                     $table_name,
@@ -279,8 +281,6 @@ namespace ClassicPHP {
 
             /* Remove Fields That Don't Exist */
             $this->arrays->remove_null_array_values( $field_names );
-
-            $this->error->throw_error('help', 'warning', $field_names, true, true);
 
             /* Return False No Matter What If $field_names is Now Empty */
             if ( 1 > count( $field_names ) ) {
