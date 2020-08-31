@@ -334,6 +334,16 @@ namespace ClassicPHP {
             }
         }
 
+        /** @method validate_argument_return_type
+         * Forces $return_type to be a string with any of the following
+         * values:
+         *      array
+         *      string
+         *      bool
+         *      boolean
+         * @param string $return_type
+         * @return string $return_type
+         */
         private function validate_argument_return_type(
             string $return_type ) {
 
@@ -355,6 +365,14 @@ namespace ClassicPHP {
             return $return_type;
         }
 
+        /** @method validate_argument_values_array
+         * Ensures $values_array is an array, or else an expected
+         * alternative data type. When $return_type is bool, returns false
+         * if $values_array is not an array. When $return_type is string,
+         * returns a string from $values_array.
+         * @param string $return_type
+         * @return string $return_type
+         */
         private function validate_argument_values_array(
             $values_array,
             string $return_type = 'array') {
@@ -377,7 +395,7 @@ namespace ClassicPHP {
                     return strval( $values_array );
                 }
 
-                // Return Array Otherwise (eg, Invalid, Array Return Type)
+                // Return Array Otherwise (eg, Invalid Array Return Type)
                 else {
 
                     return [ $values_array ];
