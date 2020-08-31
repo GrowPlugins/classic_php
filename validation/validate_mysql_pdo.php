@@ -313,6 +313,27 @@ namespace ClassicPHP {
             }
         }
 
+        /** @method validate_limits
+         * Validates limit numbers so they are within acceptible ranges.
+         * @param int $offset
+         * @param int $row_limit
+         * @return boolean
+         */
+        function validate_limits(
+            int $offset,
+            int $row_limit ) {
+
+            /* Return ****************************************************/
+            if ( 0 <= $offset && 0 <= $row_limit ) {
+
+                return true;
+            }
+            else {
+
+                return false;
+            }
+        }
+
         private function validate_argument_return_type(
             string $return_type ) {
 
@@ -324,8 +345,8 @@ namespace ClassicPHP {
             if (
                 'array' !== $return_type
                 && 'string' !== $return_type
-                && 'boolean' !== $return_type
-                && 'bool' !== $return_type ) {
+                && 'bool' !== $return_type
+                && 'boolean' !== $return_type ) {
 
                 $return_type = 'array';
             }
@@ -344,17 +365,19 @@ namespace ClassicPHP {
 
                 // Return False on Invalid Input and Boolean Return Type
                 if (
-                    'boolean' === $return_type
-                    || 'bool' === $return_type ) {
+                    'bool' === $return_type
+                    || 'boolean' === $return_type ) {
 
                     return false;
                 }
 
+                // Return String When Invalid Input and String Return Type
                 elseif( 'string' === $return_type ) {
 
                     return strval( $values_array );
                 }
 
+                // Return Array Otherwise (eg, Invalid, Array Return Type)
                 else {
 
                     return [ $values_array ];
