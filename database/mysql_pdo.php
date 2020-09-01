@@ -2,8 +2,11 @@
 
 namespace ClassicPHP {
 
-    use \PDO;
+    /* Class Using Aliases */
+    use \PDO as PDO;
 
+    /* Class Includes */
+    // Determine ClassicPHP Base Path
     if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
         $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
@@ -13,70 +16,117 @@ namespace ClassicPHP {
         unset( $dir );
     }
 
+    // Includes List
     require_once( CLASSIC_PHP_DIR . '/data_types/array_processing.php' );
 
-    class ValidateMySQLPDO {
+    /** Class: MySQLPDO
+     * Allows you to validate table names, field names, and limits with a
+     * PDO connection.
+     * Inherits From: None
+     * Requires: \PDO, ClassicPHP\ArrayProcessing
+     * Inherited By: ClassicPHP\MySQLPDO_Read
+     *********************************************************************/
+    class MySQLPDO {
 
-        use PDO;
-
-        private $pdo;
-        private $arrays;
+        protected $pdo;
+        protected $arrays;
 
         function __construct( PDO $pdo_connection ) {
 
             $this->pdo = $pdo_connection;
             $this->arrays = new ArrayProcessing();
-
-            $this->error = new ErrorHandling();
         }
 
-        /*
+        /** @method query_database_tables
+         * Queries the database for available tables.
+         * @return string[] $database_tables
+         */
+        function query_database_tables() {
 
-        fields
-        tables
-        values
-        LIMIT numbers
+            /* Definition ************************************************/
+            $pdo_statement;
+            $returned_records;
+            $database_tables;
 
-        Query:
-            SELECT fields
-            FROM table
-            JOIN table
-                ON field = value
-            GROUP BY fields
-            HAVING field = value
-            WHERE field = value
-            LIMIT number, number
+            /* Processing ************************************************/
+            /* Query Table Records */
+            $pdo_statement = $this->pdo->query( 'SHOW TABLES' );
 
-        Update:
-            UPDATE table
-            SET field = value
+            $pdo_statement->execute();
 
-            INSERT INTO table
-            (fields)
-            VALUES (values)
+            $returned_records = $pdo_statement->fetchAll( PDO::FETCH_NUM );
 
-            DELETE table
-            WHERE field = value
+            /* Gather Table Names from Table Records */
+            foreach ( $returned_records as $returned_record ) {
 
-        Create:
-            CREATE table
-            (fields)
-            VALUES (values)
+                $database_tables[] = $returned_record[0];
+            }
 
-        Drop:
-            DROP table
-        */
+            /* Return ****************************************************/
+            return $database_tables;
+        }
+
+        /** @method query_table_fields
+         * Queries the database table for available fields.
+         * @param string $table
+         * @return string[] $table_fields
+         */
+        function query_table_fields(
+            string $table,
+            bool $validate_table_name = false ) {
+
+            /* Definition ************************************************/
+            $pdo_statement;
+            $returned_records;
+            $table_fields;
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            if ( true === $validate_table_name ) {
+
+                $table = $this->validate_table_names( $table, 'bool' );
+
+                if ( false === $table ) {
+
+                    return false;
+                }
+            }
+
+            /* Get Table Fields -----------------------------------------*/
+            /* Query Field Records */
+            $pdo_statement = $this->pdo->query(
+                'SHOW COLUMNS FROM ' . $table );
+
+            $pdo_statement->execute();
+
+            $returned_records =
+                $pdo_statement->fetchAll( PDO::FETCH_NUM );
+
+            /* Gather Field Names from Field Records */
+            foreach ( $returned_records as $returned_record ) {
+
+                $table_fields[] = $returned_record[0];
+            }
+
+            /* Return ****************************************************/
+            return $table_fields;
+        }
 
         /** @method validate_table_names
          * Compares one or more table names to tables that exist in the
-         * database. Returns either the input array of table names with
-         * those that don't exist removed, or false, depending on the
-         * return type specified in the arguments list.
+         * database. $return_type determines how correct table names will
+         * be returned.
+         * If $return_type is 'array', tables specified which
+         * do exist will have their names returned in an array. If
+         * $return_type is 'string', tables specified which do exist will
+         * be returned in a comma-separated list. If $return_type
+         * is 'bool', all tables specified must exist or false will be
+         * returned.
          * @param mixed string[] string $table_names
          * @param string $return_type -- array, string, bool/boolean
          * @return string[]
          * @return string
-         * @return boolean
+         * @return bool
          */
         function validate_table_names(
             $table_names,
@@ -99,18 +149,7 @@ namespace ClassicPHP {
                 'array' );
 
             /* Query Available Tables -----------------------------------*/
-            /* Query Table Records */
-            $pdo_statement = $this->pdo->query( 'SHOW TABLES' );
-
-            $pdo_statement->execute();
-
-            $returned_records = $pdo_statement->fetchAll( PDO::FETCH_NUM );
-
-            /* Gather Table Names from Table Records */
-            foreach ( $returned_records as $returned_record ) {
-
-                $existing_tables[] = $returned_record[0];
-            }
+            $existing_tables = $this->query_database_tables();
 
             /* Compare $table_names to Available Tables -----------------*/
             foreach ( $table_names as $table_name_key => $table_name ) {
@@ -184,16 +223,21 @@ namespace ClassicPHP {
 
         /** @method validate_field_names
          * Compares one or more field names to fields that exist in the
-         * specified database table. Returns either the input array of
-         * field names with those that don't exist removed, or false,
-         * depending on the return type specified in the arguments list.
+         * specified database table. $return_type determines how correct
+         * field names will be returned.
+         * If $return_type is 'array', fields specified which
+         * do exist will have their names returned in an array. If
+         * $return_type is 'string', fields specified which do exist will
+         * be returned in a comma-separated list. If $return_type
+         * is 'bool', all fields specified must exist or false will be
+         * returned.
          * @param mixed string[] string $field_names
          * @param string $table_name
          * @param string $return_type -- array, string, bool/boolean
          * @param bool $validate_field_name
          * @return string[]
          * @return string
-         * @return boolean
+         * @return bool
          */
         function validate_field_names(
             $field_names,
@@ -219,7 +263,7 @@ namespace ClassicPHP {
                 $field_names,
                 $return_type );
 
-            /* Validate $field_name If $validate_table_name is True */
+            /* Validate $table_name If $validate_table_name is True */
             if ( $validate_table_name ) {
 
                 $table_name = $this->validate_table_names(
@@ -228,20 +272,7 @@ namespace ClassicPHP {
             }
 
             /* Query Available Fields -----------------------------------*/
-            /* Query Field Records */
-            $pdo_statement = $this->pdo->query(
-                'SHOW COLUMNS FROM ' . $table_name );
-
-            $pdo_statement->execute();
-
-            $returned_records =
-                $pdo_statement->fetchAll( PDO::FETCH_NUM );
-
-            /* Gather Field Names from Field Records */
-            foreach ( $returned_records as $returned_record ) {
-
-                $existing_fields[] = $returned_record[0];
-            }
+            $existing_fields = $this->query_table_fields( $table_name );
 
             /* Compare $field_names to Available Fields -----------------*/
             foreach ( $field_names as $field_name_key => $field_name ) {
@@ -313,6 +344,37 @@ namespace ClassicPHP {
             }
         }
 
+        /** @method validate_limits
+         * Validates limit numbers so they are within acceptible ranges.
+         * @param int $offset
+         * @param int $row_limit
+         * @return bool
+         */
+        function validate_limits(
+            int $offset,
+            int $row_limit ) {
+
+            /* Return ****************************************************/
+            if ( 0 <= $offset && 0 <= $row_limit ) {
+
+                return true;
+            }
+            else {
+
+                return false;
+            }
+        }
+
+        /** @method validate_argument_return_type
+         * Forces $return_type to be a string with any of the following
+         * values:
+         *      array
+         *      string
+         *      bool
+         *      boolean
+         * @param string $return_type
+         * @return string $return_type
+         */
         private function validate_argument_return_type(
             string $return_type ) {
 
@@ -324,8 +386,8 @@ namespace ClassicPHP {
             if (
                 'array' !== $return_type
                 && 'string' !== $return_type
-                && 'boolean' !== $return_type
-                && 'bool' !== $return_type ) {
+                && 'bool' !== $return_type
+                && 'boolean' !== $return_type ) {
 
                 $return_type = 'array';
             }
@@ -334,6 +396,14 @@ namespace ClassicPHP {
             return $return_type;
         }
 
+        /** @method validate_argument_values_array
+         * Ensures $values_array is an array, or else an expected
+         * alternative data type. When $return_type is bool, returns false
+         * if $values_array is not an array. When $return_type is string,
+         * returns a string from $values_array.
+         * @param string $return_type
+         * @return string $return_type
+         */
         private function validate_argument_values_array(
             $values_array,
             string $return_type = 'array') {
@@ -344,17 +414,19 @@ namespace ClassicPHP {
 
                 // Return False on Invalid Input and Boolean Return Type
                 if (
-                    'boolean' === $return_type
-                    || 'bool' === $return_type ) {
+                    'bool' === $return_type
+                    || 'boolean' === $return_type ) {
 
                     return false;
                 }
 
+                // Return String When Invalid Input and String Return Type
                 elseif( 'string' === $return_type ) {
 
                     return strval( $values_array );
                 }
 
+                // Return Array Otherwise (eg, Invalid Array Return Type)
                 else {
 
                     return [ $values_array ];
