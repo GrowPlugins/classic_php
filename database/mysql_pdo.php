@@ -28,9 +28,8 @@ namespace ClassicPHP {
      *********************************************************************/
     class MySQLPDO {
 
-        private $arrays;
-
         protected $pdo;
+        protected $arrays;
 
         function __construct( PDO $pdo_connection ) {
 
@@ -127,7 +126,7 @@ namespace ClassicPHP {
          * @param string $return_type -- array, string, bool/boolean
          * @return string[]
          * @return string
-         * @return boolean
+         * @return bool
          */
         function validate_table_names(
             $table_names,
@@ -238,7 +237,7 @@ namespace ClassicPHP {
          * @param bool $validate_field_name
          * @return string[]
          * @return string
-         * @return boolean
+         * @return bool
          */
         function validate_field_names(
             $field_names,
@@ -349,7 +348,7 @@ namespace ClassicPHP {
          * Validates limit numbers so they are within acceptible ranges.
          * @param int $offset
          * @param int $row_limit
-         * @return boolean
+         * @return bool
          */
         function validate_limits(
             int $offset,
