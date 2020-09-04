@@ -234,7 +234,7 @@ namespace ClassicPHP {
          * @param mixed string[] string $field_names
          * @param string $table_name
          * @param string $return_type -- array, string, bool/boolean
-         * @param bool $validate_field_name
+         * @param bool $validate_table_name
          * @return string[]
          * @return string
          * @return bool
