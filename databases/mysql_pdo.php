@@ -120,8 +120,8 @@ namespace ClassicPHP {
          * do exist will have their names returned in an array. If
          * $return_type is 'string', tables specified which do exist will
          * be returned in a comma-separated list. If $return_type
-         * is 'bool', all tables specified must exist or false will be
-         * returned.
+         * is 'bool',  all fields specified must exist for true to be
+         * returned, otherwise false will be returned instead.
          * @param mixed string[] string $table_names
          * @param string $return_type -- array, string, bool/boolean
          * @return string[]
@@ -229,8 +229,8 @@ namespace ClassicPHP {
          * do exist will have their names returned in an array. If
          * $return_type is 'string', fields specified which do exist will
          * be returned in a comma-separated list. If $return_type
-         * is 'bool', all fields specified must exist or false will be
-         * returned.
+         * is 'bool', all fields specified must exist for true to be
+         * returned, otherwise false will be returned instead.
          * @param mixed string[] string $field_names
          * @param string $table_name
          * @param string $return_type -- array, string, bool/boolean
