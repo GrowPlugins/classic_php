@@ -28,6 +28,7 @@ namespace ClassicPHP {
                 'real',
                 'bool',
                 'null',
+                'object',
             ];      // Values allowed in $array_data_type_required
             $allowed_value_found = false;
             $array_data_types_allowed = true;
@@ -114,6 +115,32 @@ namespace ClassicPHP {
                     }
                 }
 
+                // Validate Null Array
+                elseif (
+                    'null' === $array_data_type_required ) {
+
+                    foreach ( $array as $element ) {
+
+                        if ( ! is_null( $element ) ) {
+
+                            return false;
+                        }
+                    }
+                }
+
+                // Validate Class Array
+                elseif (
+                    'object' === $array_data_type_required ) {
+
+                    foreach ( $array as $element ) {
+
+                        if ( ! is_object( $element ) ) {
+
+                            return false;
+                        }
+                    }
+                }
+
                 // Otherwise is Valid
             }
 
@@ -179,59 +206,58 @@ namespace ClassicPHP {
             /* Validate Array If Array */
             if ( is_array( $array ) ) {
 
-                    foreach (
-                        $allowed_data_types as $allowed_data_type ) {
+                foreach (
+                    $allowed_data_types as $allowed_data_type ) {
 
-                        // Validate String Array
-                        if ( 'string' === $allowed_data_type ) {
+                    // Validate String Array
+                    if ( 'string' === $allowed_data_type ) {
 
-                            foreach ( $array as $element ) {
+                        foreach ( $array as $element ) {
 
-                                if ( ! is_string( $element ) ) {
+                            if ( ! is_string( $element ) ) {
 
-                                    return false;
-                                }
+                                return false;
                             }
                         }
-
-                        // Validate Int Array
-                        elseif ( 'int' === $allowed_data_type ) {
-
-                            foreach ( $array as $element ) {
-
-                                if ( ! is_int( $element ) ) {
-
-                                    return false;
-                                }
-                            }
-                        }
-
-                        // Validate Float Array
-                        elseif ( 'float' === $allowed_data_type ) {
-
-                            foreach ( $array as $element ) {
-
-                                if ( ! is_float( $element ) ) {
-
-                                    return false;
-                                }
-                            }
-                        }
-
-                        // Validate Boolean Array
-                        elseif ( 'bool' === $allowed_data_type ) {
-
-                            foreach ( $array as $element ) {
-
-                                if ( ! is_bool( $element ) ) {
-
-                                    return false;
-                                }
-                            }
-                        }
-
-                        // Otherwise is Valid
                     }
+
+                    // Validate Int Array
+                    elseif ( 'int' === $allowed_data_type ) {
+
+                        foreach ( $array as $element ) {
+
+                            if ( ! is_int( $element ) ) {
+
+                                return false;
+                            }
+                        }
+                    }
+
+                    // Validate Float Array
+                    elseif ( 'float' === $allowed_data_type ) {
+
+                        foreach ( $array as $element ) {
+
+                            if ( ! is_float( $element ) ) {
+
+                                return false;
+                            }
+                        }
+                    }
+
+                    // Validate Boolean Array
+                    elseif ( 'bool' === $allowed_data_type ) {
+
+                        foreach ( $array as $element ) {
+
+                            if ( ! is_bool( $element ) ) {
+
+                                return false;
+                            }
+                        }
+                    }
+
+                    // Otherwise is Valid
                 }
             }
 
