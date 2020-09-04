@@ -269,6 +269,11 @@ namespace ClassicPHP {
                 $table_name = $this->validate_table_names(
                     $table_name,
                     'string' );
+
+                if ( false === $table_name ) {
+
+                    return false;
+                }
             }
 
             /* Query Available Fields -----------------------------------*/
