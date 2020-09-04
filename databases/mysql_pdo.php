@@ -80,14 +80,15 @@ namespace ClassicPHP {
             $pdo_statement;
             $returned_records;
             $table_fields;
+            $is_valid_table;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
             if ( true === $validate_table_name ) {
 
-                $table = $this->validate_table_names( $table, 'bool' );
-
-                if ( false === $table ) {
+                if (
+                    false ===
+                        $this->validate_table_names( $table, 'bool' ) ) {
 
                     return false;
                 }
@@ -97,8 +98,6 @@ namespace ClassicPHP {
             /* Query Field Records */
             $pdo_statement = $this->pdo->query(
                 'SHOW COLUMNS FROM ' . $table );
-
-            $pdo_statement->execute();
 
             $returned_records =
                 $pdo_statement->fetchAll( PDO::FETCH_NUM );
