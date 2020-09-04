@@ -69,6 +69,7 @@ namespace ClassicPHP {
         /** @method query_table_fields
          * Queries the database table for available fields.
          * @param string $table
+         * @param bool $validate_table_name
          * @return string[] $table_fields
          */
         function query_table_fields(
