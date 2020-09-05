@@ -108,7 +108,7 @@ namespace ClassicPHP {
                 return false;
             }
 
-            $functions = $this->validate_functions( $functions );
+            $functions = $this->remove_invalid_functions( $functions );
 
             if ( false === $functions ) {
 
@@ -141,21 +141,19 @@ namespace ClassicPHP {
             return $selection_clause;
         }
 
-        /** @method validate_functions
-         * Returns the input array of functions, with those that are
-         * invalid removed. If $return_type is 'bool' and any function is
-         * invalid, false is returned.
-         * @param mixed string[] string $table_names
+        /** @method remove_invalid_functions
+         * Replaces invalid functions with empty strings. If $return_type
+         * is 'bool' and any function is invalid, false is returned.
+         * @param mixed string[] string $functions
          * @param string $return_type -- array, bool/boolean
          * @return string[]
          * @return bool
          */
-        private function validate_functions(
+        private function remove_invalid_functions(
             $functions,
             $return_type = 'array' ) {
 
             /* Definition ************************************************/
-            $validated_functions;
             $valid_functions = [
                 'ABS',
                 'ACOS',
@@ -608,8 +606,9 @@ namespace ClassicPHP {
                 $functions[ $key ] = strtoupper( $function );
             }
 
-            /* Validate $functions are All $valid_functions */
-            foreach ( $functions as $function ) {
+            /* Processing ************************************************/
+            /* Remove Invalid Function Names from $functions */
+            foreach ( $functions as $key => $function ) {
 
                 $valid_function_found = false;
 
@@ -617,7 +616,6 @@ namespace ClassicPHP {
 
                     if ( $valid_function === $function ) {
 
-                        $validated_functions[] = $function;
                         $valid_function_found = true;
                         break;
                     }
@@ -631,14 +629,12 @@ namespace ClassicPHP {
                 }
                 elseif ( ! $valid_function_found ) {
 
-                    $validated_functions[] = '';
+                    $functions[ $key ] = '';
                 }
             }
 
-            print_r($validated_functions);
-
             /* Return ****************************************************/
-            return $validated_functions;
+            return $functions;
         }
     }
 }
