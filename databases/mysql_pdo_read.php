@@ -46,6 +46,16 @@ namespace ClassicPHP {
     - Alter database data
     - Drop database data
 
+    --Query
+
+    A query often requires user input, so validation and escaping is necessary.
+
+    SELECT -- Validate fields against fields from table, and '*'
+    FROM -- Validate table against tables from database
+    WHERE -- Validate fields against fields from table. Validate values and use PDO encapsulation.
+    ORDER BY -- Validate fields against fields from table.
+    LIMIT -- Validate values.
+
     */
 
     /** Class: MySQLPDO_Read
@@ -552,9 +562,17 @@ namespace ClassicPHP {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
+            /* Force $functions to Be Array of Strings */
             if ( ! is_array( $functions ) ) {
 
-                return false;
+                if ( ! is_string( $functions ) ) {
+
+                    return false;
+                }
+                else {
+
+                    $functions = [ $functions ];
+                }
             }
 
             if ( 'array' !== $return_type ) {
