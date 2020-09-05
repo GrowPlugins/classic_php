@@ -90,10 +90,9 @@ namespace ClassicPHP {
         /** @method create_selection_clause
          * Creates a selection clause string for use within a selection
          * statement.
-         * @param mixed string[] string $table_names
-         * @param string $return_type -- array, string, bool/boolean
+         * @param mixed string[] string $fields
+         * @param mixed string[] string $functions
          * @return string[]
-         * @return string
          * @return bool
          */
         function create_selection_clause( $fields, $functions = [''] ) {
