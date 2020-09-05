@@ -69,6 +69,7 @@ namespace ClassicPHP {
         /** @method query_table_fields
          * Queries the database table for available fields.
          * @param string $table
+         * @param bool $validate_table_name
          * @return string[] $table_fields
          */
         function query_table_fields(
@@ -79,14 +80,15 @@ namespace ClassicPHP {
             $pdo_statement;
             $returned_records;
             $table_fields;
+            $is_valid_table;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
             if ( true === $validate_table_name ) {
 
-                $table = $this->validate_table_names( $table, 'bool' );
-
-                if ( false === $table ) {
+                if (
+                    false ===
+                        $this->validate_table_names( $table, 'bool' ) ) {
 
                     return false;
                 }
@@ -96,8 +98,6 @@ namespace ClassicPHP {
             /* Query Field Records */
             $pdo_statement = $this->pdo->query(
                 'SHOW COLUMNS FROM ' . $table );
-
-            $pdo_statement->execute();
 
             $returned_records =
                 $pdo_statement->fetchAll( PDO::FETCH_NUM );
@@ -120,8 +120,8 @@ namespace ClassicPHP {
          * do exist will have their names returned in an array. If
          * $return_type is 'string', tables specified which do exist will
          * be returned in a comma-separated list. If $return_type
-         * is 'bool', all tables specified must exist or false will be
-         * returned.
+         * is 'bool',  all fields specified must exist for true to be
+         * returned, otherwise false will be returned instead.
          * @param mixed string[] string $table_names
          * @param string $return_type -- array, string, bool/boolean
          * @return string[]
@@ -229,12 +229,12 @@ namespace ClassicPHP {
          * do exist will have their names returned in an array. If
          * $return_type is 'string', fields specified which do exist will
          * be returned in a comma-separated list. If $return_type
-         * is 'bool', all fields specified must exist or false will be
-         * returned.
+         * is 'bool', all fields specified must exist for true to be
+         * returned, otherwise false will be returned instead.
          * @param mixed string[] string $field_names
          * @param string $table_name
          * @param string $return_type -- array, string, bool/boolean
-         * @param bool $validate_field_name
+         * @param bool $validate_table_name
          * @return string[]
          * @return string
          * @return bool
@@ -269,6 +269,11 @@ namespace ClassicPHP {
                 $table_name = $this->validate_table_names(
                     $table_name,
                     'string' );
+
+                if ( false === $table_name ) {
+
+                    return false;
+                }
             }
 
             /* Query Available Fields -----------------------------------*/
