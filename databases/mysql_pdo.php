@@ -360,7 +360,7 @@ namespace ClassicPHP {
             int $row_limit ) {
 
             /* Return ****************************************************/
-            if ( 0 <= $offset && 0 <= $row_limit ) {
+            if ( 0 <= $offset && 1 <= $row_limit ) {
 
                 return true;
             }
