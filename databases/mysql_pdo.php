@@ -174,7 +174,7 @@ namespace ClassicPHP {
                         || 'string' === $return_type ) {
 
                         // Mark Null for Future Removal
-                        $this->arrays->mark_array_value_null(
+                        $this->arrays->mark_value_null(
                             $table_names,
                             $table_name_key );
                     }
@@ -186,7 +186,7 @@ namespace ClassicPHP {
             }
 
             /* Remove Tables That Don't Exist */
-            $this->arrays->remove_null_array_values( $table_names );
+            $this->arrays->remove_null_values( $table_names );
 
             /* Return False No Matter What If $table_names is Now Empty */
             if ( 1 > count( $table_names ) ) {
@@ -302,7 +302,7 @@ namespace ClassicPHP {
                         || 'string' === $return_type ) {
 
                         // Mark Null for Future Removal
-                        $this->arrays->mark_array_value_null(
+                        $this->arrays->mark_value_null(
                             $field_names,
                             $field_name_key );
                     }
@@ -314,7 +314,7 @@ namespace ClassicPHP {
             }
 
             /* Remove Fields That Don't Exist */
-            $this->arrays->remove_null_array_values( $field_names );
+            $this->arrays->remove_null_values( $field_names );
 
             /* Return False No Matter What If $field_names is Now Empty */
             if ( 1 > count( $field_names ) ) {

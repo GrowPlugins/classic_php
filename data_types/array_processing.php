@@ -4,7 +4,7 @@ namespace ClassicPHP {
 
     class ArrayProcessing {
 
-        /** @method remove_array_value
+        /** @method remove_value
          * Removes a single value from an array. Uses unset() if the key
          * is a string, otherwise uses array_splice() to prevent unsetting
          * the array key altogether for keys of type int.
@@ -12,7 +12,7 @@ namespace ClassicPHP {
          * @param mixed string int $key
          * @return mixed[] $array
          */
-        function remove_array_value( array &$array, $key ) {
+        function remove_value( array &$array, $key ) {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -40,14 +40,14 @@ namespace ClassicPHP {
             return $array;
         }
 
-        /** @method mark_array_value_null
+        /** @method mark_value_null
          * Replaces a single value in an array with a null. Primarily
          * meant to be used to mark an element for later removal.
          * @param mixed[] &$array
          * @param mixed string int $key
          * @return mixed[] $array
          */
-        function mark_array_value_null( array &$array, $key ) {
+        function mark_value_null( array &$array, $key ) {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -68,14 +68,14 @@ namespace ClassicPHP {
             return $array;
         }
 
-        /** @method remove_null_array_values
+        /** @method remove_null_values
          * Removes all null elements from an array. Associative array
          * keys will be removed altogether if their element is null.
          * @param mixed[] &$array
          * @param mixed string int $key
          * @return mixed[] $array
          */
-        function remove_null_array_values( array &$array ) {
+        function remove_null_values( array &$array ) {
 
             /* Processing ************************************************/
             /* Iterate Through $array via Array Pointer to Mimic
