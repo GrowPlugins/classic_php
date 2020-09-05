@@ -6,8 +6,10 @@ Version: 0.1.2
 ## Class List
 Classes found in Classic.php include:
 
+* Database Helper Classes
+  * MySQLPDO (classic_php/databases/mysql_pdo.php)
+  * MySQLPDO_Read (classic_php/databases/mysql_pdo_read.php)
 * Data Validation Helper Classes
-  * ValidateMySQLPDO (classic_php/validation/validate_mysql_pdo.php)
   * ValidateArrays (classic_php/validation/validate_arrays.php)
 * Data Type Specific Helper Classes
   * ArrayProcessing (classic_php/data_types/array_processing.php)
