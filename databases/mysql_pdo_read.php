@@ -6,8 +6,19 @@ namespace ClassicPHP {
     use \PDO as PDO;
 
     /* Class Includes */
+    // Determine ClassicPHP Base Path
+    if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
+
+        $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
+
+        define( 'CLASSIC_PHP_DIR', $dir );
+
+        unset( $dir );
+    }
+
     // Includes List
     require_once( __DIR__ . '/mysql_pdo.php' );
+    require_once( CLASSIC_PHP_DIR . '/data_types/array_processing.php' );
 
     /*
         Query:
@@ -66,10 +77,13 @@ namespace ClassicPHP {
      *********************************************************************/
     class MySQLPDO_Read extends MySQLPDO {
 
+        protected $arrays;
+
         function __construct( PDO $pdo_connection ) {
 
             parent::__construct( $pdo_connection );
 
+            $this->arrays = new ArrayProcessing();
             $this->error = new ErrorHandling();
         }
 

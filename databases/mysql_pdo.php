@@ -5,20 +5,6 @@ namespace ClassicPHP {
     /* Class Using Aliases */
     use \PDO as PDO;
 
-    /* Class Includes */
-    // Determine ClassicPHP Base Path
-    if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
-
-        $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
-
-        define( 'CLASSIC_PHP_DIR', $dir );
-
-        unset( $dir );
-    }
-
-    // Includes List
-    require_once( CLASSIC_PHP_DIR . '/data_types/array_processing.php' );
-
     /** Class: MySQLPDO
      * Allows you to validate table names, field names, and limits with a
      * PDO connection.
@@ -29,12 +15,10 @@ namespace ClassicPHP {
     class MySQLPDO {
 
         protected $pdo;
-        protected $arrays;
 
         function __construct( PDO $pdo_connection ) {
 
             $this->pdo = $pdo_connection;
-            $this->arrays = new ArrayProcessing();
         }
 
         /** @method query_database_tables
