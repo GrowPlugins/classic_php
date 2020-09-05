@@ -137,6 +137,7 @@ namespace ClassicPHP {
             $existing_tables;       // Tables array (assoc)
             $returned_records;      // Temporary records variable
             $table_found;           // Whether table exists
+            $tables_found;          // Array of tables saught that do exist
             $return_string = '';    // String to return if returning string
 
             /* Processing ************************************************/
@@ -161,6 +162,7 @@ namespace ClassicPHP {
 
                     if ( $table_name === $existing_table ) {
 
+                        $tables_found[] = $table_name;
                         $table_found = true;
                         break;
                     }
@@ -170,26 +172,16 @@ namespace ClassicPHP {
                 if ( ! $table_found ) {
 
                     if (
-                        'array' === $return_type
-                        || 'string' === $return_type ) {
-
-                        // Mark Null for Future Removal
-                        $this->arrays->mark_value_null(
-                            $table_names,
-                            $table_name_key );
-                    }
-                    else {
+                        ! 'array' === $return_type
+                        && ! 'string' === $return_type ) {
 
                         return false;
                     }
                 }
             }
 
-            /* Remove Tables That Don't Exist */
-            $this->arrays->remove_null_values( $table_names );
-
-            /* Return False No Matter What If $table_names is Now Empty */
-            if ( 1 > count( $table_names ) ) {
+            /* Return False No Matter What If $tables_found is Empty */
+            if ( 1 > count( $tables_found ) ) {
 
                 return false;
             }
@@ -197,14 +189,14 @@ namespace ClassicPHP {
             /* Return ****************************************************/
             if ( 'array' === $return_type ) {
 
-                return $table_names;
+                return $tables_found;
             }
             elseif ( 'string' === $return_type ) {
 
                 /* Generate $return_string */
-                foreach ( $table_names as $table_name ) {
+                foreach ( $tables_found as $table_found ) {
 
-                    $return_string .= $table_name . ', ';
+                    $return_string .= $table_found . ', ';
                 }
 
                 // Remove Trailing ', '
@@ -250,6 +242,7 @@ namespace ClassicPHP {
             $existing_fields;       // Fields array (assoc)
             $returned_records;      // Temporary records variable
             $field_found;           // Whether field exists
+            $fields_found;          // Array of fields saught that do exist
             $return_string = '';    // String to return if returning string
 
             /* Processing ************************************************/
@@ -289,6 +282,7 @@ namespace ClassicPHP {
 
                     if ( $field_name === $existing_field ) {
 
+                        $fields_found[] = $field_name;
                         $field_found = true;
                         break;
                     }
@@ -298,26 +292,16 @@ namespace ClassicPHP {
                 if ( ! $field_found ) {
 
                     if (
-                        'array' === $return_type
-                        || 'string' === $return_type ) {
-
-                        // Mark Null for Future Removal
-                        $this->arrays->mark_value_null(
-                            $field_names,
-                            $field_name_key );
-                    }
-                    else {
+                        ! 'array' === $return_type
+                        && ! 'string' === $return_type ) {
 
                         return false;
                     }
                 }
             }
 
-            /* Remove Fields That Don't Exist */
-            $this->arrays->remove_null_values( $field_names );
-
             /* Return False No Matter What If $field_names is Now Empty */
-            if ( 1 > count( $field_names ) ) {
+            if ( 1 > count( $fields_found ) ) {
 
                 return false;
             }
@@ -325,14 +309,14 @@ namespace ClassicPHP {
             /* Return ****************************************************/
             if ( 'array' === $return_type ) {
 
-                return $field_names;
+                return $fields_found;
             }
             elseif ( 'string' === $return_type ) {
 
                 /* Generate $return_string */
-                foreach ( $field_names as $field_name ) {
+                foreach ( $fields_found as $field_found ) {
 
-                    $return_string .= $field_name . ', ';
+                    $return_string .= $field_found . ', ';
                 }
 
                 // Remove Trailing ', '
