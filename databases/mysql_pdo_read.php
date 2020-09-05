@@ -5,6 +5,10 @@ namespace ClassicPHP {
     /* Class Using Aliases */
     use \PDO as PDO;
 
+    /* Class Includes */
+    // Includes List
+    require_once( __DIR__ . '/mysql_pdo.php' );
+
     /*
         Query:
             SELECT Function(fields) AS fieldNames
@@ -96,7 +100,7 @@ namespace ClassicPHP {
                     is_key( $functions, $key )
                     && '' !== $functions[ $key ] ) {
 
-                    $selection_clause .= $function . '(' $field . '), ';
+                    $selection_clause .= $function . '(' . $field . '), ';
                 }
                 else {
 
