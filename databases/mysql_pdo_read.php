@@ -558,7 +558,7 @@ namespace ClassicPHP {
                 'YEAR',
                 'YEARWEEK',
             ];
-            $valid_function_found = true;
+            $valid_function_found = false;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -569,12 +569,13 @@ namespace ClassicPHP {
                     $functions,
                     'string' ) ) {
 
+                // If Not, and Not Even String Then Return False
                 if ( ! is_string( $functions ) ) {
 
                     return false;
                 }
 
-                // Else If Not Array, But is String
+                // Else If Not Array, But is String, Make String Array
                 else {
 
                     $functions = [ $functions ];
@@ -587,8 +588,16 @@ namespace ClassicPHP {
                 $return_type = 'bool';
             }
 
+            /* Force $functions Elements to be Uppercase for Matching */
+            foreach ( $functions as $key => $function ) {
+
+                $functions[ $key ] = strtoupper( $function );
+            }
+
             /* Validate $functions are All $valid_functions */
             foreach ( $functions as $function ) {
+
+                $valid_function_found = false;
 
                 foreach( $valid_functions as $valid_function ) {
 
@@ -597,10 +606,6 @@ namespace ClassicPHP {
                         $validated_functions[] = $function;
                         $valid_function_found = true;
                         break;
-                    }
-                    else {
-
-                        $valid_function_found = false;
                     }
                 }
 
@@ -615,6 +620,8 @@ namespace ClassicPHP {
                     $validated_functions[] = '';
                 }
             }
+
+            print_r($validated_functions);
 
             /* Return ****************************************************/
             return $validated_functions;
