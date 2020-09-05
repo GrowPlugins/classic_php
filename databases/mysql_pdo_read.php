@@ -563,18 +563,25 @@ namespace ClassicPHP {
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
             /* Force $functions to Be Array of Strings */
-            if ( ! is_array( $functions ) ) {
+            // Test If Array and If Every Element is String Data Type
+            if (
+                ! $this->arrays->validate_data_types(
+                    $functions,
+                    'string' ) ) {
 
                 if ( ! is_string( $functions ) ) {
 
                     return false;
                 }
+
+                // Else If Not Array, But is String
                 else {
 
                     $functions = [ $functions ];
                 }
             }
 
+            /* Validate $return_type */
             if ( 'array' !== $return_type ) {
 
                 $return_type = 'bool';

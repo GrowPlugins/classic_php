@@ -84,7 +84,7 @@ namespace ClassicPHP {
 
                 if ( null === current( $array ) ) {
 
-                    $this->remove_array_value( $array, key( $array ) );
+                    $this->remove_value( $array, key( $array ) );
                 }
 
                 // Increment Pointer Position
