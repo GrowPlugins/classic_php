@@ -67,6 +67,10 @@ namespace ClassicPHP {
     ORDER BY -- Validate fields against fields from table.
     LIMIT -- Validate values.
 
+    NOTE: Let the developer develop a function to use all the clause
+    building functions themselves. I just need to create the clause
+    building functions. Remember select clauses can have subqueries.
+
     */
 
     /** Class: MySQLPDO_Read
@@ -89,7 +93,7 @@ namespace ClassicPHP {
 
         /** @method create_selection_clause
          * Creates a selection clause string for use within a selection
-         * statement.
+         * statement. Does not allow the use of subqueries in the clause.
          * @param mixed string[] string $fields
          * @param mixed string[] string $functions
          * @return string[]
