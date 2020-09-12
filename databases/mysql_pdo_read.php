@@ -168,32 +168,35 @@ namespace ClassicPHP {
          * method.
          * @param string $table
          * @param string[] $joined_tables
-         * @param string[] $joined_types
+         * @param string[] $join_types
          * @return string[]
          * @return bool
          */
         function create_from_clause(
             string $table,
             array $joined_tables = [],
-            array $joined_types = [] ) {
+            array $join_types = [''] ) {
 
             /* Definition ************************************************/
-            $selection_clause;
+            $from_clause;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
-            /* Validate $table */
-            if ( ! is_array( $fields ) ) {
+            /* Validate $join_types */
+            if (
+                $this->arrays->validate_data_types(
+                    $join_types,
+                    'string' ) ) {
 
-                return false;
-            }
+                foreach ( $join_types as $join_type ) {
 
-            /* Validate $functions */
-            $functions = $this->remove_invalid_functions( $functions );
 
-            if ( false === $functions ) {
 
-                $functions = [''];
+                    if ( 'LEFT' ) {
+
+                        //
+                    }
+                }
             }
 
             /* Build Clause ---------------------------------------------*/
@@ -259,7 +262,6 @@ namespace ClassicPHP {
             $valid_functions_json_file =
                 CLASSIC_PHP_DIR
                 . '/classic_php_data_files/mysql_functions.json';
-            $valid_functions_json_string;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -297,19 +299,8 @@ namespace ClassicPHP {
 
             /* Processing ************************************************/
             /* Read JSON Array File of Valid Functions */
-            if ( file_exists( $valid_functions_json_file ) ) {
-
-                ob_start();
-
-                readfile( $valid_functions_json_file );
-
-                $valid_functions_json_string = ob_get_clean();
-
-                $valid_functions =
-                    json_decode(
-                        $valid_functions_json_string,
-                        true );
-            }
+            $valid_functions =
+                $this->read_json_file( $valid_functions_json_file, true );
 
             /* Remove Invalid Function Names from $functions */
             foreach ( $functions as $key => $function ) {
@@ -339,6 +330,29 @@ namespace ClassicPHP {
 
             /* Return ****************************************************/
             return $functions;
+        }
+
+        private function read_json_file(
+            $json_file,
+            $return_json_array = false ) {
+
+            /* Definition ************************************************/
+            $json_string;
+
+            /* Read JSON Array File of Valid Functions */
+            if ( file_exists( $json_file ) ) {
+
+                ob_start();
+
+                readfile( $json_file );
+
+                $json_string = ob_get_clean();
+
+                return
+                    json_decode(
+                        $json_string,
+                        $return_json_array );
+            }
         }
     }
 }
