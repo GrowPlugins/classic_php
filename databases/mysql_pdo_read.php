@@ -95,24 +95,20 @@ namespace ClassicPHP {
          * Creates a SELECT clause string for use within a selection
          * statement. Does not allow the use of subqueries in the clause.
          * Fields should be validated prior to using this method.
-         * @param mixed string[] string $fields
+         * @param string[] $fields
          * @param mixed string[] string $functions
          * @return string[]
          * @return bool
          */
-        function create_selection_clause( $fields, $functions = [''] ) {
+        function create_selection_clause(
+            array $fields,
+            $functions = [''] ) {
 
             /* Definition ************************************************/
             $selection_clause;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
-            /* Validate $fields */
-            if ( ! is_array( $fields ) ) {
-
-                return false;
-            }
-
             /* Validate $functions */
             $functions = $this->remove_invalid_functions( $functions );
 
