@@ -92,8 +92,9 @@ namespace ClassicPHP {
         }
 
         /** @method create_selection_clause
-         * Creates a selection clause string for use within a selection
+         * Creates a SELECT clause string for use within a selection
          * statement. Does not allow the use of subqueries in the clause.
+         * Fields should be validated prior to using this method.
          * @param mixed string[] string $fields
          * @param mixed string[] string $functions
          * @return string[]
@@ -107,6 +108,85 @@ namespace ClassicPHP {
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
             /* Validate $fields */
+            if ( ! is_array( $fields ) ) {
+
+                return false;
+            }
+
+            /* Validate $functions */
+            $functions = $this->remove_invalid_functions( $functions );
+
+            if ( false === $functions ) {
+
+                $functions = [''];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $selection_clause = 'SELECT ';
+
+            foreach ( $fields as $key => $field ) {
+
+                /* Build Fields into SELECT Clause */
+                // Add Field with Valid Function
+                if (
+                    array_key_exists( $key, $functions )
+                    && '' !== $functions[ $key ] ) {
+
+                    $selection_clause .=
+                        $functions[ $key ] . '(' . $field . '), ';
+                }
+
+                // Add Field without Function
+                else {
+
+                    $selection_clause .= $field . ', ';
+                }
+
+                /* Handle Case where '*' is Now in SELECT Clause */
+                if ( '*' === $field ) {
+
+                    if ( $key === array_key_first( $fields ) ) {
+
+                        break;
+                    }
+                    else {
+
+                        return false;
+                    }
+                }
+            }
+
+            // Remove Trailing ', '
+            $selection_clause = substr(
+                $selection_clause,
+                0,
+                strlen( $selection_clause ) - 2 );
+
+            return $selection_clause;
+        }
+
+        /** @method create_from_clause
+         * Creates a FROM clause string for use within a selection
+         * statement. Does not allow the use of subqueries in the clause.
+         * Tables and fields should be validated prior to using this
+         * method.
+         * @param string $table
+         * @param string[] $joined_tables
+         * @param string[] $joined_types
+         * @return string[]
+         * @return bool
+         */
+        function create_from_clause(
+            string $table,
+            array $joined_tables = [],
+            array $joined_types = [] ) {
+
+            /* Definition ************************************************/
+            $selection_clause;
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Validate $table */
             if ( ! is_array( $fields ) ) {
 
                 return false;
