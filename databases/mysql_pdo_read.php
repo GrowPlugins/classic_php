@@ -125,15 +125,32 @@ namespace ClassicPHP {
 
             foreach ( $fields as $key => $field ) {
 
+                /* Build Fields into SELECT Clause */
+                // Add Field with Valid Function
                 if (
                     array_key_exists( $key, $functions )
                     && '' !== $functions[ $key ] ) {
 
                     $selection_clause .= $functions[ $key ] . '(' . $field . '), ';
                 }
+
+                // Add Field without Function
                 else {
 
                     $selection_clause .= $field . ', ';
+                }
+
+                /* Handle Case where '*' is in SELECT Clause */
+                if ( '*' === $field ) {
+
+                    if ( $key === array_key_first( $fields ) ) {
+
+                        break;
+                    }
+                    else {
+
+                        return false;
+                    }
                 }
             }
 
