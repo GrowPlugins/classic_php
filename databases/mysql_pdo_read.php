@@ -175,7 +175,10 @@ namespace ClassicPHP {
         function create_from_clause(
             string $table,
             array $joined_tables = [],
-            array $join_types = [''] ) {
+            array $join_types = [],
+            array $join_on_fields = [],
+            array $join_on_comparisons = [],
+            array $join_on_values = [] ) {
 
             /* Definition ************************************************/
             $from_clause;
@@ -188,58 +191,101 @@ namespace ClassicPHP {
                     $join_types,
                     'string' ) ) {
 
-                foreach ( $join_types as $join_type ) {
+                // Validate Each Join Type
+                foreach ( $join_types as $key => $join_type ) {
 
+                    $join_types[ $key ] =
+                        strtoupper( $join_types[ $key ] );
 
+                    if (
+                        'LEFT' !== $join_types[ $key ]
+                        && 'RIGHT' !== $join_types[ $key ]
+                        && 'LEFT OUTER' !== $join_types[ $key ]
+                        && 'RIGHT OUTER' !== $join_types[ $key ]
+                        && 'INNER' !== $join_types[ $key ]
+                        && 'CROSS' !== $join_types[ $key ]
+                        && 'FULL' !== $join_types[ $key ] ) {
 
-                    if ( 'LEFT' ) {
-
-                        //
+                        $join_types[ $key ] = 'INNER';
                     }
                 }
+            }
+            else {
+
+                $join_types = [];
+            }
+
+            /* Validate $join_on_fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $join_on_fields,
+                    'string' ) ) {
+
+                $join_on_fields = [];
+            }
+
+            /* Validate $join_on_comparisons */
+            if (
+                $this->arrays->validate_data_types(
+                    $join_on_comparisons,
+                    'string' ) ) {
+
+                // Validate Each Join Type
+                foreach (
+                    $join_on_comparisons as $key => $join_on_comparison ) {
+
+                    if (
+                        '=' !== $join_on_comparisons[ $key ]
+                        && '<' !== $join_on_comparisons[ $key ]
+                        && '>' !== $join_on_comparisons[ $key ]
+                        && '<=' !== $join_on_comparisons[ $key ]
+                        && '>=' !== $join_on_comparisons[ $key ]
+                        && '<>' !== $join_on_comparisons[ $key ]
+                        && '!=' !== $join_on_comparisons[ $key ] ) {
+
+                        $join_on_comparisons[ $key ] = '=';
+                    }
+                }
+            }
+            else {
+
+                $join_on_comparisons = [];
             }
 
             /* Build Clause ---------------------------------------------*/
-            $selection_clause = 'SELECT ';
+            $from_clause = 'FROM ' . $table;
 
-            foreach ( $fields as $key => $field ) {
+            /* Build Joined Tables into FROM Clause, If Given */
+            if ( [] !== $joined_tables ) {
 
-                /* Build Fields into SELECT Clause */
-                // Add Field with Valid Function
-                if (
-                    array_key_exists( $key, $functions )
-                    && '' !== $functions[ $key ] ) {
+                foreach ( $joined_tables as $key => $joined_table ) {
 
-                    $selection_clause .= $functions[ $key ] . '(' . $field . '), ';
-                }
+                    // Add Join Type If Specified
+                    if ( array_key_exists( $key, $join_types ) ) {
 
-                // Add Field without Function
-                else {
-
-                    $selection_clause .= $field . ', ';
-                }
-
-                /* Handle Case where '*' is in SELECT Clause */
-                if ( '*' === $field ) {
-
-                    if ( $key === array_key_first( $fields ) ) {
-
-                        break;
+                        $from_clause .= ' ' . $join_types[ $key ];
                     }
-                    else {
 
-                        return false;
+                    // Add Table Join
+                    $from_clause .=
+                        ' JOIN ' . $joined_table;
+
+                    // Add ON Subclause If Join Field, Comparison Operator,
+                        // and Value Specified
+                    if (
+                        array_key_exists( $key, $join_on_fields )
+                        && array_key_exists( $key, $join_on_comparisons )
+                        && array_key_exists( $key, $join_on_values ) ) {
+
+                        $from_clause .=
+                            ' ON ' . $join_on_fields[ $key ] . ' '
+                            . $join_on_comparisons[ $key ] . ' '
+                            . $join_on_values[ $key ];
                     }
                 }
             }
 
-            // Remove Trailing ', '
-            $selection_clause = substr(
-                $selection_clause,
-                0,
-                strlen( $selection_clause ) - 2 );
-
-            return $selection_clause;
+            return $from_clause;
         }
 
         /** @method remove_invalid_functions
@@ -332,6 +378,13 @@ namespace ClassicPHP {
             return $functions;
         }
 
+        /** @method read_json_file
+         * Reads a JSON file and returns its contents as a valid JSON
+         * object.
+         * @param string $json_file
+         * @param bool $return_json_array
+         * @return mixed JSON array
+         */
         private function read_json_file(
             $json_file,
             $return_json_array = false ) {
