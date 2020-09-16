@@ -110,6 +110,15 @@ namespace ClassicPHP {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
+            /* Validate $fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $fields,
+                    'string' ) ) {
+
+                $fields = [];
+            }
+
             /* Validate $functions */
             $functions = $this->remove_invalid_functions( $functions );
 
@@ -121,43 +130,53 @@ namespace ClassicPHP {
             /* Build Clause ---------------------------------------------*/
             $selection_clause = 'SELECT ';
 
-            foreach ( $fields as $key => $field ) {
+            /* Process $fields If Fields Exist */
+            if ( [] !== $fields ) {
 
-                /* Build Fields into SELECT Clause */
-                // Add Field with Valid Function
-                if (
-                    array_key_exists( $key, $functions )
-                    && '' !== $functions[ $key ] ) {
+                foreach ( $fields as $key => $field ) {
 
-                    $selection_clause .=
-                        $functions[ $key ] . '(' . $field . '), ';
-                }
+                    /* Build Fields into SELECT Clause */
+                    // Add Field with Valid Function
+                    if (
+                        array_key_exists( $key, $functions )
+                        && '' !== $functions[ $key ] ) {
 
-                // Add Field without Function
-                else {
-
-                    $selection_clause .= $field . ', ';
-                }
-
-                /* Handle Case where '*' is Now in SELECT Clause */
-                if ( '*' === $field ) {
-
-                    if ( $key === array_key_first( $fields ) ) {
-
-                        break;
+                        $selection_clause .=
+                            $functions[ $key ] . '(' . $field . '), ';
                     }
+
+                    // Add Field without Function
                     else {
 
-                        return false;
+                        $selection_clause .= $field . ', ';
+                    }
+
+                    /* Handle Case where '*' is Now in SELECT Clause */
+                    if ( '*' === $field ) {
+
+                        if ( $key === array_key_first( $fields ) ) {
+
+                            break;
+                        }
+                        else {
+
+                            return false;
+                        }
                     }
                 }
+
+                // Remove Trailing ', '
+                $selection_clause = substr(
+                    $selection_clause,
+                    0,
+                    strlen( $selection_clause ) - 2 );
             }
 
-            // Remove Trailing ', '
-            $selection_clause = substr(
-                $selection_clause,
-                0,
-                strlen( $selection_clause ) - 2 );
+            /* If No Fields, If Invalidated $fields Array, Use '*' */
+            else {
+
+                $selection_clause .= '*';
+            }
 
             return $selection_clause;
         }
