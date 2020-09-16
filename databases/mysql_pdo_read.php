@@ -97,7 +97,7 @@ namespace ClassicPHP {
          * Fields should be validated prior to using this method.
          * @param string[] $fields
          * @param mixed string[] string $functions
-         * @return string[]
+         * @return string
          * @return bool
          */
         function create_selection_clause(
@@ -168,8 +168,11 @@ namespace ClassicPHP {
          * method.
          * @param string $table
          * @param string[] $joined_tables
-         * @param string[] $join_types
-         * @return string[]
+         * @param string[] $join_types              // Eg, 'LEFT', 'RIGHT'
+         * @param string[] $join_on_fields
+         * @param string[] $join_on_comparisons     // Comparison Operators
+         * @param string[] $join_on_values          // Values sought in ON
+         * @return string
          * @return bool
          */
         function create_from_clause(
