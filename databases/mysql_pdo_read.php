@@ -30,6 +30,7 @@ namespace ClassicPHP {
             HAVING field = value
             WHERE field = value
             LIMIT number, number
+            ORDER BY fields
 
         Update:
             UPDATE table
@@ -298,6 +299,80 @@ namespace ClassicPHP {
             }
 
             return $from_clause;
+        }
+
+        /** @method create_group_by_clause
+         * Creates a FROM clause string for use within a selection
+         * statement. Does not allow the use of subqueries in the clause.
+         * Tables and fields should be validated prior to using this
+         * method.
+         * @param string $table
+         * @param string[] $joined_tables
+         * @param string[] $join_types              // Eg, 'LEFT', 'RIGHT'
+         * @param string[] $join_on_fields
+         * @param string[] $join_on_comparisons     // Comparison Operators
+         * @param string[] $join_on_values          // Values sought in ON
+         * @return string
+         * @return bool
+         */
+        function create_group_by_clause(
+            array $fields ) {
+
+            /* Definition ************************************************/
+            $group_by_clause;
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Validate $functions */
+            $functions = $this->remove_invalid_functions( $functions );
+
+            if ( false === $functions ) {
+
+                $functions = [''];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $selection_clause = 'SELECT ';
+
+            foreach ( $fields as $key => $field ) {
+
+                /* Build Fields into SELECT Clause */
+                // Add Field with Valid Function
+                if (
+                    array_key_exists( $key, $functions )
+                    && '' !== $functions[ $key ] ) {
+
+                    $selection_clause .=
+                        $functions[ $key ] . '(' . $field . '), ';
+                }
+
+                // Add Field without Function
+                else {
+
+                    $selection_clause .= $field . ', ';
+                }
+
+                /* Handle Case where '*' is Now in SELECT Clause */
+                if ( '*' === $field ) {
+
+                    if ( $key === array_key_first( $fields ) ) {
+
+                        break;
+                    }
+                    else {
+
+                        return false;
+                    }
+                }
+            }
+
+            // Remove Trailing ', '
+            $selection_clause = substr(
+                $selection_clause,
+                0,
+                strlen( $selection_clause ) - 2 );
+
+            return $selection_clause;
         }
 
         /** @method remove_invalid_functions
