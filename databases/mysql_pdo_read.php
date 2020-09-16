@@ -252,6 +252,15 @@ namespace ClassicPHP {
                 $join_on_comparisons = [];
             }
 
+            /* Validate $join_on_values */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $join_on_values,
+                    ['string', 'int', 'float', 'bool'] ) ) {
+
+                $join_on_values = [];
+            }
+
             /* Build Clause ---------------------------------------------*/
             $from_clause = 'FROM ' . $table;
 
