@@ -99,7 +99,6 @@ namespace ClassicPHP {
          * @param string[] $fields
          * @param mixed string[] string $functions
          * @return string
-         * @return bool
          */
         function create_selection_clause(
             array $fields,
@@ -178,6 +177,7 @@ namespace ClassicPHP {
                 $selection_clause .= '*';
             }
 
+            /* Return ****************************************************/
             return $selection_clause;
         }
 
@@ -193,7 +193,6 @@ namespace ClassicPHP {
          * @param string[] $join_on_comparisons     // Comparison Operators
          * @param string[] $join_on_values          // Values sought in ON
          * @return string
-         * @return bool
          */
         function create_from_clause(
             string $table,
@@ -317,22 +316,16 @@ namespace ClassicPHP {
                 }
             }
 
+            /* Return ****************************************************/
             return $from_clause;
         }
 
         /** @method create_group_by_clause
-         * Creates a FROM clause string for use within a selection
-         * statement. Does not allow the use of subqueries in the clause.
-         * Tables and fields should be validated prior to using this
+         * Creates a GROUP BY clause string for use within a selection
+         * statement. Fields should be validated prior to using this
          * method.
-         * @param string $table
-         * @param string[] $joined_tables
-         * @param string[] $join_types              // Eg, 'LEFT', 'RIGHT'
-         * @param string[] $join_on_fields
-         * @param string[] $join_on_comparisons     // Comparison Operators
-         * @param string[] $join_on_values          // Values sought in ON
+         * @param string[] $fields
          * @return string
-         * @return bool
          */
         function create_group_by_clause(
             array $fields ) {
@@ -342,56 +335,42 @@ namespace ClassicPHP {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
-            /* Validate $functions */
-            $functions = $this->remove_invalid_functions( $functions );
+            /* Validate $fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $fields,
+                    'string' ) ) {
 
-            if ( false === $functions ) {
-
-                $functions = [''];
+                $fields = [];
             }
 
             /* Build Clause ---------------------------------------------*/
-            $selection_clause = 'SELECT ';
+            /* Process $fields If Fields Exist */
+            if ( [] !== $fields ) {
 
-            foreach ( $fields as $key => $field ) {
+                $group_by_clause = 'GROUP BY ';
 
-                /* Build Fields into SELECT Clause */
-                // Add Field with Valid Function
-                if (
-                    array_key_exists( $key, $functions )
-                    && '' !== $functions[ $key ] ) {
+                foreach ( $fields as $key => $field ) {
 
-                    $selection_clause .=
-                        $functions[ $key ] . '(' . $field . '), ';
+                    /* Build Fields into GROUP BY Clause */
+                    $group_by_clause .= $field . ', ';
                 }
 
-                // Add Field without Function
-                else {
-
-                    $selection_clause .= $field . ', ';
-                }
-
-                /* Handle Case where '*' is Now in SELECT Clause */
-                if ( '*' === $field ) {
-
-                    if ( $key === array_key_first( $fields ) ) {
-
-                        break;
-                    }
-                    else {
-
-                        return false;
-                    }
-                }
+                // Remove Trailing ', '
+                $group_by_clause = substr(
+                    $group_by_clause,
+                    0,
+                    strlen( $group_by_clause ) - 2 );
             }
 
-            // Remove Trailing ', '
-            $selection_clause = substr(
-                $selection_clause,
-                0,
-                strlen( $selection_clause ) - 2 );
+            /* Else Return an Empty GROUP BY Clause */
+            else {
 
-            return $selection_clause;
+                $group_by_clause = '';
+            }
+
+            /* Return ****************************************************/
+            return $group_by_clause;
         }
 
         /** @method remove_invalid_functions
@@ -490,6 +469,7 @@ namespace ClassicPHP {
          * @param string $json_file
          * @param bool $return_json_array
          * @return mixed JSON array
+         * @return bool
          */
         private function read_json_file(
             $json_file,
@@ -498,6 +478,7 @@ namespace ClassicPHP {
             /* Definition ************************************************/
             $json_string;
 
+            /* Processing ************************************************/
             /* Read JSON Array File of Valid Functions */
             if ( file_exists( $json_file ) ) {
 
@@ -511,6 +492,10 @@ namespace ClassicPHP {
                     json_decode(
                         $json_string,
                         $return_json_array );
+            }
+            else {
+
+                return false;
             }
         }
     }
