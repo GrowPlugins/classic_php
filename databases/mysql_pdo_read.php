@@ -373,6 +373,258 @@ namespace ClassicPHP {
             return $group_by_clause;
         }
 
+        /** @method create_having_clause
+         * Creates a HAVING clause string for use within a selection
+         * statement. Fields should be validated prior to using this
+         * method. It is highly suggested to use PDO parameter
+         * placeholders (e.g., ':placeholder') for values, so you can
+         * implement PDO prepared statements. However, this is not
+         * required.
+         * @param mixed string string[] $fields
+         * @param mixed string string[] $comparison_operators
+         * @param mixed string string[] $values
+         * @param string[] $conditional_operators
+         * @return string
+         */
+        function create_having_clause(
+            $fields,
+            $comparison_operators,
+            $values,
+            array $conditional_operators = ['AND'] ) {
+
+            /* Definition ************************************************/
+            $having_clause;
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Force $fields to be Array */
+            if ( ! is_array( $fields ) ) {
+
+                $fields = [ $fields ];
+            }
+
+            /* Force $comparison_operators to be Array */
+            if ( ! is_array( $comparison_operators ) ) {
+
+                $comparison_operators = [ $comparison_operators ];
+            }
+
+            /* Force $values to be Array */
+            if ( ! is_array( $values ) ) {
+
+                $values = [ $values ];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $having_clause = 'HAVING ';
+
+            /* Build HAVING Conditions */
+            $having_clause .= $this->build_condition_list(
+                $fields,
+                $comparison_operators,
+                $values,
+                $conditional_operators );
+
+            /* Return ****************************************************/
+            return $having_clause;
+        }
+
+        /** @method create_where_clause
+         * Creates a WHERE clause string for use within a selection
+         * statement. Fields should be validated prior to using this
+         * method. It is highly suggested to use PDO parameter
+         * placeholders (e.g., ':placeholder') for values, so you can
+         * implement PDO prepared statements. However, this is not
+         * required.
+         * @param mixed string string[] $fields
+         * @param mixed string string[] $comparison_operators
+         * @param mixed string string[] $values
+         * @param string[] $conditional_operators
+         * @return string
+         */
+        function create_where_clause(
+            $fields,
+            $comparison_operators,
+            $values,
+            array $conditional_operators = ['AND'] ) {
+
+            /* Definition ************************************************/
+            $where_clause;
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Force $fields to be Array */
+            if ( ! is_array( $fields ) ) {
+
+                $fields = [ $fields ];
+            }
+
+            /* Force $comparison_operators to be Array */
+            if ( ! is_array( $comparison_operators ) ) {
+
+                $comparison_operators = [ $comparison_operators ];
+            }
+
+            /* Force $values to be Array */
+            if ( ! is_array( $values ) ) {
+
+                $values = [ $values ];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $where_clause = 'WHERE ';
+
+            /* Build WHERE Conditions */
+            $where_clause .= $this->build_condition_list(
+                $fields,
+                $comparison_operators,
+                $values,
+                $conditional_operators );
+
+            /* Return ****************************************************/
+            return $where_clause;
+        }
+
+        /** @method build_condition_list
+         * Builds a list of fields, comparison operator, values, such as:
+         * 'field = value AND field < value, ...'.
+         * @param string[] $fields
+         * @param string[] $comparison_operators
+         * @param array $values
+         * @param array $logic_operators
+         * @return bool
+         */
+        private function build_condition_list(
+            array $fields = [],
+            array $comparison_operators = [],
+            array $values = [],
+            array $logic_operators = [] ) {
+
+            /* Definition ************************************************/
+            $field_value_list = '';
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Validate $fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $fields,
+                    'string' ) ) {
+
+                $fields = [];
+            }
+
+            /* Validate $comparison_operators */
+            if (
+                $this->arrays->validate_data_types(
+                    $comparison_operators,
+                    'string' ) ) {
+
+                // Validate Each Join Type
+                foreach (
+                    $comparison_operators as $key => $comparison ) {
+
+                    if (
+                        '=' !== $comparison_operators[ $key ]
+                        && '<' !== $comparison_operators[ $key ]
+                        && '>' !== $comparison_operators[ $key ]
+                        && '<=' !== $comparison_operators[ $key ]
+                        && '>=' !== $comparison_operators[ $key ]
+                        && '<>' !== $comparison_operators[ $key ]
+                        && '!=' !== $comparison_operators[ $key ] ) {
+
+                        $comparison_operators[ $key ] = '=';
+                    }
+                }
+            }
+            else {
+
+                $comparison_operators = [];
+            }
+
+            /* Validate $values */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $values,
+                    ['string', 'int', 'float', 'bool'] ) ) {
+
+                $values = [];
+            }
+
+            /* Validate $logic_operators */
+            if (
+                $this->arrays->validate_data_types(
+                    $logic_operators,
+                    'string' ) ) {
+
+                // Validate Each Join Type
+                foreach (
+                    $logic_operators as $key => $logic ) {
+
+                    if (
+                        'AND' !== $logic_operators[ $key ]
+                        && 'OR' !== $logic_operators[ $key ] ) {
+
+                        $logic_operators[ $key ] = 'AND';
+                    }
+                }
+            }
+            else {
+
+                $logic_operators = [];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            /* Build List If Fields, Comparisons, and Values Exist */
+            if (
+                [] !== $fields
+                && [] !== $comparison_operators
+                && [] !== $values ) {
+
+                foreach ( $fields as $key => $field ) {
+
+                    // Append
+                    if (
+                        array_key_exists( $key, $comparison_operators )
+                        && array_key_exists( $key, $values ) ) {
+
+                        $field_value_list .=
+                            $fields[ $key ] . ' '
+                            . $comparison_operators[ $key ] . ' '
+                            . $values[ $key ] . ' ';
+
+                        // Append Conditional Operator
+                        if ( array_key_exists( $key, $logic_operators ) ) {
+
+                            $field_value_list .=
+                                $logic_operators[ $key ] . ' ';
+                        }
+
+                        // If No Conditional Operator, Stop Building
+                        else {
+
+                            break;
+                        }
+                    }
+                }
+
+                // Remove Trailing ' '
+                $field_value_list = substr(
+                    $field_value_list,
+                    0,
+                    strlen( $field_value_list ) - 1 );
+            }
+
+            /* Return False Otherwise */
+            else {
+
+                return false;
+            }
+
+            /* Return ****************************************************/
+            return $field_value_list;
+        }
+
         /** @method remove_invalid_functions
          * Replaces invalid functions with empty strings. If $return_type
          * is 'bool' and any function is invalid, false is returned.
