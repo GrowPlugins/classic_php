@@ -485,6 +485,50 @@ namespace ClassicPHP {
             return $where_clause;
         }
 
+        /** @method create_limit_clause
+         * Creates a LIMIT clause string for use within a selection
+         * statement.
+         * @param int $limit
+         * @param int $offset
+         * @return string
+         */
+        function create_limit_clause(
+            int $limit,
+            int $offset = 0 ) {
+
+            /* Definition ************************************************/
+            $limit_clause;
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Validate $limit */
+            if ( 0 > $limit ) {
+
+                return '';
+            }
+
+            /* Validate $offset */
+            if ( 0 > $offset ) {
+
+                $offset = 0;
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $limit_clause = 'LIMIT ';
+
+            if ( 0 < $offset ) {
+
+                $limit_clause .= $offset . ', ' . $limit;
+            }
+            else {
+
+                $limit_clause .= $limit;
+            }
+
+            /* Return ****************************************************/
+            return $limit_clause;
+        }
+
         /** @method build_condition_list
          * Builds a list of fields, comparison operator, values, such as:
          * 'field = value AND field < value, ...'.
