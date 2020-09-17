@@ -529,6 +529,59 @@ namespace ClassicPHP {
             return $limit_clause;
         }
 
+        /** @method create_order_by_clause
+         * Creates a GROUP BY clause string for use within a selection
+         * statement. Fields should be validated prior to using this
+         * method.
+         * @param string[] $fields
+         * @return string
+         */
+        function create_order_by_clause(
+            array $fields ) {
+
+            /* Definition ************************************************/
+            $group_by_clause;
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Validate $fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $fields,
+                    'string' ) ) {
+
+                $fields = [];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            /* Process $fields If Fields Exist */
+            if ( [] !== $fields ) {
+
+                $group_by_clause = 'GROUP BY ';
+
+                foreach ( $fields as $key => $field ) {
+
+                    /* Build Fields into GROUP BY Clause */
+                    $group_by_clause .= $field . ', ';
+                }
+
+                // Remove Trailing ', '
+                $group_by_clause = substr(
+                    $group_by_clause,
+                    0,
+                    strlen( $group_by_clause ) - 2 );
+            }
+
+            /* Else Return an Empty GROUP BY Clause */
+            else {
+
+                $group_by_clause = '';
+            }
+
+            /* Return ****************************************************/
+            return $group_by_clause;
+        }
+
         /** @method build_condition_list
          * Builds a list of fields, comparison operator, values, such as:
          * 'field = value AND field < value, ...'.
