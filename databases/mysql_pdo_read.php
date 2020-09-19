@@ -21,7 +21,7 @@ namespace ClassicPHP {
     require_once( CLASSIC_PHP_DIR . '/data_types/array_processing.php' );
 
     /*
-        Query:
+        Read Queries:
             SELECT Function(fields) AS fieldNames
             FROM table
             JOIN table
@@ -31,53 +31,12 @@ namespace ClassicPHP {
             WHERE field = value
             LIMIT number, number
             ORDER BY fields
-
-        Update:
-            UPDATE table
-            SET field = value
-
-            INSERT INTO table
-            (fields)
-            VALUES (values)
-
-            DELETE table
-            WHERE field = value
-
-        Create:
-            CREATE table
-            (fields)
-            VALUES (values)
-
-        Drop:
-            DROP table
-    */
-
-    /*
-
-    - Query database data for PDO connections
-    - Alter database data
-    - Drop database data
-
-    --Query
-
-    A query often requires user input, so validation and escaping is necessary.
-
-    SELECT -- Validate fields against fields from table, and '*'
-    FROM -- Validate table against tables from database
-    WHERE -- Validate fields against fields from table. Validate values and use PDO encapsulation.
-    ORDER BY -- Validate fields against fields from table.
-    LIMIT -- Validate values.
-
-    NOTE: Let the developer develop a function to use all the clause
-    building functions themselves. I just need to create the clause
-    building functions. Remember select clauses can have subqueries.
-
     */
 
     /** Class: MySQLPDO_Read
-     * Allows you to query a database safely using PDO.
+     * Helps you more quickly query a database safely using PDO.
      * Inherits From: ClassicPHP\MySQLPDO
-     * Requires: \PDO
+     * Requires: \PDO, ClassicPHP\ArrayProcessing
      * Inherited By: None
      */
     class MySQLPDO_Read extends MySQLPDO {
@@ -93,8 +52,8 @@ namespace ClassicPHP {
         ******************************************************************/
 
         /** @method __construct
-         * Instantiates the super class, and two helper classes,
-         * ArrayProcessing and ErrorHandling.
+         * Instantiates the super class, and the helper class
+         * ArrayProcessing.
          * @param PDO $pdo_connection
          */
         function __construct( PDO $pdo_connection ) {
@@ -102,7 +61,6 @@ namespace ClassicPHP {
             parent::__construct( $pdo_connection );
 
             $this->arrays = new ArrayProcessing();
-            $this->error = new ErrorHandling();
         }
 
         /** @method create_selection_clause
