@@ -76,7 +76,7 @@ namespace ClassicPHP {
             $functions = [''] ) {
 
             /* Definition ************************************************/
-            $selection_clause;
+            $selection_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -152,62 +152,6 @@ namespace ClassicPHP {
             return $selection_clause;
         }
 
-        /** @method create_where_clause
-         * Creates a WHERE clause string for use within a selection
-         * statement. Fields should be validated prior to using this
-         * method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
-         * @param mixed string string[] $fields
-         * @param mixed string string[] $comparison_operators
-         * @param mixed string string[] $values
-         * @param string[] $conditional_operators
-         * @return string
-         */
-        function create_where_clause(
-            $fields,
-            $comparison_operators,
-            $values,
-            array $conditional_operators = ['AND'] ) {
-
-            /* Definition ************************************************/
-            $where_clause;
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
-
-                $fields = [ $fields ];
-            }
-
-            /* Force $comparison_operators to be Array */
-            if ( ! is_array( $comparison_operators ) ) {
-
-                $comparison_operators = [ $comparison_operators ];
-            }
-
-            /* Force $values to be Array */
-            if ( ! is_array( $values ) ) {
-
-                $values = [ $values ];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $where_clause = 'WHERE ';
-
-            /* Build WHERE Conditions */
-            $where_clause .= $this->build_condition_list(
-                $fields,
-                $comparison_operators,
-                $values,
-                $conditional_operators );
-
-            /* Return ****************************************************/
-            return $where_clause;
-        }
-
         /** @method create_from_clause
          * Creates a FROM clause string for use within a selection
          * statement. Does not allow the use of subqueries in the clause.
@@ -230,7 +174,7 @@ namespace ClassicPHP {
             array $join_on_values = [] ) {
 
             /* Definition ************************************************/
-            $from_clause;
+            $from_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -279,7 +223,7 @@ namespace ClassicPHP {
                     $join_on_comparisons,
                     'string' ) ) {
 
-                // Validate Each Join Type
+                // Validate Each ON Comparison Operator
                 foreach (
                     $join_on_comparisons as $key => $join_on_comparison ) {
 
@@ -347,6 +291,62 @@ namespace ClassicPHP {
             return $from_clause;
         }
 
+        /** @method create_where_clause
+         * Creates a WHERE clause string for use within a selection
+         * statement. Fields should be validated prior to using this
+         * method. It is highly suggested to use PDO parameter
+         * placeholders (e.g., ':placeholder') for values, so you can
+         * implement PDO prepared statements. However, this is not
+         * required.
+         * @param mixed string string[] $fields
+         * @param mixed string string[] $comparison_operators
+         * @param mixed string string[] $values
+         * @param string[] $conditional_operators
+         * @return string
+         */
+        function create_where_clause(
+            $fields,
+            $comparison_operators,
+            $values,
+            array $conditional_operators = ['AND'] ) {
+
+            /* Definition ************************************************/
+            $where_clause = '';
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Force $fields to be Array */
+            if ( ! is_array( $fields ) ) {
+
+                $fields = [ $fields ];
+            }
+
+            /* Force $comparison_operators to be Array */
+            if ( ! is_array( $comparison_operators ) ) {
+
+                $comparison_operators = [ $comparison_operators ];
+            }
+
+            /* Force $values to be Array */
+            if ( ! is_array( $values ) ) {
+
+                $values = [ $values ];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $where_clause = 'WHERE ';
+
+            /* Build WHERE Conditions */
+            $where_clause .= $this->build_condition_list(
+                $fields,
+                $comparison_operators,
+                $values,
+                $conditional_operators );
+
+            /* Return ****************************************************/
+            return $where_clause;
+        }
+
         /** @method create_group_by_clause
          * Creates a GROUP BY clause string for use within a selection
          * statement. Fields should be validated prior to using this
@@ -358,7 +358,7 @@ namespace ClassicPHP {
             array $fields ) {
 
             /* Definition ************************************************/
-            $group_by_clause;
+            $group_by_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -390,12 +390,6 @@ namespace ClassicPHP {
                     strlen( $group_by_clause ) - 2 );
             }
 
-            /* Else Return an Empty GROUP BY Clause */
-            else {
-
-                $group_by_clause = '';
-            }
-
             /* Return ****************************************************/
             return $group_by_clause;
         }
@@ -420,7 +414,7 @@ namespace ClassicPHP {
             array $conditional_operators = ['AND'] ) {
 
             /* Definition ************************************************/
-            $having_clause;
+            $having_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -468,7 +462,7 @@ namespace ClassicPHP {
             int $offset = 0 ) {
 
             /* Definition ************************************************/
-            $limit_clause;
+            $limit_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -511,7 +505,7 @@ namespace ClassicPHP {
             array $fields ) {
 
             /* Definition ************************************************/
-            $order_by_clause;
+            $order_by_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -541,12 +535,6 @@ namespace ClassicPHP {
                     $order_by_clause,
                     0,
                     strlen( $order_by_clause ) - 2 );
-            }
-
-            /* Else Return an Empty GROUP BY Clause */
-            else {
-
-                $order_by_clause = '';
             }
 
             /* Return ****************************************************/

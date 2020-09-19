@@ -75,137 +75,97 @@ namespace ClassicPHP {
          * statement. Tables and fields should be validated prior to
          * using this method.
          * @param string $table
-         * @param string[] $joined_tables
-         * @param string[] $join_types              // Eg, 'LEFT', 'RIGHT'
-         * @param string[] $join_on_fields
-         * @param string[] $join_on_comparisons     // Comparison Operators
-         * @param string[] $join_on_values          // Values sought in ON
+         * @param string[] $set_fields
+         * @param string[] $set_comparisons     // Comparison Operators
+         * @param string[] $set_values          // Values sought in SET
          * @return string
          */
-        function create_from_clause(
+        function create_update_clause(
             string $table,
-            array $joined_tables = [],
-            array $join_types = [],
-            array $join_on_fields = [],
-            array $join_on_comparisons = [],
-            array $join_on_values = [] ) {
+            array $set_fields,
+            array $set_comparisons = [],
+            array $set_values = [] ) {
 
             /* Definition ************************************************/
-            $from_clause;
+            $update_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
-            /* Validate $join_types */
-            if (
-                $this->arrays->validate_data_types(
-                    $join_types,
-                    'string' ) ) {
-
-                // Validate Each Join Type
-                foreach ( $join_types as $key => $join_type ) {
-
-                    $join_types[ $key ] =
-                        strtoupper( $join_types[ $key ] );
-
-                    if (
-                        'LEFT' !== $join_types[ $key ]
-                        && 'RIGHT' !== $join_types[ $key ]
-                        && 'LEFT OUTER' !== $join_types[ $key ]
-                        && 'RIGHT OUTER' !== $join_types[ $key ]
-                        && 'INNER' !== $join_types[ $key ]
-                        && 'CROSS' !== $join_types[ $key ]
-                        && 'FULL' !== $join_types[ $key ] ) {
-
-                        $join_types[ $key ] = 'INNER';
-                    }
-                }
-            }
-            else {
-
-                $join_types = [];
-            }
-
-            /* Validate $join_on_fields */
+            /* Validate $set_fields */
             if (
                 ! $this->arrays->validate_data_types(
-                    $join_on_fields,
+                    $set_fields,
                     'string' ) ) {
 
-                $join_on_fields = [];
+                $set_fields = [];
             }
 
-            /* Validate $join_on_comparisons */
+            /* Validate $set_comparisons */
             if (
                 $this->arrays->validate_data_types(
-                    $join_on_comparisons,
+                    $set_comparisons,
                     'string' ) ) {
 
-                // Validate Each Join Type
+                // Validate Each SET Comparison Operator
                 foreach (
-                    $join_on_comparisons as $key => $join_on_comparison ) {
+                    $set_comparisons as $key => $join_on_comparison ) {
 
                     if (
-                        '=' !== $join_on_comparisons[ $key ]
-                        && '<' !== $join_on_comparisons[ $key ]
-                        && '>' !== $join_on_comparisons[ $key ]
-                        && '<=' !== $join_on_comparisons[ $key ]
-                        && '>=' !== $join_on_comparisons[ $key ]
-                        && '<>' !== $join_on_comparisons[ $key ]
-                        && '!=' !== $join_on_comparisons[ $key ] ) {
+                        '=' !== $set_comparisons[ $key ]
+                        && '<' !== $set_comparisons[ $key ]
+                        && '>' !== $set_comparisons[ $key ]
+                        && '<=' !== $set_comparisons[ $key ]
+                        && '>=' !== $set_comparisons[ $key ]
+                        && '<>' !== $set_comparisons[ $key ]
+                        && '!=' !== $set_comparisons[ $key ] ) {
 
-                        $join_on_comparisons[ $key ] = '=';
+                        $set_comparisons[ $key ] = '=';
                     }
                 }
             }
             else {
 
-                $join_on_comparisons = [];
+                $set_comparisons = [];
             }
 
-            /* Validate $join_on_values */
+            /* Validate $set_values */
             if (
                 ! $this->arrays->validate_data_types(
-                    $join_on_values,
+                    $set_values,
                     ['string', 'int', 'float', 'bool'] ) ) {
 
-                $join_on_values = [];
+                $set_values = [];
             }
 
             /* Build Clause ---------------------------------------------*/
-            $from_clause = 'FROM ' . $table;
+            /* Build UPDATE Clause, If Fields Exist */
+            if ( [] !== $set_fields ) {
 
-            /* Build Joined Tables into FROM Clause, If Given */
-            if ( [] !== $joined_tables ) {
+                $update_clause = 'UPDATE ' . $table . ' SET ';
 
-                foreach ( $joined_tables as $key => $joined_table ) {
+                foreach ( $set_fields as $key => $set_field ) {
 
-                    // Add Join Type If Specified
-                    if ( array_key_exists( $key, $join_types ) ) {
-
-                        $from_clause .= ' ' . $join_types[ $key ];
-                    }
-
-                    // Add Table Join
-                    $from_clause .=
-                        ' JOIN ' . $joined_table;
-
-                    // Add ON Subclause If Join Field, Comparison Operator,
-                        // and Value Specified
+                    // Add Next Field, Operator, and Value, If All Exist
                     if (
-                        array_key_exists( $key, $join_on_fields )
-                        && array_key_exists( $key, $join_on_comparisons )
-                        && array_key_exists( $key, $join_on_values ) ) {
+                        array_key_exists( $key, $set_comparisons )
+                        && array_key_exists( $key, $set_values ) ) {
 
-                        $from_clause .=
-                            ' ON ' . $join_on_fields[ $key ] . ' '
-                            . $join_on_comparisons[ $key ] . ' '
-                            . $join_on_values[ $key ];
+                        $update_clause .=
+                            $set_fields[ $key ] . ' '
+                            . $set_comparisons[ $key ] . ' '
+                            . $set_values[ $key ] . ', ';
                     }
                 }
+
+                // Remove Trailing ', '
+                $update_clause = substr(
+                    $update_clause,
+                    0,
+                    strlen( $update_clause ) - 2 );
             }
 
             /* Return ****************************************************/
-            return $from_clause;
+            return $update_clause;
         }
 
         /* EXAMPLE METHODS **************************************************************/
