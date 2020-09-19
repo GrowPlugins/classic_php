@@ -22,10 +22,10 @@ namespace ClassicPHP {
 
     /*
         Read Queries:
-            SELECT Function(fields) AS fieldNames
+            SELECT Function(fields) -->AS fieldNames
             FROM table
             JOIN table
-                ON field = value
+                ON field = value -->AS tableNames
             GROUP BY fields
             HAVING field = value
             WHERE field = value
