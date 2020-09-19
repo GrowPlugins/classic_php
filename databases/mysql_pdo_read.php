@@ -63,7 +63,7 @@ namespace ClassicPHP {
             $this->arrays = new ArrayProcessing();
         }
 
-        /** @method create_selection_clause
+        /** @method create_select_clause
          * Creates a SELECT clause string for use within a selection
          * statement. Does not allow the use of subqueries in the clause.
          * Fields should be validated prior to using this method.
@@ -71,7 +71,7 @@ namespace ClassicPHP {
          * @param mixed string[] string $functions
          * @return string
          */
-        function create_selection_clause(
+        function create_select_clause(
             array $fields,
             $functions = [''] ) {
 
