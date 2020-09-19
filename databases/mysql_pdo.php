@@ -129,7 +129,7 @@ namespace ClassicPHP {
             $existing_tables;       // Tables array (assoc)
             $returned_records;      // Temporary records variable
             $table_found;           // Whether table exists
-            $tables_found;          // Array of tables saught that do exist
+            $tables_found = [];     // Array of tables saught that do exist
             $return_string = '';    // String to return if returning string
 
             /* Processing ************************************************/
@@ -234,7 +234,7 @@ namespace ClassicPHP {
             $existing_fields;       // Fields array (assoc)
             $returned_records;      // Temporary records variable
             $field_found;           // Whether field exists
-            $fields_found;          // Array of fields saught that do exist
+            $fields_found = [];     // Array of fields saught that do exist
             $return_string = '';    // String to return if returning string
 
             /* Processing ************************************************/
