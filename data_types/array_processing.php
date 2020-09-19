@@ -2,7 +2,17 @@
 
 namespace ClassicPHP {
 
+    /** Class: ArrayProcessing
+     * Allows you to manipulate arrays easier.
+     * Inherits From: None
+     * Requires: None
+     * Inherited By: None
+     */
     class ArrayProcessing {
+
+        /******************************************************************
+        * Public Methods
+        ******************************************************************/
 
         /** @method remove_value
          * Removes a single value from an array. Uses unset() if the key

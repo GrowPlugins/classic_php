@@ -11,10 +11,18 @@ namespace ClassicPHP {
      * Inherits From: None
      * Requires: \PDO, ClassicPHP\ArrayProcessing
      * Inherited By: ClassicPHP\MySQLPDO_Read
-     *********************************************************************/
+     */
     class MySQLPDO {
 
+        /******************************************************************
+        * Properties
+        ******************************************************************/
+
         protected $pdo;
+
+        /******************************************************************
+        * Public Methods
+        ******************************************************************/
 
         function __construct( PDO $pdo_connection ) {
 
@@ -337,6 +345,10 @@ namespace ClassicPHP {
                 return false;
             }
         }
+
+        /******************************************************************
+        * Private Methods
+        ******************************************************************/
 
         /** @method validate_argument_return_type
          * Forces $return_type to be a string with any of the following

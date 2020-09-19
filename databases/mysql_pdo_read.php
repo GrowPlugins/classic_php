@@ -79,11 +79,24 @@ namespace ClassicPHP {
      * Inherits From: ClassicPHP\MySQLPDO
      * Requires: \PDO
      * Inherited By: None
-     *********************************************************************/
+     */
     class MySQLPDO_Read extends MySQLPDO {
+
+        /******************************************************************
+        * Properties
+        ******************************************************************/
 
         protected $arrays;
 
+        /******************************************************************
+        * Public Methods
+        ******************************************************************/
+
+        /** @method __construct
+         * Instantiates the super class, and two helper classes,
+         * ArrayProcessing and ErrorHandling.
+         * @param PDO $pdo_connection
+         */
         function __construct( PDO $pdo_connection ) {
 
             parent::__construct( $pdo_connection );
@@ -179,6 +192,62 @@ namespace ClassicPHP {
 
             /* Return ****************************************************/
             return $selection_clause;
+        }
+
+        /** @method create_where_clause
+         * Creates a WHERE clause string for use within a selection
+         * statement. Fields should be validated prior to using this
+         * method. It is highly suggested to use PDO parameter
+         * placeholders (e.g., ':placeholder') for values, so you can
+         * implement PDO prepared statements. However, this is not
+         * required.
+         * @param mixed string string[] $fields
+         * @param mixed string string[] $comparison_operators
+         * @param mixed string string[] $values
+         * @param string[] $conditional_operators
+         * @return string
+         */
+        function create_where_clause(
+            $fields,
+            $comparison_operators,
+            $values,
+            array $conditional_operators = ['AND'] ) {
+
+            /* Definition ************************************************/
+            $where_clause;
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Force $fields to be Array */
+            if ( ! is_array( $fields ) ) {
+
+                $fields = [ $fields ];
+            }
+
+            /* Force $comparison_operators to be Array */
+            if ( ! is_array( $comparison_operators ) ) {
+
+                $comparison_operators = [ $comparison_operators ];
+            }
+
+            /* Force $values to be Array */
+            if ( ! is_array( $values ) ) {
+
+                $values = [ $values ];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $where_clause = 'WHERE ';
+
+            /* Build WHERE Conditions */
+            $where_clause .= $this->build_condition_list(
+                $fields,
+                $comparison_operators,
+                $values,
+                $conditional_operators );
+
+            /* Return ****************************************************/
+            return $where_clause;
         }
 
         /** @method create_from_clause
@@ -429,62 +498,6 @@ namespace ClassicPHP {
             return $having_clause;
         }
 
-        /** @method create_where_clause
-         * Creates a WHERE clause string for use within a selection
-         * statement. Fields should be validated prior to using this
-         * method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
-         * @param mixed string string[] $fields
-         * @param mixed string string[] $comparison_operators
-         * @param mixed string string[] $values
-         * @param string[] $conditional_operators
-         * @return string
-         */
-        function create_where_clause(
-            $fields,
-            $comparison_operators,
-            $values,
-            array $conditional_operators = ['AND'] ) {
-
-            /* Definition ************************************************/
-            $where_clause;
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
-
-                $fields = [ $fields ];
-            }
-
-            /* Force $comparison_operators to be Array */
-            if ( ! is_array( $comparison_operators ) ) {
-
-                $comparison_operators = [ $comparison_operators ];
-            }
-
-            /* Force $values to be Array */
-            if ( ! is_array( $values ) ) {
-
-                $values = [ $values ];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $where_clause = 'WHERE ';
-
-            /* Build WHERE Conditions */
-            $where_clause .= $this->build_condition_list(
-                $fields,
-                $comparison_operators,
-                $values,
-                $conditional_operators );
-
-            /* Return ****************************************************/
-            return $where_clause;
-        }
-
         /** @method create_limit_clause
          * Creates a LIMIT clause string for use within a selection
          * statement.
@@ -530,7 +543,7 @@ namespace ClassicPHP {
         }
 
         /** @method create_order_by_clause
-         * Creates a GROUP BY clause string for use within a selection
+         * Creates a ORDER BY clause string for use within a selection
          * statement. Fields should be validated prior to using this
          * method.
          * @param string[] $fields
@@ -581,6 +594,10 @@ namespace ClassicPHP {
             /* Return ****************************************************/
             return $order_by_clause;
         }
+
+        /******************************************************************
+        * Private Methods
+        ******************************************************************/
 
         /** @method build_condition_list
          * Builds a list of fields, comparison operator, values, such as:
