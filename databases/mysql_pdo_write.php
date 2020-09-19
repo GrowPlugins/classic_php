@@ -23,7 +23,7 @@ namespace ClassicPHP {
     /*
         Write Queries:
             UPDATE table
-            SET field = value
+                SET field = value
             WHERE field = value
 
             INSERT INTO table
@@ -317,62 +317,6 @@ namespace ClassicPHP {
 
             /* Return ****************************************************/
             return $selection_clause;
-        }
-
-        /** @method create_where_clause
-         * Creates a WHERE clause string for use within a selection
-         * statement. Fields should be validated prior to using this
-         * method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
-         * @param mixed string string[] $fields
-         * @param mixed string string[] $comparison_operators
-         * @param mixed string string[] $values
-         * @param string[] $conditional_operators
-         * @return string
-         */
-        function create_where_clause(
-            $fields,
-            $comparison_operators,
-            $values,
-            array $conditional_operators = ['AND'] ) {
-
-            /* Definition ************************************************/
-            $where_clause;
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
-
-                $fields = [ $fields ];
-            }
-
-            /* Force $comparison_operators to be Array */
-            if ( ! is_array( $comparison_operators ) ) {
-
-                $comparison_operators = [ $comparison_operators ];
-            }
-
-            /* Force $values to be Array */
-            if ( ! is_array( $values ) ) {
-
-                $values = [ $values ];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $where_clause = 'WHERE ';
-
-            /* Build WHERE Conditions */
-            $where_clause .= $this->build_condition_list(
-                $fields,
-                $comparison_operators,
-                $values,
-                $conditional_operators );
-
-            /* Return ****************************************************/
-            return $where_clause;
         }
 
         /** @method create_from_clause
