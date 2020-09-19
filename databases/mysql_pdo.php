@@ -565,5 +565,25 @@ namespace ClassicPHP {
             /* Return ****************************************************/
             return $field_value_list;
         }
+
+        /** @method encapsulate_names
+         * Adds encapsulation to table and field names to allow spaces and
+         * other special characters to exist within the names.
+         * @param string $name                  // The table/field name
+         * @param string $encapsulation_type    // 'backticks' or 'braces'
+         */
+        protected function encapsulate_names(
+            string $name,
+            string $encapsulation_type = 'backticks' ) {
+
+            if ( 'backticks' === $encapsulation_type ) {
+
+                return '`' . $name . '`';
+            }
+            elseif ( 'braces' === $encapsulation_type ) {
+
+                return '[' . $name . ']';
+            }
+        }
     }
 }
