@@ -540,7 +540,7 @@ namespace ClassicPHP {
             array $fields ) {
 
             /* Definition ************************************************/
-            $group_by_clause;
+            $order_by_clause;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -557,29 +557,29 @@ namespace ClassicPHP {
             /* Process $fields If Fields Exist */
             if ( [] !== $fields ) {
 
-                $group_by_clause = 'GROUP BY ';
+                $order_by_clause = 'ORDER BY ';
 
                 foreach ( $fields as $key => $field ) {
 
-                    /* Build Fields into GROUP BY Clause */
-                    $group_by_clause .= $field . ', ';
+                    /* Build Fields into ORDER BY Clause */
+                    $order_by_clause .= $field . ', ';
                 }
 
                 // Remove Trailing ', '
-                $group_by_clause = substr(
-                    $group_by_clause,
+                $order_by_clause = substr(
+                    $order_by_clause,
                     0,
-                    strlen( $group_by_clause ) - 2 );
+                    strlen( $order_by_clause ) - 2 );
             }
 
             /* Else Return an Empty GROUP BY Clause */
             else {
 
-                $group_by_clause = '';
+                $order_by_clause = '';
             }
 
             /* Return ****************************************************/
-            return $group_by_clause;
+            return $order_by_clause;
         }
 
         /** @method build_condition_list
