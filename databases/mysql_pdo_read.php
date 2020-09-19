@@ -18,7 +18,6 @@ namespace ClassicPHP {
 
     // Includes List
     require_once( __DIR__ . '/mysql_pdo.php' );
-    require_once( CLASSIC_PHP_DIR . '/data_types/array_processing.php' );
 
     /*
         Read Queries:
@@ -42,12 +41,6 @@ namespace ClassicPHP {
     class MySQLPDO_Read extends MySQLPDO {
 
         /******************************************************************
-        * Properties
-        ******************************************************************/
-
-        protected $arrays;
-
-        /******************************************************************
         * Public Methods
         ******************************************************************/
 
@@ -59,8 +52,6 @@ namespace ClassicPHP {
         function __construct( PDO $pdo_connection ) {
 
             parent::__construct( $pdo_connection );
-
-            $this->arrays = new ArrayProcessing();
         }
 
         /** @method create_select_clause
@@ -112,13 +103,35 @@ namespace ClassicPHP {
                         && '' !== $functions[ $key ] ) {
 
                         $selection_clause .=
-                            $functions[ $key ] . '(' . $field . '), ';
+                            $functions[ $key ] . '(';
+
+                        if ( '*' === $field ) {
+
+                            $selection_clause .=
+                                $field . '), ';
+                        }
+                        else {
+
+                            $selection_clause .=
+                                $this->enclose_database_object_names(
+                                    $field ) . '), ';
+                        }
                     }
 
                     // Add Field without Function
                     else {
 
-                        $selection_clause .= $field . ', ';
+                        if ( '*' === $field ) {
+
+                            $selection_clause .=
+                                $field . ', ';
+                        }
+                        else {
+
+                            $selection_clause .=
+                                $this->enclose_database_object_names(
+                                    $field ) . ', ';
+                        }
                     }
 
                     /* Handle Case where '*' is Now in SELECT Clause */
@@ -255,7 +268,8 @@ namespace ClassicPHP {
             }
 
             /* Build Clause ---------------------------------------------*/
-            $from_clause = 'FROM ' . $table;
+            $from_clause =
+                'FROM ' . $this->enclose_database_object_names( $table );
 
             /* Build Joined Tables into FROM Clause, If Given */
             if ( [] !== $joined_tables ) {
@@ -270,7 +284,8 @@ namespace ClassicPHP {
 
                     // Add Table Join
                     $from_clause .=
-                        ' JOIN ' . $joined_table;
+                        ' JOIN ' . $this->enclose_database_object_names(
+                            $joined_table );
 
                     // Add ON Subclause If Join Field, Comparison Operator,
                         // and Value Specified
@@ -280,9 +295,11 @@ namespace ClassicPHP {
                         && array_key_exists( $key, $join_on_values ) ) {
 
                         $from_clause .=
-                            ' ON ' . $join_on_fields[ $key ] . ' '
+                            ' ON ' . $this->enclose_database_object_names(
+                                $join_on_fields[ $key ] ) . ' '
                             . $join_on_comparisons[ $key ] . ' '
-                            . $join_on_values[ $key ];
+                            . $this->prepare_values_for_query(
+                                $join_on_values[ $key ] );
                     }
                 }
             }
@@ -380,7 +397,9 @@ namespace ClassicPHP {
                 foreach ( $fields as $key => $field ) {
 
                     /* Build Fields into GROUP BY Clause */
-                    $group_by_clause .= $field . ', ';
+                    $group_by_clause .=
+                        $this->enclose_database_object_names(
+                            $field ) . ', ';
                 }
 
                 // Remove Trailing ', '
@@ -527,7 +546,9 @@ namespace ClassicPHP {
                 foreach ( $fields as $key => $field ) {
 
                     /* Build Fields into ORDER BY Clause */
-                    $order_by_clause .= $field . ', ';
+                    $order_by_clause .=
+                        $this->enclose_database_object_names(
+                            $field ) . ', ';
                 }
 
                 // Remove Trailing ', '

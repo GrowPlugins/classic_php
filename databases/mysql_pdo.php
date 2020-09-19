@@ -5,6 +5,20 @@ namespace ClassicPHP {
     /* Class Using Aliases */
     use \PDO as PDO;
 
+    /* Class Includes */
+    // Determine ClassicPHP Base Path
+    if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
+
+        $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
+
+        define( 'CLASSIC_PHP_DIR', $dir );
+
+        unset( $dir );
+    }
+
+    // Includes List
+    require_once( CLASSIC_PHP_DIR . '/data_types/array_processing.php' );
+
     /** Class: MySQLPDO
      * Allows you to validate table names, field names, and limits with a
      * PDO connection.
@@ -18,7 +32,8 @@ namespace ClassicPHP {
         * Properties
         ******************************************************************/
 
-        protected $pdo;
+        protected PDO $pdo;
+        protected ArrayProcessing $arrays;
 
         /******************************************************************
         * Public Methods
@@ -27,6 +42,7 @@ namespace ClassicPHP {
         function __construct( PDO $pdo_connection ) {
 
             $this->pdo = $pdo_connection;
+            $this->arrays = new ArrayProcessing();
         }
 
         /** @method query_database_tables
@@ -346,6 +362,44 @@ namespace ClassicPHP {
             }
         }
 
+        /** @method enclose_database_object_names
+         * Adds name enclosure characters to table and field names to
+         * allow spaces and other special characters to exist within
+         * those names.
+         * @param string $name                  // The table/field name
+         * @param string $encapsulation_type    // 'backticks' or 'braces'
+         */
+        function enclose_database_object_names(
+            string $name,
+            string $encapsulation_type = 'backticks' ) {
+
+            if ( 'backticks' === $encapsulation_type ) {
+
+                return '`' . $name . '`';
+            }
+            elseif ( 'braces' === $encapsulation_type ) {
+
+                return '[' . $name . ']';
+            }
+        }
+
+        /** @method prepare_values_for_query
+         * Prepares values for inclusion in an SQL query. Strings and dates
+         * are enclosed in single quotes.
+         * @param string $value                 // The value to be prepared
+         */
+        function prepare_values_for_query( $value ) {
+
+            if ( is_string( $value ) ) {
+
+                return '\'' . $value . '\'';
+            }
+            else {
+
+                return $value;
+            }
+        }
+
         /******************************************************************
         * Private Methods
         ******************************************************************/
@@ -530,9 +584,11 @@ namespace ClassicPHP {
                         && array_key_exists( $key, $values ) ) {
 
                         $field_value_list .=
-                            $fields[ $key ] . ' '
+                            $this->enclose_database_object_names(
+                                $fields[ $key ] ) . ' '
                             . $comparison_operators[ $key ] . ' '
-                            . $values[ $key ] . ' ';
+                            . $this->prepare_values_for_query(
+                                $values[ $key ] ) . ' ';
 
                         // Append Conditional Operator
                         if ( array_key_exists( $key, $logic_operators ) ) {
@@ -564,27 +620,6 @@ namespace ClassicPHP {
 
             /* Return ****************************************************/
             return $field_value_list;
-        }
-
-        /** @method enclose_database_object_names
-         * Adds name enclosure characters to table and field names to
-         * allow spaces and other special characters to exist within
-         * those names.
-         * @param string $name                  // The table/field name
-         * @param string $encapsulation_type    // 'backticks' or 'braces'
-         */
-        protected function enclose_database_object_names(
-            string $name,
-            string $encapsulation_type = 'backticks' ) {
-
-            if ( 'backticks' === $encapsulation_type ) {
-
-                return '`' . $name . '`';
-            }
-            elseif ( 'braces' === $encapsulation_type ) {
-
-                return '[' . $name . ']';
-            }
         }
     }
 }

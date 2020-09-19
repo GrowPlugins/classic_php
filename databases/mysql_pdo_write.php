@@ -18,7 +18,6 @@ namespace ClassicPHP {
 
     // Includes List
     require_once( __DIR__ . '/mysql_pdo.php' );
-    require_once( CLASSIC_PHP_DIR . '/data_types/array_processing.php' );
 
     /*
         Write Queries:
@@ -50,12 +49,6 @@ namespace ClassicPHP {
     class MySQLPDO_Write extends MySQLPDO {
 
         /******************************************************************
-        * Properties
-        ******************************************************************/
-
-        protected $arrays;
-
-        /******************************************************************
         * Public Methods
         ******************************************************************/
 
@@ -67,8 +60,6 @@ namespace ClassicPHP {
         function __construct( PDO $pdo_connection ) {
 
             parent::__construct( $pdo_connection );
-
-            $this->arrays = new ArrayProcessing();
         }
 
         /** @method create_update_clause
@@ -145,7 +136,10 @@ namespace ClassicPHP {
             /* Build UPDATE Clause, If Fields Exist */
             if ( [] !== $set_fields ) {
 
-                $update_clause = 'UPDATE ' . $table . ' SET ';
+                $update_clause =
+                    'UPDATE '
+                    . $this->enclose_database_object_names( $table )
+                    . ' SET ';
 
                 foreach ( $set_fields as $key => $set_field ) {
 
@@ -155,9 +149,11 @@ namespace ClassicPHP {
                         && array_key_exists( $key, $set_values ) ) {
 
                         $update_clause .=
-                            $set_fields[ $key ] . ' '
+                            $this->enclose_database_object_names(
+                                $set_fields[ $key ] ) . ' '
                             . $set_comparisons[ $key ] . ' '
-                            . $set_values[ $key ] . ', ';
+                            . $this->prepare_values_for_query(
+                                $set_values[ $key ] ) . ', ';
                     }
                 }
 
@@ -283,7 +279,9 @@ namespace ClassicPHP {
 
                 if ( array_key_exists( $key, $values ) ) {
 
-                    $insert_into_clause .= $field . ', ';
+                    $insert_into_clause .=
+                        $this->enclose_database_object_names( $field )
+                        . ', ';
                 }
             }
 
@@ -302,7 +300,9 @@ namespace ClassicPHP {
 
                 if ( array_key_exists( $key, $fields ) ) {
 
-                    $insert_into_clause .= $value . ', ';
+                    $insert_into_clause .=
+                        $this->prepare_values_for_query( $value )
+                        . ', ';
                 }
             }
 
