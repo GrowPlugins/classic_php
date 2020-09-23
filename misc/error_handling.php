@@ -228,6 +228,66 @@ namespace ClassicPHP {
             }
         }
 
+        /** @method echo_error
+         * Allows you to echo an error instead of throwing it.
+         * @param string $error_description
+         * @param string $error_level
+         */
+        function echo_error(
+            string $error_description,
+            string $error_level = 'warning' ) {
+
+            /* Declaration ***********************************************/
+            $backtrace =
+                debug_backtrace( DEBUG_BACKTRACE_PROVIDE_OBJECT, 20 );
+            $error_message = '';
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Force $error_level to be 'warning', 'notice', or 'error' */
+            if ( 'warning' === $error_level ) {
+
+                $error_type = E_USER_WARNING;
+            }
+            elseif ( 'notice' === $error_level ) {
+
+                $error_type = E_USER_NOTICE;
+            }
+            else {
+
+                $error_type = E_USER_ERROR;
+            }
+
+            /* Build Error Message --------------------------------------*/
+            $error_message = $error_description . "\nBacktrace:\n";
+
+            $error_message .= $this->format_backtrace(
+                $backtrace,
+                true );
+
+            /* Output Error Information ---------------------------------*/
+            if ( E_USER_ERROR === $error_type ) {
+
+                echo '<pre>';
+                echo htmlentities( 'Error: ' . $error_message );
+                echo '</pre>';
+
+                exit;
+            }
+            elseif ( E_USER_WARNING === $error_type ) {
+
+                echo '<pre>';
+                echo htmlentities( 'Warning: ' . $error_message );
+                echo '</pre>';
+            }
+            elseif ( E_USER_NOTICE === $error_type ) {
+
+                echo '<pre>';
+                echo htmlentities( 'Notice: ' . $error_description );
+                echo '</pre>';
+            }
+        }
+
         /** @method format_backtrace
          * Returns a prettified backtrace.
          * @param array $backtrace
