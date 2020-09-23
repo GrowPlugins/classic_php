@@ -149,15 +149,94 @@ namespace ClassicPHP {
             }
         }
 
+        /** @method throw_detailed_error
+         * Allows you to throw an error or echo one. The error can include
+         * details about variables related to the error. If error
+         * handling is set to echo the error to the screen, echoing can be
+         * put within a <pre> element for nicer display.
+         * @param string $error_description
+         * @param string $error_level
+         * @param mixed[] $variables
+         * @param bool $echo
+         * @param bool $output_pre_wrapper
+         */
+        function throw_detailed_error(
+            string $error_description,
+            string $error_level = 'warning',
+            $variables = [],
+            bool $echo = false,
+            bool $pretty_output = false ) {
+
+            /* Declaration ***********************************************/
+            $backtrace =
+                debug_backtrace( DEBUG_BACKTRACE_PROVIDE_OBJECT, 20 );
+            $vardump = '';
+            $error_message = '';
+            $error_type;
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Force $error_level to be 'warning', 'notice', or 'error' */
+            if ( 'warning' === $error_level ) {
+
+                $error_type = E_USER_WARNING;
+            }
+            elseif ( 'notice' === $error_level ) {
+
+                $error_type = E_USER_NOTICE;
+            }
+            else {
+
+                $error_type = E_USER_ERROR;
+            }
+
+            /* Gather Information About Input Variable(s) ---------------*/
+            /* Generate $vardump String If $variables Not Null Array */
+            if ( [] !== $variables ) {
+
+                ob_start();
+
+                var_dump($variables);
+
+                $vardump = ob_get_clean();
+            }
+
+            /* Build Error Message --------------------------------------*/
+            $error_message = $error_description . "\nBacktrace:\n";
+
+            $error_message .= $this->build_error_message(
+                $backtrace,
+                $pretty_output );
+
+            /* Append Var Dump Data */
+            if ( '' !== $vardump ) {
+
+                $error_message .= "\nVariable Dump:\n" . $vardump;
+            }
+
+            /* Output Error Information ---------------------------------*/
+            if ( ! $pretty_output ) {
+
+                trigger_error(
+                    htmlentities( $error_message ),
+                    $error_type );
+            }
+            else {
+                echo '<pre>';
+                trigger_error(
+                    htmlentities( $error_message ),
+                    $error_type );
+                echo '</pre>';
+            }
+        }
+
         /** @method build_error_message
          * Returns an error message, prettified.
-         * @param string $error_description
          * @param array $backtrace
          * @param bool $use_newlines
          * @return string $error_message
          */
         private function build_error_message(
-            string $error_description,
             array $backtrace,
             bool $use_newlines = false ) {
 
@@ -178,8 +257,6 @@ namespace ClassicPHP {
                 . $separator_character . $separator_character;
 
             /* Append Backtrace Data */
-            $error_message .= "Backtrace:" . $separator_character;
-
             for( $i = 0; $i < count( $backtrace ); $i++ ) {
 
                 // Output Backtrace Index
