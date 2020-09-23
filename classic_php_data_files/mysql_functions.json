@@ -88,7 +88,7 @@
     "GeomCollection",
     "GeometryCollection",
     "GET_DD_COLUMN_PRIVILEGES",
-    "GET_DD_CREATE_OPTIONS",
+    "GET_DD_OPTIONS",
     "GET_DD_INDEX_SUB_PART_LENGTH",
     "GET_FORMAT",
     "GET_LOCK",

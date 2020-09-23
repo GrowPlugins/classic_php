@@ -54,7 +54,7 @@ namespace ClassicPHP {
             parent::__construct( $pdo_connection );
         }
 
-        /** @method create_select_clause
+        /** @method build_select_clause
          * Creates a SELECT clause string for use within a selection
          * statement. Does not allow the use of subqueries in the clause.
          * Fields should be validated prior to using this method.
@@ -62,7 +62,7 @@ namespace ClassicPHP {
          * @param mixed string[] string $functions
          * @return string
          */
-        function create_select_clause(
+        function build_select_clause(
             array $fields,
             $functions = [''] ) {
 
@@ -165,7 +165,7 @@ namespace ClassicPHP {
             return $selection_clause;
         }
 
-        /** @method create_from_clause
+        /** @method build_from_clause
          * Creates a FROM clause string for use within a selection
          * statement. Does not allow the use of subqueries in the clause.
          * Tables and fields should be validated prior to using this
@@ -178,7 +178,7 @@ namespace ClassicPHP {
          * @param string[] $join_on_values          // Values sought in ON
          * @return string
          */
-        function create_from_clause(
+        function build_from_clause(
             string $table,
             array $joined_tables = [],
             array $join_types = [],
@@ -308,7 +308,7 @@ namespace ClassicPHP {
             return $from_clause;
         }
 
-        /** @method create_where_clause
+        /** @method build_where_clause
          * Creates a WHERE clause string for use within a selection
          * statement. Fields should be validated prior to using this
          * method. It is highly suggested to use PDO parameter
@@ -321,7 +321,7 @@ namespace ClassicPHP {
          * @param string[] $conditional_operators
          * @return string
          */
-        function create_where_clause(
+        function build_where_clause(
             $fields,
             $comparison_operators,
             $values,
@@ -364,14 +364,14 @@ namespace ClassicPHP {
             return $where_clause;
         }
 
-        /** @method create_group_by_clause
+        /** @method build_group_by_clause
          * Creates a GROUP BY clause string for use within a selection
          * statement. Fields should be validated prior to using this
          * method.
          * @param string[] $fields
          * @return string
          */
-        function create_group_by_clause(
+        function build_group_by_clause(
             array $fields ) {
 
             /* Definition ************************************************/
@@ -413,7 +413,7 @@ namespace ClassicPHP {
             return $group_by_clause;
         }
 
-        /** @method create_having_clause
+        /** @method build_having_clause
          * Creates a HAVING clause string for use within a selection
          * statement. Fields should be validated prior to using this
          * method. It is highly suggested to use PDO parameter
@@ -426,7 +426,7 @@ namespace ClassicPHP {
          * @param string[] $conditional_operators
          * @return string
          */
-        function create_having_clause(
+        function build_having_clause(
             $fields,
             $comparison_operators,
             $values,
@@ -469,14 +469,14 @@ namespace ClassicPHP {
             return $having_clause;
         }
 
-        /** @method create_limit_clause
+        /** @method build_limit_clause
          * Creates a LIMIT clause string for use within a selection
          * statement.
          * @param int $limit
          * @param int $offset
          * @return string
          */
-        function create_limit_clause(
+        function build_limit_clause(
             int $limit,
             int $offset = 0 ) {
 
@@ -513,14 +513,14 @@ namespace ClassicPHP {
             return $limit_clause;
         }
 
-        /** @method create_order_by_clause
+        /** @method build_order_by_clause
          * Creates a ORDER BY clause string for use within a selection
          * statement. Fields should be validated prior to using this
          * method.
          * @param string[] $fields
          * @return string
          */
-        function create_order_by_clause(
+        function build_order_by_clause(
             array $fields ) {
 
             /* Definition ************************************************/

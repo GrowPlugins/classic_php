@@ -29,7 +29,7 @@ namespace ClassicPHP {
     */
 
     /** Class: MySQLPDO_Manage
-     * Helps you more quickly change database data safely using PDO.
+     * Helps you more quickly manage database tables.
      * Inherits From: ClassicPHP\MySQLPDO
      * Requires: \PDO, ClassicPHP\ArrayProcessing
      * Inherited By: None
@@ -50,113 +50,7 @@ namespace ClassicPHP {
             parent::__construct( $pdo_connection );
         }
 
-        /** @method create_update_clause
-         * Creates an UPDATE clause string for use within an update
-         * statement. Tables and fields should be validated prior to
-         * using this method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
-         * @param string $table
-         * @param string[] $set_fields
-         * @param string[] $set_comparisons     // Comparison Operators
-         * @param string[] $set_values          // Values sought in SET
-         * @return string
-         */
-        function create_update_clause(
-            string $table,
-            array $set_fields,
-            array $set_comparisons = [],
-            array $set_values = [] ) {
-
-            /* Definition ************************************************/
-            $update_clause = '';
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Validate $set_fields */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $set_fields,
-                    'string' ) ) {
-
-                $set_fields = [];
-            }
-
-            /* Validate $set_comparisons */
-            if (
-                $this->arrays->validate_data_types(
-                    $set_comparisons,
-                    'string' ) ) {
-
-                // Validate Each SET Comparison Operator
-                foreach (
-                    $set_comparisons as $key => $join_on_comparison ) {
-
-                    if (
-                        '=' !== $set_comparisons[ $key ]
-                        && '<' !== $set_comparisons[ $key ]
-                        && '>' !== $set_comparisons[ $key ]
-                        && '<=' !== $set_comparisons[ $key ]
-                        && '>=' !== $set_comparisons[ $key ]
-                        && '<>' !== $set_comparisons[ $key ]
-                        && '!=' !== $set_comparisons[ $key ] ) {
-
-                        $set_comparisons[ $key ] = '=';
-                    }
-                }
-            }
-            else {
-
-                $set_comparisons = [];
-            }
-
-            /* Validate $set_values */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $set_values,
-                    ['string', 'int', 'float', 'bool'] ) ) {
-
-                $set_values = [];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            /* Build UPDATE Clause, If Fields Exist */
-            if ( [] !== $set_fields ) {
-
-                $update_clause =
-                    'UPDATE '
-                    . $this->enclose_database_object_names( $table )
-                    . ' SET ';
-
-                foreach ( $set_fields as $key => $set_field ) {
-
-                    // Add Next Field, Operator, and Value, If All Exist
-                    if (
-                        array_key_exists( $key, $set_comparisons )
-                        && array_key_exists( $key, $set_values ) ) {
-
-                        $update_clause .=
-                            $this->enclose_database_object_names(
-                                $set_fields[ $key ] ) . ' '
-                            . $set_comparisons[ $key ] . ' '
-                            . $this->prepare_values_for_query(
-                                $set_values[ $key ] ) . ', ';
-                    }
-                }
-
-                // Remove Trailing ', '
-                $update_clause = substr(
-                    $update_clause,
-                    0,
-                    strlen( $update_clause ) - 2 );
-            }
-
-            /* Return ****************************************************/
-            return $update_clause;
-        }
-
-        /** @method create_where_clause
+        /** @method build_create_clause
          * Creates a WHERE clause string for use within an update
          * statement. Fields should be validated prior to using this
          * method. It is highly suggested to use PDO parameter
@@ -169,69 +63,13 @@ namespace ClassicPHP {
          * @param string[] $conditional_operators
          * @return string
          */
-        function create_where_clause(
-            $fields,
-            $comparison_operators,
-            $values,
-            array $conditional_operators = ['AND'] ) {
-
-            /* Definition ************************************************/
-            $where_clause;
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
-
-                $fields = [ $fields ];
-            }
-
-            /* Force $comparison_operators to be Array */
-            if ( ! is_array( $comparison_operators ) ) {
-
-                $comparison_operators = [ $comparison_operators ];
-            }
-
-            /* Force $values to be Array */
-            if ( ! is_array( $values ) ) {
-
-                $values = [ $values ];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $where_clause = 'WHERE ';
-
-            /* Build WHERE Conditions */
-            $where_clause .= $this->build_condition_list(
-                $fields,
-                $comparison_operators,
-                $values,
-                $conditional_operators );
-
-            /* Return ****************************************************/
-            return $where_clause;
-        }
-
-        /** @method create_insert_into_clause
-         * Creates a WHERE clause string for use within an update
-         * statement. Fields should be validated prior to using this
-         * method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
-         * @param mixed string string[] $fields
-         * @param mixed string string[] $comparison_operators
-         * @param mixed string string[] $values
-         * @param string[] $conditional_operators
-         * @return string
-         */
-        function create_insert_into_clause(
+        function build_create_clause(
             string $table,
             $fields,
             $values ) {
 
             /* Definition ************************************************/
-            $insert_into_clause;
+            $create_clause;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -306,14 +144,14 @@ namespace ClassicPHP {
             return $insert_into_clause;
         }
 
-        /** @method create_delete_clause
+        /** @method build_delete_clause
          * Creates a DELETE clause string for use within an update
          * statement. The table should be validated prior to using this
          * method.
          * @param string $table
          * @return string
          */
-        function create_delete_clause( string $table ) {
+        function build_delete_clause( string $table ) {
 
             /* Definition ************************************************/
             $delete_clause;
@@ -330,7 +168,7 @@ namespace ClassicPHP {
 
         /* EXAMPLE METHODS **************************************************************/
 
-        /** @method create_selection_clause
+        /** @method build_selection_clause
          * Creates a SELECT clause string for use within a selection
          * statement. Does not allow the use of subqueries in the clause.
          * Fields should be validated prior to using this method.
@@ -338,7 +176,7 @@ namespace ClassicPHP {
          * @param mixed string[] string $functions
          * @return string
          */
-        function create_selection_clause(
+        function build_selection_clause(
             array $fields,
             $functions = [''] ) {
 
@@ -419,7 +257,7 @@ namespace ClassicPHP {
             return $selection_clause;
         }
 
-        /** @method create_from_clause
+        /** @method build_from_clause
          * Creates a FROM clause string for use within a selection
          * statement. Does not allow the use of subqueries in the clause.
          * Tables and fields should be validated prior to using this
@@ -432,7 +270,7 @@ namespace ClassicPHP {
          * @param string[] $join_on_values          // Values sought in ON
          * @return string
          */
-        function create_from_clause(
+        function build_from_clause(
             string $table,
             array $joined_tables = [],
             array $join_types = [],
@@ -558,14 +396,14 @@ namespace ClassicPHP {
             return $from_clause;
         }
 
-        /** @method create_group_by_clause
+        /** @method build_group_by_clause
          * Creates a GROUP BY clause string for use within a selection
          * statement. Fields should be validated prior to using this
          * method.
          * @param string[] $fields
          * @return string
          */
-        function create_group_by_clause(
+        function build_group_by_clause(
             array $fields ) {
 
             /* Definition ************************************************/
@@ -611,7 +449,7 @@ namespace ClassicPHP {
             return $group_by_clause;
         }
 
-        /** @method create_having_clause
+        /** @method build_having_clause
          * Creates a HAVING clause string for use within a selection
          * statement. Fields should be validated prior to using this
          * method. It is highly suggested to use PDO parameter
@@ -624,7 +462,7 @@ namespace ClassicPHP {
          * @param string[] $conditional_operators
          * @return string
          */
-        function create_having_clause(
+        function build_having_clause(
             $fields,
             $comparison_operators,
             $values,
@@ -667,14 +505,14 @@ namespace ClassicPHP {
             return $having_clause;
         }
 
-        /** @method create_limit_clause
+        /** @method build_limit_clause
          * Creates a LIMIT clause string for use within a selection
          * statement.
          * @param int $limit
          * @param int $offset
          * @return string
          */
-        function create_limit_clause(
+        function build_limit_clause(
             int $limit,
             int $offset = 0 ) {
 
@@ -711,14 +549,14 @@ namespace ClassicPHP {
             return $limit_clause;
         }
 
-        /** @method create_order_by_clause
+        /** @method build_order_by_clause
          * Creates a ORDER BY clause string for use within a selection
          * statement. Fields should be validated prior to using this
          * method.
          * @param string[] $fields
          * @return string
          */
-        function create_order_by_clause(
+        function build_order_by_clause(
             array $fields ) {
 
             /* Definition ************************************************/

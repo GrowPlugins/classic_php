@@ -55,7 +55,7 @@ namespace ClassicPHP {
             parent::__construct( $pdo_connection );
         }
 
-        /** @method create_update_clause
+        /** @method build_update_clause
          * Creates an UPDATE clause string for use within an update
          * statement. Tables and fields should be validated prior to
          * using this method. It is highly suggested to use PDO parameter
@@ -68,7 +68,7 @@ namespace ClassicPHP {
          * @param string[] $set_values          // Values sought in SET
          * @return string
          */
-        function create_update_clause(
+        function build_update_clause(
             string $table,
             array $set_fields,
             array $set_comparisons = [],
@@ -161,7 +161,7 @@ namespace ClassicPHP {
             return $update_clause;
         }
 
-        /** @method create_where_clause
+        /** @method build_where_clause
          * Creates a WHERE clause string for use within an update
          * statement. Fields should be validated prior to using this
          * method. It is highly suggested to use PDO parameter
@@ -174,7 +174,7 @@ namespace ClassicPHP {
          * @param string[] $conditional_operators
          * @return string
          */
-        function create_where_clause(
+        function build_where_clause(
             $fields,
             $comparison_operators,
             $values,
@@ -217,7 +217,7 @@ namespace ClassicPHP {
             return $where_clause;
         }
 
-        /** @method create_insert_into_clause
+        /** @method build_insert_into_clause
          * Creates a WHERE clause string for use within an update
          * statement. Fields should be validated prior to using this
          * method. It is highly suggested to use PDO parameter
@@ -230,7 +230,7 @@ namespace ClassicPHP {
          * @param string[] $conditional_operators
          * @return string
          */
-        function create_insert_into_clause(
+        function build_insert_into_clause(
             string $table,
             $fields,
             $values ) {
@@ -311,14 +311,14 @@ namespace ClassicPHP {
             return $insert_into_clause;
         }
 
-        /** @method create_delete_clause
+        /** @method build_delete_clause
          * Creates a DELETE clause string for use within an update
          * statement. The table should be validated prior to using this
          * method.
          * @param string $table
          * @return string
          */
-        function create_delete_clause( string $table ) {
+        function build_delete_clause( string $table ) {
 
             /* Definition ************************************************/
             $delete_clause;
