@@ -150,21 +150,19 @@ namespace ClassicPHP {
         }
 
         /** @method throw_detailed_error
-         * Allows you to throw an error or echo one. The error can include
-         * details about variables related to the error. If error
-         * handling is set to echo the error to the screen, echoing can be
-         * put within a <pre> element for nicer display.
+         * Allows you to throw an error with optional details about
+         * any variables related to the error. Can optionally use "pretty"
+         * error message formatting, which uses additional line breaks and
+         * puts any screen output within a <pre> element for nicer display.
          * @param string $error_description
          * @param string $error_level
          * @param mixed[] $variables
-         * @param bool $echo
-         * @param bool $output_pre_wrapper
+         * @param bool $pretty_output
          */
         function throw_detailed_error(
             string $error_description,
             string $error_level = 'warning',
             $variables = [],
-            bool $echo = false,
             bool $pretty_output = false ) {
 
             /* Declaration ***********************************************/
