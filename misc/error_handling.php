@@ -148,5 +148,84 @@ namespace ClassicPHP {
                 }
             }
         }
+
+        /** @method build_error_message
+         * Allows you to echo an error instead of throwing it. Echoing can
+         * be put within a <pre> element for nicer display.
+         * @param string $error_description
+         * @param string $error_level
+         * @param mixed[] $variables
+         * @param bool $echo
+         * @param bool $output_pre_wrapper
+         */
+        private function build_error_message(
+            string $error_description,
+            array $backtrace,
+            bool $use_newlines = false ) {
+
+            /* Declaration ***********************************************/
+            $error_message = '';
+            $separator_character = ' ';
+
+            /* Processing ************************************************/
+            if ( $use_newlines ) {
+
+                $separator_character = "\n";
+            }
+
+            /* Build Error Message --------------------------------------*/
+            /* Append Description */
+            $error_message .=
+                $error_description
+                . $separator_character . $separator_character;
+
+            /* Append Backtrace Data */
+            $error_message .= "Backtrace:" . $separator_character;
+
+            for( $i = 0; $i < count( $backtrace ); $i++ ) {
+
+                // Output Backtrace Index
+                $error_message .= ( $i + 1) . '. ';
+
+                // Output Class and Function in Backtrace
+                if ( isset( $backtrace[ $i ]['class'] ) ) {
+
+                    $error_message .= $backtrace[ $i ]['class'] . '::';
+                }
+
+                $error_message .=
+                    $backtrace[ $i ]['function'] . '()';
+
+                // Output Location Called From
+                if ( 0 < $i ) {
+
+                    $error_message .=
+                        ' at ' . $backtrace[ $i - 1 ]['file']
+                        . ', line ' . $backtrace[ $i - 1 ]['line'];
+                }
+
+                // Conditionally Output Last of Called From Sentence
+                if ( $i + 1 < count( $backtrace ) ) {
+
+                    if ( 0 < $i ) {
+
+                        $error_message .= ', which';
+                    }
+
+                    $error_message .=
+                        " was called by" . $separator_character;
+                }
+                else {
+
+                    $error_message .=
+                        ", which originated from"
+                        . $separator_character . ( $i + 2 ) . '. '
+                        . $backtrace[ $i ]['file'] . ', line '
+                        . $backtrace[ $i ]['line'] . "\n";
+                }
+            }
+
+            return $error_message;
+        }
     }
 }
