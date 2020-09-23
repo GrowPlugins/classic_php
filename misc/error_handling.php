@@ -204,7 +204,7 @@ namespace ClassicPHP {
             /* Build Error Message --------------------------------------*/
             $error_message = $error_description . "\nBacktrace:\n";
 
-            $error_message .= $this->build_error_message(
+            $error_message .= $this->format_backtrace(
                 $backtrace,
                 $pretty_output );
 
@@ -230,13 +230,13 @@ namespace ClassicPHP {
             }
         }
 
-        /** @method build_error_message
-         * Returns an error message, prettified.
+        /** @method format_backtrace
+         * Returns a prettified backtrace.
          * @param array $backtrace
          * @param bool $use_newlines
          * @return string $error_message
          */
-        private function build_error_message(
+        private function format_backtrace(
             array $backtrace,
             bool $use_newlines = false ) {
 
@@ -250,13 +250,7 @@ namespace ClassicPHP {
                 $separator_character = "\n";
             }
 
-            /* Build Error Message --------------------------------------*/
-            /* Append Description */
-            $error_message .=
-                $error_description
-                . $separator_character . $separator_character;
-
-            /* Append Backtrace Data */
+            /* Build Backtrace Message ----------------------------------*/
             for( $i = 0; $i < count( $backtrace ); $i++ ) {
 
                 // Output Backtrace Index
@@ -300,6 +294,7 @@ namespace ClassicPHP {
                 }
             }
 
+            /* Return ****************************************************/
             return $error_message;
         }
     }
