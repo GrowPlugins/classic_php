@@ -150,13 +150,11 @@ namespace ClassicPHP {
         }
 
         /** @method build_error_message
-         * Allows you to echo an error instead of throwing it. Echoing can
-         * be put within a <pre> element for nicer display.
+         * Returns an error message, prettified.
          * @param string $error_description
-         * @param string $error_level
-         * @param mixed[] $variables
-         * @param bool $echo
-         * @param bool $output_pre_wrapper
+         * @param array $backtrace
+         * @param bool $use_newlines
+         * @return string $error_message
          */
         private function build_error_message(
             string $error_description,
