@@ -2,13 +2,13 @@
 
 namespace ClassicPHP {
 
-    /** Class: Debugging
-     * Allows you to debug code easier and faster.
+    /** Class: Test
+     * Allows you to test/debug code easier and faster.
      * Inherits From: None
      * Requires: None
      * Inherited By: None
      */
-    class Debugging {
+    class Test {
 
         /******************************************************************
         * Public Methods
