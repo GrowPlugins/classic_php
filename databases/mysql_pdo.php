@@ -25,11 +25,19 @@ namespace ClassicPHP {
      * Inherits From: None
      * Requires: \PDO, ClassicPHP\ArrayProcessing
      * Inherited By: ClassicPHP\MySQLPDO_Read
-     *********************************************************************/
+     */
     class MySQLPDO {
 
-        protected $pdo;
-        protected $arrays;
+        /******************************************************************
+        * Properties
+        ******************************************************************/
+
+        protected PDO $pdo;
+        protected ArrayProcessing $arrays;
+
+        /******************************************************************
+        * Public Methods
+        ******************************************************************/
 
         function __construct( PDO $pdo_connection ) {
 
@@ -137,6 +145,7 @@ namespace ClassicPHP {
             $existing_tables;       // Tables array (assoc)
             $returned_records;      // Temporary records variable
             $table_found;           // Whether table exists
+            $tables_found = [];     // Array of tables saught that do exist
             $return_string = '';    // String to return if returning string
 
             /* Processing ************************************************/
@@ -161,6 +170,7 @@ namespace ClassicPHP {
 
                     if ( $table_name === $existing_table ) {
 
+                        $tables_found[] = $table_name;
                         $table_found = true;
                         break;
                     }
@@ -170,26 +180,16 @@ namespace ClassicPHP {
                 if ( ! $table_found ) {
 
                     if (
-                        'array' === $return_type
-                        || 'string' === $return_type ) {
-
-                        // Mark Null for Future Removal
-                        $this->arrays->mark_array_value_null(
-                            $table_names,
-                            $table_name_key );
-                    }
-                    else {
+                        ! 'array' === $return_type
+                        && ! 'string' === $return_type ) {
 
                         return false;
                     }
                 }
             }
 
-            /* Remove Tables That Don't Exist */
-            $this->arrays->remove_null_array_values( $table_names );
-
-            /* Return False No Matter What If $table_names is Now Empty */
-            if ( 1 > count( $table_names ) ) {
+            /* Return False No Matter What If $tables_found is Empty */
+            if ( 1 > count( $tables_found ) ) {
 
                 return false;
             }
@@ -197,14 +197,14 @@ namespace ClassicPHP {
             /* Return ****************************************************/
             if ( 'array' === $return_type ) {
 
-                return $table_names;
+                return $tables_found;
             }
             elseif ( 'string' === $return_type ) {
 
                 /* Generate $return_string */
-                foreach ( $table_names as $table_name ) {
+                foreach ( $tables_found as $table_found ) {
 
-                    $return_string .= $table_name . ', ';
+                    $return_string .= $table_found . ', ';
                 }
 
                 // Remove Trailing ', '
@@ -250,6 +250,7 @@ namespace ClassicPHP {
             $existing_fields;       // Fields array (assoc)
             $returned_records;      // Temporary records variable
             $field_found;           // Whether field exists
+            $fields_found = [];     // Array of fields saught that do exist
             $return_string = '';    // String to return if returning string
 
             /* Processing ************************************************/
@@ -289,6 +290,7 @@ namespace ClassicPHP {
 
                     if ( $field_name === $existing_field ) {
 
+                        $fields_found[] = $field_name;
                         $field_found = true;
                         break;
                     }
@@ -298,26 +300,16 @@ namespace ClassicPHP {
                 if ( ! $field_found ) {
 
                     if (
-                        'array' === $return_type
-                        || 'string' === $return_type ) {
-
-                        // Mark Null for Future Removal
-                        $this->arrays->mark_array_value_null(
-                            $field_names,
-                            $field_name_key );
-                    }
-                    else {
+                        ! 'array' === $return_type
+                        && ! 'string' === $return_type ) {
 
                         return false;
                     }
                 }
             }
 
-            /* Remove Fields That Don't Exist */
-            $this->arrays->remove_null_array_values( $field_names );
-
             /* Return False No Matter What If $field_names is Now Empty */
-            if ( 1 > count( $field_names ) ) {
+            if ( 1 > count( $fields_found ) ) {
 
                 return false;
             }
@@ -325,14 +317,14 @@ namespace ClassicPHP {
             /* Return ****************************************************/
             if ( 'array' === $return_type ) {
 
-                return $field_names;
+                return $fields_found;
             }
             elseif ( 'string' === $return_type ) {
 
                 /* Generate $return_string */
-                foreach ( $field_names as $field_name ) {
+                foreach ( $fields_found as $field_found ) {
 
-                    $return_string .= $field_name . ', ';
+                    $return_string .= $field_found . ', ';
                 }
 
                 // Remove Trailing ', '
@@ -360,7 +352,7 @@ namespace ClassicPHP {
             int $row_limit ) {
 
             /* Return ****************************************************/
-            if ( 0 <= $offset && 0 <= $row_limit ) {
+            if ( 0 <= $offset && 1 <= $row_limit ) {
 
                 return true;
             }
@@ -369,6 +361,48 @@ namespace ClassicPHP {
                 return false;
             }
         }
+
+        /** @method enclose_database_object_names
+         * Adds name enclosure characters to table and field names to
+         * allow spaces and other special characters to exist within
+         * those names.
+         * @param string $name                  // The table/field name
+         * @param string $encapsulation_type    // 'backticks' or 'braces'
+         */
+        function enclose_database_object_names(
+            string $name,
+            string $encapsulation_type = 'backticks' ) {
+
+            if ( 'backticks' === $encapsulation_type ) {
+
+                return '`' . $name . '`';
+            }
+            elseif ( 'braces' === $encapsulation_type ) {
+
+                return '[' . $name . ']';
+            }
+        }
+
+        /** @method prepare_values_for_query
+         * Prepares values for inclusion in an SQL query. Strings and dates
+         * are enclosed in single quotes.
+         * @param string $value                 // The value to be prepared
+         */
+        function prepare_values_for_query( $value ) {
+
+            if ( is_string( $value ) ) {
+
+                return '\'' . $value . '\'';
+            }
+            else {
+
+                return $value;
+            }
+        }
+
+        /******************************************************************
+        * Private Methods
+        ******************************************************************/
 
         /** @method validate_argument_return_type
          * Forces $return_type to be a string with any of the following
@@ -440,6 +474,152 @@ namespace ClassicPHP {
 
             /* Return ****************************************************/
             return $values_array;
+        }
+
+        /******************************************************************
+        * Protected Methods
+        ******************************************************************/
+
+        /** @method build_condition_list
+         * Builds a list of fields, comparison operator, values, such as:
+         * 'field = value AND field < value, ...'.
+         * @param string[] $fields
+         * @param string[] $comparison_operators
+         * @param array $values
+         * @param array $logic_operators
+         * @return bool
+         */
+        protected function build_condition_list(
+            array $fields = [],
+            array $comparison_operators = [],
+            array $values = [],
+            array $logic_operators = [] ) {
+
+            /* Definition ************************************************/
+            $field_value_list = '';
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Validate $fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $fields,
+                    'string' ) ) {
+
+                $fields = [];
+            }
+
+            /* Validate $comparison_operators */
+            if (
+                $this->arrays->validate_data_types(
+                    $comparison_operators,
+                    'string' ) ) {
+
+                // Validate Each Join Type
+                foreach (
+                    $comparison_operators as $key => $comparison ) {
+
+                    if (
+                        '=' !== $comparison_operators[ $key ]
+                        && '<' !== $comparison_operators[ $key ]
+                        && '>' !== $comparison_operators[ $key ]
+                        && '<=' !== $comparison_operators[ $key ]
+                        && '>=' !== $comparison_operators[ $key ]
+                        && '<>' !== $comparison_operators[ $key ]
+                        && '!=' !== $comparison_operators[ $key ] ) {
+
+                        $comparison_operators[ $key ] = '=';
+                    }
+                }
+            }
+            else {
+
+                $comparison_operators = [];
+            }
+
+            /* Validate $values */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $values,
+                    ['string', 'int', 'float', 'bool'] ) ) {
+
+                $values = [];
+            }
+
+            /* Validate $logic_operators */
+            if (
+                $this->arrays->validate_data_types(
+                    $logic_operators,
+                    'string' ) ) {
+
+                // Validate Each Join Type
+                foreach (
+                    $logic_operators as $key => $logic ) {
+
+                    if (
+                        'AND' !== $logic_operators[ $key ]
+                        && 'OR' !== $logic_operators[ $key ] ) {
+
+                        $logic_operators[ $key ] = 'AND';
+                    }
+                }
+            }
+            else {
+
+                $logic_operators = [];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            /* Build List If Fields, Comparisons, and Values Exist */
+            if (
+                [] !== $fields
+                && [] !== $comparison_operators
+                && [] !== $values ) {
+
+                foreach ( $fields as $key => $field ) {
+
+                    // Append
+                    if (
+                        array_key_exists( $key, $comparison_operators )
+                        && array_key_exists( $key, $values ) ) {
+
+                        $field_value_list .=
+                            $this->enclose_database_object_names(
+                                $fields[ $key ] ) . ' '
+                            . $comparison_operators[ $key ] . ' '
+                            . $this->prepare_values_for_query(
+                                $values[ $key ] ) . ' ';
+
+                        // Append Conditional Operator
+                        if ( array_key_exists( $key, $logic_operators ) ) {
+
+                            $field_value_list .=
+                                $logic_operators[ $key ] . ' ';
+                        }
+
+                        // If No Conditional Operator, Stop Building
+                        else {
+
+                            break;
+                        }
+                    }
+                }
+
+                // Remove Trailing ' '
+                $field_value_list = substr(
+                    $field_value_list,
+                    0,
+                    strlen( $field_value_list ) - 1 );
+            }
+
+            /* Return False Otherwise */
+            else {
+
+                return false;
+            }
+
+            /* Return ****************************************************/
+            return $field_value_list;
         }
     }
 }

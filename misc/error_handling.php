@@ -2,7 +2,17 @@
 
 namespace ClassicPHP {
 
+    /** Class: ErrorHandling
+     * Allows you to manage the handling of error easier.
+     * Inherits From: None
+     * Requires: None
+     * Inherited By: None
+     */
     class ErrorHandling {
+
+        /******************************************************************
+        * Public Methods
+        ******************************************************************/
 
         /** @method throw_error
          * Allows you to throw an error or echo one. The error can include
@@ -15,7 +25,7 @@ namespace ClassicPHP {
          * @param bool $echo
          * @param bool $output_pre_wrapper
          */
-        public function throw_error(
+        function throw_error(
             string $error_description,
             string $error_level = 'warning',
             $variables = [],
