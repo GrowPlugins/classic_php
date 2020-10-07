@@ -630,7 +630,7 @@ namespace ClassicPHP {
          * @return mixed JSON array
          * @return bool
          */
-        private function read_json_file(
+        protected function read_json_file(
             $json_file,
             $return_json_array = false ) {
 
