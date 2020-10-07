@@ -1,0 +1,52 @@
+{
+    "Integer" : [
+        "INT",
+        "INTEGER",
+        "SMALLINT",
+        "MEDIUMINT",
+        "BIGINT"
+    ]
+
+    "SpecialInteger" : [
+        "BOOL",
+        "BOOLEAN",
+        "SERIAL"
+    ]
+
+    "ExactDecimal" : [
+        "DEC",
+        "DECIMAL",
+        "NUMERIC",
+        "FIXED"
+    ]
+
+    "Decimal" : [
+        "FLOAT",
+        "DOUBLE",
+        "REAL",
+        "DOUBLE PRECISION"
+    ]
+
+    "DateTime" : [
+        "DATE",
+        "TIME",
+        "DATETIME",
+        "TIMESTAMP",
+        "YEAR"
+    ]
+
+    "String" : [
+        "CHAR",
+        "VARCHAR",
+        "BINARY",
+        "VARBINARY",
+        "BLOB",
+        "TEXT",
+        "ENUM",
+        "SET"
+    ]
+
+    "Miscellaneous" : [
+        "JSON"
+    ]
+}
