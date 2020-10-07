@@ -655,41 +655,5 @@ namespace ClassicPHP {
             /* Return ****************************************************/
             return $functions;
         }
-
-        /** @method read_json_file
-         * Reads a JSON file and returns its contents as a valid JSON
-         * object.
-         * @param string $json_file
-         * @param bool $return_json_array
-         * @return mixed JSON array
-         * @return bool
-         */
-        private function read_json_file(
-            $json_file,
-            $return_json_array = false ) {
-
-            /* Definition ************************************************/
-            $json_string;
-
-            /* Processing ************************************************/
-            /* Read JSON Array File of Valid Functions */
-            if ( file_exists( $json_file ) ) {
-
-                ob_start();
-
-                readfile( $json_file );
-
-                $json_string = ob_get_clean();
-
-                return
-                    json_decode(
-                        $json_string,
-                        $return_json_array );
-            }
-            else {
-
-                return false;
-            }
-        }
     }
 }
