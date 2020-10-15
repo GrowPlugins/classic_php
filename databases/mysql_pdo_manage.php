@@ -70,6 +70,12 @@ namespace ClassicPHP {
 
             /* Definition ************************************************/
             $create_table_clause;
+            $mysql_data_types =
+                $this->read_json_file(
+                    CLASSIC_PHP_DIR
+                    . '/classic_php_data_files/mysql_data_types.json' );
+            $data_type_valid = false;
+            $data_type_open_parenthesis_position = 0;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -88,6 +94,49 @@ namespace ClassicPHP {
                     $fields = [];
                 }
             }
+
+            /* Validate $data_types */
+            foreach( $data_types as $key => $data_type ) {
+
+                $data_type_valid = false;
+
+                $data_types[ $key ] = strtoupper( $data_types[ $key ] );
+
+                // Compare $data_types to $mysql_data_types
+                foreach( $mysql_data_types as $mysql_data_type ) {
+
+                    // Search in $data_types for '('
+                    $data_type_open_parenthesis_position =
+                        strpos( $data_types[ $key ], '(' );
+
+                    if ( false === $data_type_open_parenthesis_position ) {
+
+                        $data_type_open_parenthesis_position =
+                            strlen( $data_types[ $key ] );
+                    }
+
+                    // Compare Uppercase $data_types to $mysql_data_types
+                        // Without Parenthesis
+                    if (
+                        $mysql_data_type ===
+                            substr(
+                                $data_types[ $key ],
+                                0,
+                                $data_type_open_parenthesis_position ) ) {
+
+                        $data_type_valid = true;
+                    }
+                }
+
+                // If No Valid Data Type Found, Mark $data_types Value
+                if ( ! $data_type_valid ) {
+
+                    $this->arrays->mark_value_null( $data_types, $key );
+                }
+            }
+
+            // Remove Invalid, Marked, $data_types Values
+            $this->arrays->remove_null_values( $data_types );
 
             /* Validate $field_options */
             if (
