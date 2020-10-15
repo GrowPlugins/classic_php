@@ -46,6 +46,14 @@ namespace ClassicPHP {
                 array_splice( $array, $key, 1 );
             }
 
+            /* Make Array Empty If Only Remaining Element is Null */
+            if (
+                1 === count( $array )
+                && null === $array[ array_keys( $array )[0] ] ) {
+
+                $array = [];
+            }
+
             /* Return ****************************************************/
             return $array;
         }
