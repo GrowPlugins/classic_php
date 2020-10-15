@@ -17,7 +17,9 @@ namespace ClassicPHP {
         /** @method remove_value
          * Removes a single value from an array. Uses unset() if the key
          * is a string, otherwise uses array_splice() to prevent unsetting
-         * the array key altogether for keys of type int.
+         * the array key altogether for keys of type int. Returns empty
+         * array if only array value is null (assumed to be array with
+         * last value removed).
          * @param mixed[] &$array
          * @param mixed string int $key
          * @return mixed[] $array
