@@ -3,6 +3,7 @@ TO DO:
 0.1.2
 - Add ALTER TABLE clause builder to MySQLPDO_Manage class.
 - Test MySQLPDO_Manage class.
+- Add PDO_Prepare method to MySQLPDO_Read and MySQLPDO_Write classes?
 
 0.1.3
 - Add more error methods to ErrorHandling, such as for backtracing/var
