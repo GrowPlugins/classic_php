@@ -320,6 +320,7 @@ namespace ClassicPHP {
          * @param mixed string string[] $values
          * @param string[] $conditional_operators
          * @return string
+         * @return false
          */
         function build_where_clause(
             $fields,
@@ -329,6 +330,7 @@ namespace ClassicPHP {
 
             /* Definition ************************************************/
             $where_clause = '';
+            $condition_list_returned_value;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -354,11 +356,20 @@ namespace ClassicPHP {
             $where_clause = 'WHERE ';
 
             /* Build WHERE Conditions */
-            $where_clause .= $this->build_condition_list(
+            $condition_list_returned_value = $this->build_condition_list(
                 $fields,
                 $comparison_operators,
                 $values,
                 $conditional_operators );
+
+            if ( false !== $condition_list_returned_value ) {
+
+                $where_clause .= $condition_list_returned_value;
+            }
+            else {
+
+                return false;
+            }
 
             /* Return ****************************************************/
             return $where_clause;
@@ -422,9 +433,10 @@ namespace ClassicPHP {
          * required.
          * @param mixed string string[] $fields
          * @param mixed string string[] $comparison_operators
-         * @param mixed string string[] $values
+         * @param mixed $values
          * @param string[] $conditional_operators
          * @return string
+         * @return false
          */
         function build_having_clause(
             $fields,
@@ -434,6 +446,7 @@ namespace ClassicPHP {
 
             /* Definition ************************************************/
             $having_clause = '';
+            $condition_list_returned_value;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -459,11 +472,20 @@ namespace ClassicPHP {
             $having_clause = 'HAVING ';
 
             /* Build HAVING Conditions */
-            $having_clause .= $this->build_condition_list(
+            $condition_list_returned_value = $this->build_condition_list(
                 $fields,
                 $comparison_operators,
                 $values,
                 $conditional_operators );
+
+            if ( false !== $condition_list_returned_value ) {
+
+                $having_clause .= $condition_list_returned_value;
+            }
+            else {
+
+                return false;
+            }
 
             /* Return ****************************************************/
             return $having_clause;

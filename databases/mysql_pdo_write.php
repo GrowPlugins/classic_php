@@ -182,6 +182,7 @@ namespace ClassicPHP {
 
             /* Definition ************************************************/
             $where_clause;
+            $condition_list_returned_value;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -207,11 +208,20 @@ namespace ClassicPHP {
             $where_clause = 'WHERE ';
 
             /* Build WHERE Conditions */
-            $where_clause .= $this->build_condition_list(
+            $condition_list_returned_value = $this->build_condition_list(
                 $fields,
                 $comparison_operators,
                 $values,
                 $conditional_operators );
+
+            if ( false !== $condition_list_returned_value ) {
+
+                $where_clause .= $condition_list_returned_value;
+            }
+            else {
+
+                return false;
+            }
 
             /* Return ****************************************************/
             return $where_clause;

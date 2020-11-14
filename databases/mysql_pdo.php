@@ -487,7 +487,8 @@ namespace ClassicPHP {
          * @param string[] $comparison_operators
          * @param array $values
          * @param array $logic_operators
-         * @return bool
+         * @return string
+         * @return false
          */
         protected function build_condition_list(
             array $fields = [],
@@ -497,6 +498,7 @@ namespace ClassicPHP {
 
             /* Definition ************************************************/
             $field_value_list = '';
+            $smallest_input_array_length;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -506,7 +508,7 @@ namespace ClassicPHP {
                     $fields,
                     'string' ) ) {
 
-                $fields = [];
+                return false;
             }
 
             /* Validate $comparison_operators */
@@ -534,7 +536,7 @@ namespace ClassicPHP {
             }
             else {
 
-                $comparison_operators = [];
+                return false;
             }
 
             /* Validate $values */
@@ -543,7 +545,7 @@ namespace ClassicPHP {
                     $values,
                     ['string', 'int', 'float', 'bool'] ) ) {
 
-                $values = [];
+                return false;
             }
 
             /* Validate $logic_operators */
@@ -566,57 +568,67 @@ namespace ClassicPHP {
             }
             else {
 
-                $logic_operators = [];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            /* Build List If Fields, Comparisons, and Values Exist */
-            if (
-                [] !== $fields
-                && [] !== $comparison_operators
-                && [] !== $values ) {
-
-                foreach ( $fields as $key => $field ) {
-
-                    // Append
-                    if (
-                        array_key_exists( $key, $comparison_operators )
-                        && array_key_exists( $key, $values ) ) {
-
-                        $field_value_list .=
-                            $this->enclose_database_object_names(
-                                $fields[ $key ] ) . ' '
-                            . $comparison_operators[ $key ] . ' '
-                            . $this->prepare_values_for_query(
-                                $values[ $key ] ) . ' ';
-
-                        // Append Conditional Operator
-                        if ( array_key_exists( $key, $logic_operators ) ) {
-
-                            $field_value_list .=
-                                $logic_operators[ $key ] . ' ';
-                        }
-
-                        // If No Conditional Operator, Stop Building
-                        else {
-
-                            break;
-                        }
-                    }
-                }
-
-                // Remove Trailing ' '
-                $field_value_list = substr(
-                    $field_value_list,
-                    0,
-                    strlen( $field_value_list ) - 1 );
-            }
-
-            /* Return False Otherwise */
-            else {
-
                 return false;
             }
+
+            /* Trim Input Arrays to Smallest Input Array Length ---------*/
+            /* Determine the Length of the Smallest Array */
+            $smallest_input_array_length =
+                $this->arrays->shortest_array_length(
+                    [
+                        $fields,
+                        $comparison_operators,
+                        $values,
+                        $logic_operators
+                    ] );
+
+            /* Trim All Input Arrays */
+            $fields = $this->arrays->trim_to_length(
+                $fields,
+                $smallest_input_array_length );
+
+            $comparison_operators = $this->arrays->trim_to_length(
+                $comparison_operators,
+                $smallest_input_array_length );
+
+            $values = $this->arrays->trim_to_length(
+                $values,
+                $smallest_input_array_length );
+
+            // Trim $logic_operators to One Less Element Than Other Arrays
+            $logic_operators = $this->arrays->trim_to_length(
+                $logic_operators,
+                $smallest_input_array_length - 1 );
+
+            /* Build Clause ---------------------------------------------*/
+            foreach ( $fields as $key => $field ) {
+
+                // Append
+                if (
+                    array_key_exists( $key, $comparison_operators )
+                    && array_key_exists( $key, $values ) ) {
+
+                    $field_value_list .=
+                        $this->enclose_database_object_names(
+                            $fields[ $key ] ) . ' '
+                        . $comparison_operators[ $key ] . ' '
+                        . $this->prepare_values_for_query(
+                            $values[ $key ] ) . ' ';
+
+                    // Append Conditional Operator, If Not Last Key
+                    if ( array_key_exists( $key, $logic_operators ) ) {
+
+                        $field_value_list .=
+                            $logic_operators[ $key ] . ' ';
+                    }
+                }
+            }
+
+            // Remove Trailing ' '
+            $field_value_list = substr(
+                $field_value_list,
+                0,
+                strlen( $field_value_list ) - 1 );
 
             /* Return ****************************************************/
             return $field_value_list;
