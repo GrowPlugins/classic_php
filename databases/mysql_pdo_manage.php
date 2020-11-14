@@ -1,42 +1,50 @@
 <?php
 
-namespace ClassicPHP {
+namespace ClassicPHP;
 
-    /* Class Using Aliases */
-    use \PDO as PDO;
+/**************************************************************************
+ * Class Header -----------------------------------------------------------
+ *************************************************************************/
+/* Class Using Aliases */
+use \PDO as PDO;
 
-    /* Class Includes */
-    // Determine ClassicPHP Base Path
-    if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
+/* Class Includes */
+// Determine ClassicPHP Base Path
+if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
-        $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
+    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
 
-        define( 'CLASSIC_PHP_DIR', $dir );
+    define( 'CLASSIC_PHP_DIR', $dir );
 
-        unset( $dir );
-    }
+    unset( $dir );
+}
 
-    // Includes List
-    require_once( __DIR__ . '/mysql_pdo.php' );
+// Includes List
+require_once( __DIR__ . '/mysql_pdo.php' );
 
-    /*
-        Manage Queries:
-            CREATE table [IF NOT EXISTS]
-            (fields)
-            VALUES (values)
+/*
+    Manage Queries:
+        CREATE table [IF NOT EXISTS]
+        (fields)
+        VALUES (values)
 
-            ALTER TABLE table
-            [ADD fieldName fieldDefinition [FIRST | AFTER fieldName]][,
-            [MODIFY fieldName fieldDefinition [FIRST | AFTER fieldName]]]
-            |
-            [CHANGE COLUMN originalFieldName newFieldName fieldDefinition [FIRST | AFTER fieldName]]
-            |
-            [DROP COLUMN fieldName]
-            |
-            [RENAME TO tableName]
+        ALTER TABLE table
+        [ADD fieldName fieldDefinition [FIRST | AFTER fieldName]][,
+        [MODIFY fieldName fieldDefinition [FIRST | AFTER fieldName]]]
+        |
+        [CHANGE COLUMN originalFieldName newFieldName fieldDefinition [FIRST | AFTER fieldName]]
+        |
+        [DROP COLUMN fieldName]
+        |
+        [RENAME TO tableName]
 
-            DROP table
-    */
+        DROP table
+*/
+
+/**************************************************************************
+ * Class Definition -------------------------------------------------------
+ *************************************************************************/
+if ( ! class_exists( 'MySQLPDO_Manage' ) ) {
 
     /** Class: MySQLPDO_Manage
      * Helps you more quickly manage database tables.

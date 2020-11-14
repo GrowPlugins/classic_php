@@ -1,6 +1,11 @@
 <?php
 
-namespace ClassicPHP {
+namespace ClassicPHP;
+
+/**************************************************************************
+ * Class Definition -------------------------------------------------------
+ *************************************************************************/
+if ( ! class_exists( 'ErrorHandling' ) ) {
 
     /** Class: ErrorHandling
      * Allows you to manage the handling of error easier.

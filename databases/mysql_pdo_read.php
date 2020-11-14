@@ -1,36 +1,44 @@
 <?php
 
-namespace ClassicPHP {
+namespace ClassicPHP;
 
-    /* Class Using Aliases */
-    use \PDO as PDO;
+/**************************************************************************
+ * Class Header -----------------------------------------------------------
+ *************************************************************************/
+/* Class Using Aliases */
+use \PDO as PDO;
 
-    /* Class Includes */
-    // Determine ClassicPHP Base Path
-    if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
+/* Class Includes */
+// Determine ClassicPHP Base Path
+if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
-        $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
+    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
 
-        define( 'CLASSIC_PHP_DIR', $dir );
+    define( 'CLASSIC_PHP_DIR', $dir );
 
-        unset( $dir );
-    }
+    unset( $dir );
+}
 
-    // Includes List
-    require_once( __DIR__ . '/mysql_pdo.php' );
+// Includes List
+require_once( __DIR__ . '/mysql_pdo.php' );
 
-    /*
-        Read Queries:
-            SELECT Function(fields) -->AS fieldNames
-            FROM table
-            JOIN table
-                ON field = value -->AS tableNames
-            GROUP BY fields
-            HAVING field = value
-            WHERE field = value
-            LIMIT number, number
-            ORDER BY fields
-    */
+/*
+    Read Queries:
+        SELECT Function(fields) -->AS fieldNames
+        FROM table
+        JOIN table
+            ON field = value -->AS tableNames
+        GROUP BY fields
+        HAVING field = value
+        WHERE field = value
+        LIMIT number, number
+        ORDER BY fields
+*/
+
+/**************************************************************************
+ * Class Definition -------------------------------------------------------
+ *************************************************************************/
+if ( ! class_exists( 'MySQLPDO_Read' ) ) {
 
     /** Class: MySQLPDO_Read
      * Helps you more quickly query a database safely using PDO.

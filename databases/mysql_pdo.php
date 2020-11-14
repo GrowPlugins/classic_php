@@ -1,23 +1,31 @@
 <?php
 
-namespace ClassicPHP {
+namespace ClassicPHP;
 
-    /* Class Using Aliases */
-    use \PDO as PDO;
+/**************************************************************************
+ * Class Header -----------------------------------------------------------
+ *************************************************************************/
+/* Class Using Aliases */
+use \PDO as PDO;
 
-    /* Class Includes */
-    // Determine ClassicPHP Base Path
-    if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
+/* Class Includes */
+// Determine ClassicPHP Base Path
+if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
-        $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
+    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
 
-        define( 'CLASSIC_PHP_DIR', $dir );
+    define( 'CLASSIC_PHP_DIR', $dir );
 
-        unset( $dir );
-    }
+    unset( $dir );
+}
 
-    // Includes List
-    require_once( CLASSIC_PHP_DIR . '/data_types/array_processing.php' );
+// Includes List
+require_once( CLASSIC_PHP_DIR . '/data_types/array_processing.php' );
+
+/**************************************************************************
+ * Class Definition -------------------------------------------------------
+ *************************************************************************/
+if ( ! class_exists( 'MySQLPDO' ) ) {
 
     /** Class: MySQLPDO
      * Allows you to validate table names, field names, and limits with a
