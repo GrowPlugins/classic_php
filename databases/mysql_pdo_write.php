@@ -22,6 +22,7 @@ if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 // Includes List
 require_once( __DIR__ . '/mysql_pdo.php' );
 
+/* Notes */
 /*
     Write Queries:
         UPDATE table
