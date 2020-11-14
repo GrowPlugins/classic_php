@@ -25,6 +25,16 @@ namespace ClassicPHP {
             (fields)
             VALUES (values)
 
+            ALTER TABLE table
+            [ADD fieldName fieldDefinition [FIRST | AFTER fieldName]][,
+            [MODIFY fieldName fieldDefinition [FIRST | AFTER fieldName]]]
+            |
+            [CHANGE COLUMN originalFieldName newFieldName fieldDefinition [FIRST | AFTER fieldName]]
+            |
+            [DROP COLUMN fieldName]
+            |
+            [RENAME TO tableName]
+
             DROP table
     */
 

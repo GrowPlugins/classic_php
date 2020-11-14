@@ -1,6 +1,7 @@
 TO DO:
 
 0.1.2
+- Add ALTER TABLE clause builder to MySQLPDO_Manage class.
 - Test MySQLPDO_Manage class.
 
 0.1.3

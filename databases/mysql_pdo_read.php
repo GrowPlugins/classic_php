@@ -446,46 +446,19 @@ namespace ClassicPHP {
 
             /* Definition ************************************************/
             $having_clause = '';
-            $condition_list_returned_value;
 
             /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
+            /* Build WHERE Clause, Since Having is the Same */
+            $having_clause =
+                $this->build_where_clause(
+                    $fields,
+                    $comparison_operators,
+                    $values,
+                    $conditional_operators );
 
-                $fields = [ $fields ];
-            }
-
-            /* Force $comparison_operators to be Array */
-            if ( ! is_array( $comparison_operators ) ) {
-
-                $comparison_operators = [ $comparison_operators ];
-            }
-
-            /* Force $values to be Array */
-            if ( ! is_array( $values ) ) {
-
-                $values = [ $values ];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $having_clause = 'HAVING ';
-
-            /* Build HAVING Conditions */
-            $condition_list_returned_value = $this->build_condition_list(
-                $fields,
-                $comparison_operators,
-                $values,
-                $conditional_operators );
-
-            if ( false !== $condition_list_returned_value ) {
-
-                $having_clause .= $condition_list_returned_value;
-            }
-            else {
-
-                return false;
-            }
+            /* Replace WHERE with HAVING */
+            $having_clause =
+                str_replace( 'WHERE', 'HAVING', $having_clause );
 
             /* Return ****************************************************/
             return $having_clause;
