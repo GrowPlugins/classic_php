@@ -1,0 +1,36 @@
+TO DO:
+
+0.1.2
+- Add ALTER TABLE clause builder to MySQLPDO_Manage class.
+- Test MySQLPDO_Manage class.
+- Add PDO_Prepare method to MySQLPDO_Read and MySQLPDO_Write classes?
+
+0.1.3
+- Add more error methods to ErrorHandling, such as for backtracing/var
+dumping, without throwing an error, or for throwing an error without var
+dump. (Consider that some methods might be aimed at manual debugging only,
+while others might be aimed at error handling within project code. Some
+code might only execute when a constant variable exists or results to a
+certain value [for internal debugging options built into code].)
+
+0.1.4
+- Rename array_processing to just array and start adding methods that
+just use PHP array functions. (Comparable to JavaScript's Array class.)
+- Add a method to array:: which allows you to check the next key value.
+- Add a string class, and start adding methods that just use PHP string
+functions.  (Comparable to JavaScript's String class.)
+- Add a method to string:: which allows you to replace an occurance of a
+string with a replacement string.
+- Add a method to string:: which allows you to remove an occurance of a
+string.
+- Make MySQLPDO_Read::build_condition_list so AND conditional operator is
+automatically placed between conditions where no conditional operator is
+provided, and any trailing conditional operator at list end is removed
+automatically.
+
+0.1.5
+- Create a FileProcessing class for reading json, ini, other files, and
+for writing those files too.
+- Create string processing class, including method for validating string
+data using preg_match()?
+- Create form class with validation methods for POST variables?

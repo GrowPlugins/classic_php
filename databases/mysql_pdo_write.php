@@ -1,37 +1,46 @@
 <?php
 
-namespace ClassicPHP {
+namespace ClassicPHP;
 
-    /* Class Using Aliases */
-    use \PDO as PDO;
+/**************************************************************************
+ * Class Header -----------------------------------------------------------
+ *************************************************************************/
+/* Class Using Aliases */
+use \PDO as PDO;
 
-    /* Class Includes */
-    // Determine ClassicPHP Base Path
-    if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
+/* Class Includes */
+// Determine ClassicPHP Base Path
+if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
-        $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
+    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
 
-        define( 'CLASSIC_PHP_DIR', $dir );
+    define( 'CLASSIC_PHP_DIR', $dir );
 
-        unset( $dir );
-    }
+    unset( $dir );
+}
 
-    // Includes List
-    require_once( __DIR__ . '/mysql_pdo.php' );
+// Includes List
+require_once( __DIR__ . '/mysql_pdo.php' );
 
-    /*
-        Write Queries:
-            UPDATE table
-                SET field = value
-            WHERE field = value
+/* Notes */
+/*
+    Write Queries:
+        UPDATE table
+            SET field = value
+        WHERE field = value
 
-            INSERT INTO table
-            (fields)
-            VALUES (values)
+        INSERT INTO table
+        (fields)
+        VALUES (values)
 
-            DELETE table
-            WHERE field = value
-    */
+        DELETE table
+        WHERE field = value
+*/
+
+/**************************************************************************
+ * Class Definition -------------------------------------------------------
+ *************************************************************************/
+if ( ! class_exists( 'MySQLPDO_Write' ) ) {
 
     /** Class: MySQLPDO_Write
      * Helps you more quickly change database data safely using PDO.
@@ -182,6 +191,7 @@ namespace ClassicPHP {
 
             /* Definition ************************************************/
             $where_clause;
+            $condition_list_returned_value;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -207,11 +217,20 @@ namespace ClassicPHP {
             $where_clause = 'WHERE ';
 
             /* Build WHERE Conditions */
-            $where_clause .= $this->build_condition_list(
+            $condition_list_returned_value = $this->build_condition_list(
                 $fields,
                 $comparison_operators,
                 $values,
                 $conditional_operators );
+
+            if ( false !== $condition_list_returned_value ) {
+
+                $where_clause .= $condition_list_returned_value;
+            }
+            else {
+
+                return false;
+            }
 
             /* Return ****************************************************/
             return $where_clause;

@@ -1,0 +1,38 @@
+[
+        "INT",
+        "INTEGER",
+        "SMALLINT",
+        "MEDIUMINT",
+        "BIGINT",
+
+        "BOOL",
+        "BOOLEAN",
+        "SERIAL",
+
+        "DEC",
+        "DECIMAL",
+        "NUMERIC",
+        "FIXED",
+
+        "FLOAT",
+        "DOUBLE",
+        "REAL",
+        "DOUBLE PRECISION",
+
+        "DATE",
+        "TIME",
+        "DATETIME",
+        "TIMESTAMP",
+        "YEAR",
+
+        "CHAR",
+        "VARCHAR",
+        "BINARY",
+        "VARBINARY",
+        "BLOB",
+        "TEXT",
+        "ENUM",
+        "SET",
+
+        "JSON"
+]

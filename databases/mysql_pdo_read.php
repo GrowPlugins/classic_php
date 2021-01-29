@@ -1,36 +1,45 @@
 <?php
 
-namespace ClassicPHP {
+namespace ClassicPHP;
 
-    /* Class Using Aliases */
-    use \PDO as PDO;
+/**************************************************************************
+ * Class Header -----------------------------------------------------------
+ *************************************************************************/
+/* Class Using Aliases */
+use \PDO as PDO;
 
-    /* Class Includes */
-    // Determine ClassicPHP Base Path
-    if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
+/* Class Includes */
+// Determine ClassicPHP Base Path
+if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
-        $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
+    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
 
-        define( 'CLASSIC_PHP_DIR', $dir );
+    define( 'CLASSIC_PHP_DIR', $dir );
 
-        unset( $dir );
-    }
+    unset( $dir );
+}
 
-    // Includes List
-    require_once( __DIR__ . '/mysql_pdo.php' );
+// Includes List
+require_once( __DIR__ . '/mysql_pdo.php' );
 
-    /*
-        Read Queries:
-            SELECT Function(fields) -->AS fieldNames
-            FROM table
-            JOIN table
-                ON field = value -->AS tableNames
-            GROUP BY fields
-            HAVING field = value
-            WHERE field = value
-            LIMIT number, number
-            ORDER BY fields
-    */
+/* Notes */
+/*
+    Read Queries:
+        SELECT Function(fields) -->AS fieldNames
+        FROM table
+        JOIN table
+            ON field = value -->AS tableNames
+        GROUP BY fields
+        HAVING field = value
+        WHERE field = value
+        LIMIT number, number
+        ORDER BY fields
+*/
+
+/**************************************************************************
+ * Class Definition -------------------------------------------------------
+ *************************************************************************/
+if ( ! class_exists( 'MySQLPDO_Read' ) ) {
 
     /** Class: MySQLPDO_Read
      * Helps you more quickly query a database safely using PDO.
@@ -320,6 +329,7 @@ namespace ClassicPHP {
          * @param mixed string string[] $values
          * @param string[] $conditional_operators
          * @return string
+         * @return false
          */
         function build_where_clause(
             $fields,
@@ -329,6 +339,7 @@ namespace ClassicPHP {
 
             /* Definition ************************************************/
             $where_clause = '';
+            $condition_list_returned_value;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -354,11 +365,20 @@ namespace ClassicPHP {
             $where_clause = 'WHERE ';
 
             /* Build WHERE Conditions */
-            $where_clause .= $this->build_condition_list(
+            $condition_list_returned_value = $this->build_condition_list(
                 $fields,
                 $comparison_operators,
                 $values,
                 $conditional_operators );
+
+            if ( false !== $condition_list_returned_value ) {
+
+                $where_clause .= $condition_list_returned_value;
+            }
+            else {
+
+                return false;
+            }
 
             /* Return ****************************************************/
             return $where_clause;
@@ -422,9 +442,10 @@ namespace ClassicPHP {
          * required.
          * @param mixed string string[] $fields
          * @param mixed string string[] $comparison_operators
-         * @param mixed string string[] $values
+         * @param mixed $values
          * @param string[] $conditional_operators
          * @return string
+         * @return false
          */
         function build_having_clause(
             $fields,
@@ -436,34 +457,17 @@ namespace ClassicPHP {
             $having_clause = '';
 
             /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
+            /* Build WHERE Clause, Since Having is the Same */
+            $having_clause =
+                $this->build_where_clause(
+                    $fields,
+                    $comparison_operators,
+                    $values,
+                    $conditional_operators );
 
-                $fields = [ $fields ];
-            }
-
-            /* Force $comparison_operators to be Array */
-            if ( ! is_array( $comparison_operators ) ) {
-
-                $comparison_operators = [ $comparison_operators ];
-            }
-
-            /* Force $values to be Array */
-            if ( ! is_array( $values ) ) {
-
-                $values = [ $values ];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $having_clause = 'HAVING ';
-
-            /* Build HAVING Conditions */
-            $having_clause .= $this->build_condition_list(
-                $fields,
-                $comparison_operators,
-                $values,
-                $conditional_operators );
+            /* Replace WHERE with HAVING */
+            $having_clause =
+                str_replace( 'WHERE', 'HAVING', $having_clause );
 
             /* Return ****************************************************/
             return $having_clause;
@@ -654,42 +658,6 @@ namespace ClassicPHP {
 
             /* Return ****************************************************/
             return $functions;
-        }
-
-        /** @method read_json_file
-         * Reads a JSON file and returns its contents as a valid JSON
-         * object.
-         * @param string $json_file
-         * @param bool $return_json_array
-         * @return mixed JSON array
-         * @return bool
-         */
-        private function read_json_file(
-            $json_file,
-            $return_json_array = false ) {
-
-            /* Definition ************************************************/
-            $json_string;
-
-            /* Processing ************************************************/
-            /* Read JSON Array File of Valid Functions */
-            if ( file_exists( $json_file ) ) {
-
-                ob_start();
-
-                readfile( $json_file );
-
-                $json_string = ob_get_clean();
-
-                return
-                    json_decode(
-                        $json_string,
-                        $return_json_array );
-            }
-            else {
-
-                return false;
-            }
         }
     }
 }

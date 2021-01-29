@@ -1,32 +1,51 @@
 <?php
 
-namespace ClassicPHP {
+namespace ClassicPHP;
 
-    /* Class Using Aliases */
-    use \PDO as PDO;
+/**************************************************************************
+ * Class Header -----------------------------------------------------------
+ *************************************************************************/
+/* Class Using Aliases */
+use \PDO as PDO;
 
-    /* Class Includes */
-    // Determine ClassicPHP Base Path
-    if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
+/* Class Includes */
+// Determine ClassicPHP Base Path
+if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
-        $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
+    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
 
-        define( 'CLASSIC_PHP_DIR', $dir );
+    define( 'CLASSIC_PHP_DIR', $dir );
 
-        unset( $dir );
-    }
+    unset( $dir );
+}
 
-    // Includes List
-    require_once( __DIR__ . '/mysql_pdo.php' );
+// Includes List
+require_once( __DIR__ . '/mysql_pdo.php' );
 
-    /*
-        Manage Queries:
-            CREATE table
-            (fields)
-            VALUES (values)
+/* Notes */
+/*
+    Manage Queries:
+        CREATE table [IF NOT EXISTS]
+        (fields)
+        VALUES (values)
 
-            DROP table
-    */
+        ALTER TABLE table
+        [ADD fieldName fieldDefinition [FIRST | AFTER fieldName]][,
+        [MODIFY fieldName fieldDefinition [FIRST | AFTER fieldName]]]
+        |
+        [CHANGE COLUMN originalFieldName newFieldName fieldDefinition [FIRST | AFTER fieldName]]
+        |
+        [DROP COLUMN fieldName]
+        |
+        [RENAME TO tableName]
+
+        DROP table
+*/
+
+/**************************************************************************
+ * Class Definition -------------------------------------------------------
+ *************************************************************************/
+if ( ! class_exists( 'MySQLPDO_Manage' ) ) {
 
     /** Class: MySQLPDO_Manage
      * Helps you more quickly manage database tables.
@@ -50,26 +69,32 @@ namespace ClassicPHP {
             parent::__construct( $pdo_connection );
         }
 
-        /** @method build_create_clause
-         * Creates a WHERE clause string for use within an update
-         * statement. Fields should be validated prior to using this
-         * method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
+        /** @method build_create_table_clause
+         * Creates a CREATE clause string. It is highly suggested to use
+         * PDO parameter placeholders (e.g., ':placeholder') for values,
+         * so you can implement PDO prepared statements. However, this is
+         * not required.
          * @param mixed string string[] $fields
          * @param mixed string string[] $comparison_operators
          * @param mixed string string[] $values
          * @param string[] $conditional_operators
          * @return string
          */
-        function build_create_clause(
+        function build_create_table_clause(
             string $table,
             $fields,
-            $values ) {
+            array $data_types,
+            array $field_options = [],
+            bool $check_existence = false ) {
 
             /* Definition ************************************************/
-            $create_clause;
+            $create_table_clause;
+            $mysql_data_types =
+                $this->read_json_file(
+                    CLASSIC_PHP_DIR
+                    . '/classic_php_data_files/mysql_data_types.json' );
+            $data_type_valid = false;
+            $data_type_open_parenthesis_position = 0;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -89,59 +114,102 @@ namespace ClassicPHP {
                 }
             }
 
-            /* Force $values to be Array */
-            if ( ! is_array( $values ) ) {
+            /* Validate $data_types */
+            foreach( $data_types as $key => $data_type ) {
 
-                $values = [ $values ];
+                $data_type_valid = false;
+
+                $data_types[ $key ] = strtoupper( $data_types[ $key ] );
+
+                // Compare $data_types to $mysql_data_types
+                foreach( $mysql_data_types as $mysql_data_type ) {
+
+                    // Search in $data_types for '('
+                    $data_type_open_parenthesis_position =
+                        strpos( $data_types[ $key ], '(' );
+
+                    if ( false === $data_type_open_parenthesis_position ) {
+
+                        $data_type_open_parenthesis_position =
+                            strlen( $data_types[ $key ] );
+                    }
+
+                    // Compare Uppercase $data_types to $mysql_data_types
+                        // Without Parenthesis
+                    if (
+                        $mysql_data_type ===
+                            substr(
+                                $data_types[ $key ],
+                                0,
+                                $data_type_open_parenthesis_position ) ) {
+
+                        $data_type_valid = true;
+                    }
+                }
+
+                // If No Valid Data Type Found, Mark $data_types Value
+                if ( ! $data_type_valid ) {
+
+                    $this->arrays->mark_value_null( $data_types, $key );
+                }
+            }
+
+            // Remove Invalid, Marked, $data_types Values
+            $this->arrays->remove_null_values( $data_types );
+
+            /* Validate $field_options */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $field_options,
+                    'string' ) ) {
+
+                $field_options = [];
             }
 
             /* Build Clause ---------------------------------------------*/
-            $insert_into_clause = 'INSERT INTO ' . $table;
+            $create_table_clause = 'CREATE TABLE ';
+
+            if ( $check_existence ) {
+
+                $create_table_clause .= 'IF NOT EXISTS ';
+            }
+
+            $create_table_clause .= $table;
 
             /* Build Fields List */
-            $insert_into_clause .= ' (';
+            $create_table_clause .= ' (';
 
             foreach ( $fields as $key => $field ) {
 
-                if ( array_key_exists( $key, $values ) ) {
+                if (
+                    array_key_exists( $key, $fields )
+                    && array_key_exists( $key, $data_types ) ) {
 
-                    $insert_into_clause .=
-                        $this->enclose_database_object_names( $field )
-                        . ', ';
+                    $create_table_clause .=
+                        $this->enclose_database_object_names(
+                            $fields[ $key ] )
+                        . ' ' . $data_types[ $key ];
+
+                    if ( array_key_exists( $key, $field_options ) ) {
+
+                        $create_table_clause .=
+                            ' ' . $field_options[ $key ];
+                    }
+
+                    $create_table_clause .= ', ';
                 }
             }
 
             // Remove Trailing ', '
-            $insert_into_clause = substr(
-                $insert_into_clause,
+            $create_table_clause = substr(
+                $create_table_clause,
                 0,
-                strlen( $insert_into_clause ) - 2 );
+                strlen( $create_table_clause ) - 2 );
 
-            $insert_into_clause .= ') ';
-
-            /* Build Values List */
-            $insert_into_clause .= 'VALUES (';
-
-            foreach ( $values as $key => $value ) {
-
-                if ( array_key_exists( $key, $fields ) ) {
-
-                    $insert_into_clause .=
-                        $this->prepare_values_for_query( $value )
-                        . ', ';
-                }
-            }
-
-            // Remove Trailing ', '
-            $insert_into_clause = substr(
-                $insert_into_clause,
-                0,
-                strlen( $insert_into_clause ) - 2 );
-
-            $insert_into_clause .= ')';
+            $create_table_clause .= ')';
 
             /* Return ****************************************************/
-            return $insert_into_clause;
+            return $create_table_clause;
         }
 
         /** @method build_delete_clause
@@ -164,442 +232,6 @@ namespace ClassicPHP {
 
             /* Return ****************************************************/
             return $delete_clause;
-        }
-
-        /* EXAMPLE METHODS **************************************************************/
-
-        /** @method build_selection_clause
-         * Creates a SELECT clause string for use within a selection
-         * statement. Does not allow the use of subqueries in the clause.
-         * Fields should be validated prior to using this method.
-         * @param string[] $fields
-         * @param mixed string[] string $functions
-         * @return string
-         */
-        function build_selection_clause(
-            array $fields,
-            $functions = [''] ) {
-
-            /* Definition ************************************************/
-            $selection_clause;
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Validate $fields */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $fields,
-                    'string' ) ) {
-
-                $fields = [];
-            }
-
-            /* Validate $functions */
-            $functions = $this->remove_invalid_functions( $functions );
-
-            if ( false === $functions ) {
-
-                $functions = [''];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $selection_clause = 'SELECT ';
-
-            /* Process $fields If Fields Exist */
-            if ( [] !== $fields ) {
-
-                foreach ( $fields as $key => $field ) {
-
-                    /* Build Fields into SELECT Clause */
-                    // Add Field with Valid Function
-                    if (
-                        array_key_exists( $key, $functions )
-                        && '' !== $functions[ $key ] ) {
-
-                        $selection_clause .=
-                            $functions[ $key ] . '(' . $field . '), ';
-                    }
-
-                    // Add Field without Function
-                    else {
-
-                        $selection_clause .= $field . ', ';
-                    }
-
-                    /* Handle Case where '*' is Now in SELECT Clause */
-                    if ( '*' === $field ) {
-
-                        if ( $key === array_key_first( $fields ) ) {
-
-                            break;
-                        }
-                        else {
-
-                            return false;
-                        }
-                    }
-                }
-
-                // Remove Trailing ', '
-                $selection_clause = substr(
-                    $selection_clause,
-                    0,
-                    strlen( $selection_clause ) - 2 );
-            }
-
-            /* If No Fields, If Invalidated $fields Array, Use '*' */
-            else {
-
-                $selection_clause .= '*';
-            }
-
-            /* Return ****************************************************/
-            return $selection_clause;
-        }
-
-        /** @method build_from_clause
-         * Creates a FROM clause string for use within a selection
-         * statement. Does not allow the use of subqueries in the clause.
-         * Tables and fields should be validated prior to using this
-         * method.
-         * @param string $table
-         * @param string[] $joined_tables
-         * @param string[] $join_types              // Eg, 'LEFT', 'RIGHT'
-         * @param string[] $join_on_fields
-         * @param string[] $join_on_comparisons     // Comparison Operators
-         * @param string[] $join_on_values          // Values sought in ON
-         * @return string
-         */
-        function build_from_clause(
-            string $table,
-            array $joined_tables = [],
-            array $join_types = [],
-            array $join_on_fields = [],
-            array $join_on_comparisons = [],
-            array $join_on_values = [] ) {
-
-            /* Definition ************************************************/
-            $from_clause;
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Validate $join_types */
-            if (
-                $this->arrays->validate_data_types(
-                    $join_types,
-                    'string' ) ) {
-
-                // Validate Each Join Type
-                foreach ( $join_types as $key => $join_type ) {
-
-                    $join_types[ $key ] =
-                        strtoupper( $join_types[ $key ] );
-
-                    if (
-                        'LEFT' !== $join_types[ $key ]
-                        && 'RIGHT' !== $join_types[ $key ]
-                        && 'LEFT OUTER' !== $join_types[ $key ]
-                        && 'RIGHT OUTER' !== $join_types[ $key ]
-                        && 'INNER' !== $join_types[ $key ]
-                        && 'CROSS' !== $join_types[ $key ]
-                        && 'FULL' !== $join_types[ $key ] ) {
-
-                        $join_types[ $key ] = 'INNER';
-                    }
-                }
-            }
-            else {
-
-                $join_types = [];
-            }
-
-            /* Validate $join_on_fields */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $join_on_fields,
-                    'string' ) ) {
-
-                $join_on_fields = [];
-            }
-
-            /* Validate $join_on_comparisons */
-            if (
-                $this->arrays->validate_data_types(
-                    $join_on_comparisons,
-                    'string' ) ) {
-
-                // Validate Each Join Type
-                foreach (
-                    $join_on_comparisons as $key => $join_on_comparison ) {
-
-                    if (
-                        '=' !== $join_on_comparisons[ $key ]
-                        && '<' !== $join_on_comparisons[ $key ]
-                        && '>' !== $join_on_comparisons[ $key ]
-                        && '<=' !== $join_on_comparisons[ $key ]
-                        && '>=' !== $join_on_comparisons[ $key ]
-                        && '<>' !== $join_on_comparisons[ $key ]
-                        && '!=' !== $join_on_comparisons[ $key ] ) {
-
-                        $join_on_comparisons[ $key ] = '=';
-                    }
-                }
-            }
-            else {
-
-                $join_on_comparisons = [];
-            }
-
-            /* Validate $join_on_values */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $join_on_values,
-                    ['string', 'int', 'float', 'bool'] ) ) {
-
-                $join_on_values = [];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $from_clause = 'FROM ' . $table;
-
-            /* Build Joined Tables into FROM Clause, If Given */
-            if ( [] !== $joined_tables ) {
-
-                foreach ( $joined_tables as $key => $joined_table ) {
-
-                    // Add Join Type If Specified
-                    if ( array_key_exists( $key, $join_types ) ) {
-
-                        $from_clause .= ' ' . $join_types[ $key ];
-                    }
-
-                    // Add Table Join
-                    $from_clause .=
-                        ' JOIN ' . $joined_table;
-
-                    // Add ON Subclause If Join Field, Comparison Operator,
-                        // and Value Specified
-                    if (
-                        array_key_exists( $key, $join_on_fields )
-                        && array_key_exists( $key, $join_on_comparisons )
-                        && array_key_exists( $key, $join_on_values ) ) {
-
-                        $from_clause .=
-                            ' ON ' . $join_on_fields[ $key ] . ' '
-                            . $join_on_comparisons[ $key ] . ' '
-                            . $join_on_values[ $key ];
-                    }
-                }
-            }
-
-            /* Return ****************************************************/
-            return $from_clause;
-        }
-
-        /** @method build_group_by_clause
-         * Creates a GROUP BY clause string for use within a selection
-         * statement. Fields should be validated prior to using this
-         * method.
-         * @param string[] $fields
-         * @return string
-         */
-        function build_group_by_clause(
-            array $fields ) {
-
-            /* Definition ************************************************/
-            $group_by_clause;
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Validate $fields */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $fields,
-                    'string' ) ) {
-
-                $fields = [];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            /* Process $fields If Fields Exist */
-            if ( [] !== $fields ) {
-
-                $group_by_clause = 'GROUP BY ';
-
-                foreach ( $fields as $key => $field ) {
-
-                    /* Build Fields into GROUP BY Clause */
-                    $group_by_clause .= $field . ', ';
-                }
-
-                // Remove Trailing ', '
-                $group_by_clause = substr(
-                    $group_by_clause,
-                    0,
-                    strlen( $group_by_clause ) - 2 );
-            }
-
-            /* Else Return an Empty GROUP BY Clause */
-            else {
-
-                $group_by_clause = '';
-            }
-
-            /* Return ****************************************************/
-            return $group_by_clause;
-        }
-
-        /** @method build_having_clause
-         * Creates a HAVING clause string for use within a selection
-         * statement. Fields should be validated prior to using this
-         * method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
-         * @param mixed string string[] $fields
-         * @param mixed string string[] $comparison_operators
-         * @param mixed string string[] $values
-         * @param string[] $conditional_operators
-         * @return string
-         */
-        function build_having_clause(
-            $fields,
-            $comparison_operators,
-            $values,
-            array $conditional_operators = ['AND'] ) {
-
-            /* Definition ************************************************/
-            $having_clause;
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
-
-                $fields = [ $fields ];
-            }
-
-            /* Force $comparison_operators to be Array */
-            if ( ! is_array( $comparison_operators ) ) {
-
-                $comparison_operators = [ $comparison_operators ];
-            }
-
-            /* Force $values to be Array */
-            if ( ! is_array( $values ) ) {
-
-                $values = [ $values ];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $having_clause = 'HAVING ';
-
-            /* Build HAVING Conditions */
-            $having_clause .= $this->build_condition_list(
-                $fields,
-                $comparison_operators,
-                $values,
-                $conditional_operators );
-
-            /* Return ****************************************************/
-            return $having_clause;
-        }
-
-        /** @method build_limit_clause
-         * Creates a LIMIT clause string for use within a selection
-         * statement.
-         * @param int $limit
-         * @param int $offset
-         * @return string
-         */
-        function build_limit_clause(
-            int $limit,
-            int $offset = 0 ) {
-
-            /* Definition ************************************************/
-            $limit_clause;
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Validate $limit */
-            if ( 0 > $limit ) {
-
-                return '';
-            }
-
-            /* Validate $offset */
-            if ( 0 > $offset ) {
-
-                $offset = 0;
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $limit_clause = 'LIMIT ';
-
-            if ( 0 < $offset ) {
-
-                $limit_clause .= $offset . ', ' . $limit;
-            }
-            else {
-
-                $limit_clause .= $limit;
-            }
-
-            /* Return ****************************************************/
-            return $limit_clause;
-        }
-
-        /** @method build_order_by_clause
-         * Creates a ORDER BY clause string for use within a selection
-         * statement. Fields should be validated prior to using this
-         * method.
-         * @param string[] $fields
-         * @return string
-         */
-        function build_order_by_clause(
-            array $fields ) {
-
-            /* Definition ************************************************/
-            $order_by_clause;
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Validate $fields */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $fields,
-                    'string' ) ) {
-
-                $fields = [];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            /* Process $fields If Fields Exist */
-            if ( [] !== $fields ) {
-
-                $order_by_clause = 'ORDER BY ';
-
-                foreach ( $fields as $key => $field ) {
-
-                    /* Build Fields into ORDER BY Clause */
-                    $order_by_clause .= $field . ', ';
-                }
-
-                // Remove Trailing ', '
-                $order_by_clause = substr(
-                    $order_by_clause,
-                    0,
-                    strlen( $order_by_clause ) - 2 );
-            }
-
-            /* Else Return an Empty GROUP BY Clause */
-            else {
-
-                $order_by_clause = '';
-            }
-
-            /* Return ****************************************************/
-            return $order_by_clause;
         }
     }
 }
