@@ -170,7 +170,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             return $update_statement;
         }
 
-        /** @method build_insert_into_clause
+        /** @method build_insert_into_statement
          * Creates an INSERT INTO statement string. Fields should be
          * validated prior to using this method. It is highly suggested
          * to use PDO parameter placeholders (e.g., ':placeholder') for
