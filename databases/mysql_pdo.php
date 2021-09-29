@@ -40,6 +40,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
         * Properties
         ******************************************************************/
 
+        const DEFAULT_VALUE = "DEFAULT";
+
         protected PDO $pdo;
         protected ArrayProcessing $arrays;
 
@@ -414,10 +416,20 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
          */
         function prepare_values_for_query( $value ) {
 
-            if ( is_string( $value ) ) {
+            /* Processing ************************************************/
+            /* Prepare $value as Class Constant Values */
+            if ( self::DEAFULT_VALUE === $value ) {
+
+                return $value;
+            }
+
+            /* Prepare $value Based on Data Type */
+            elseif( is_string( $value ) ) {
 
                 return '\'' . $value . '\'';
             }
+
+            /* Return $value Without Preparing in All Other Cases */
             else {
 
                 return $value;
