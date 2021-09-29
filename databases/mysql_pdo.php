@@ -525,7 +525,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             $fields,
             $comparison_operators,
             $values,
-            array $conditional_operators = ['AND'] ) {
+            $conditional_operators = ['AND'] ) {
 
             /* Definition ************************************************/
             $where_clause = '';
@@ -549,6 +549,12 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             if ( ! is_array( $values ) ) {
 
                 $values = [ $values ];
+            }
+
+            /* Force $conditional_operators to be Array */
+            if ( ! is_array( $conditional_operators ) ) {
+
+                $conditional_operators = [ $conditional_operators ];
             }
 
             /* Build Clause ---------------------------------------------*/
@@ -915,9 +921,16 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
                     [
                         $fields,
                         $comparison_operators,
-                        $values,
-                        $logic_operators
+                        $values
                     ] );
+                    
+            if (
+                count( $logic_operators ) + 1
+                < $smallest_input_array_length  ) {
+
+                $smallest_input_array_length =
+                    count( $logic_operators ) + 1;
+            }
 
             /* Trim All Input Arrays */
             $fields = $this->arrays->trim_to_length(
