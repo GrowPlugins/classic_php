@@ -424,10 +424,6 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             }
         }
 
-        /*-----------------------------------------------------------------
-         * General  Methods
-         *---------------------------------------------------------------*/
-
         /******************************************************************
         * Private Methods
         ******************************************************************/
@@ -507,6 +503,80 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
         /******************************************************************
         * Protected Methods
         ******************************************************************/
+       
+        /*-----------------------------------------------------------------
+         * General Clause Building Methods
+         *---------------------------------------------------------------*/
+
+        /** @method build_where_clause
+         * Creates a WHERE clause string for use within a statement, such
+         * as UPDATE or SELECT. Fields should be validated prior to using
+         * this method. It is highly suggested to use PDO parameter
+         * placeholders (e.g., ':placeholder') for values, so you can
+         * implement PDO prepared statements. However, this is not
+         * required.
+         * @param mixed string string[] $fields
+         * @param mixed string string[] $comparison_operators
+         * @param mixed string string[] $values
+         * @param string[] $conditional_operators
+         * @return string
+         */
+        protected function build_where_clause(
+            $fields,
+            $comparison_operators,
+            $values,
+            array $conditional_operators = ['AND'] ) {
+
+            /* Definition ************************************************/
+            $where_clause = '';
+            $condition_list_returned_value;
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Force $fields to be Array */
+            if ( ! is_array( $fields ) ) {
+
+                $fields = [ $fields ];
+            }
+
+            /* Force $comparison_operators to be Array */
+            if ( ! is_array( $comparison_operators ) ) {
+
+                $comparison_operators = [ $comparison_operators ];
+            }
+
+            /* Force $values to be Array */
+            if ( ! is_array( $values ) ) {
+
+                $values = [ $values ];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $where_clause = 'WHERE ';
+
+            /* Build WHERE Conditions */
+            $condition_list_returned_value = $this->build_condition_list(
+                $fields,
+                $comparison_operators,
+                $values,
+                $conditional_operators );
+
+            if ( false !== $condition_list_returned_value ) {
+
+                $where_clause .= $condition_list_returned_value;
+            }
+            else {
+
+                return false;
+            }
+
+            /* Return ****************************************************/
+            return $where_clause;
+        }
+
+        /*-----------------------------------------------------------------
+         * General Validation/Building Methods
+         *---------------------------------------------------------------*/
 
         /** @method build_condition_list
          * Builds a list of fields, comparison operator, values, such as:
@@ -661,6 +731,10 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             /* Return ****************************************************/
             return $field_value_list;
         }
+
+        /*-----------------------------------------------------------------
+         * General Class-Specific Utility Methods
+         *---------------------------------------------------------------*/
 
         /** @method read_json_file
          * Reads a JSON file and returns its contents as a valid JSON

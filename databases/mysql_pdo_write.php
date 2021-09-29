@@ -80,7 +80,6 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
         function build_update_clause(
             string $table,
             array $set_fields,
-            array $set_comparisons = [],
             array $set_values = [] ) {
 
             /* Definition ************************************************/
@@ -95,34 +94,6 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
                     'string' ) ) {
 
                 $set_fields = [];
-            }
-
-            /* Validate $set_comparisons */
-            if (
-                $this->arrays->validate_data_types(
-                    $set_comparisons,
-                    'string' ) ) {
-
-                // Validate Each SET Comparison Operator
-                foreach (
-                    $set_comparisons as $key => $join_on_comparison ) {
-
-                    if (
-                        '=' !== $set_comparisons[ $key ]
-                        && '<' !== $set_comparisons[ $key ]
-                        && '>' !== $set_comparisons[ $key ]
-                        && '<=' !== $set_comparisons[ $key ]
-                        && '>=' !== $set_comparisons[ $key ]
-                        && '<>' !== $set_comparisons[ $key ]
-                        && '!=' !== $set_comparisons[ $key ] ) {
-
-                        $set_comparisons[ $key ] = '=';
-                    }
-                }
-            }
-            else {
-
-                $set_comparisons = [];
             }
 
             /* Validate $set_values */
@@ -147,13 +118,12 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
 
                     // Add Next Field, Operator, and Value, If All Exist
                     if (
-                        array_key_exists( $key, $set_comparisons )
-                        && array_key_exists( $key, $set_values ) ) {
+                        array_key_exists( $key, $set_values ) ) {
 
                         $update_clause .=
                             $this->enclose_database_object_names(
-                                $set_fields[ $key ] ) . ' '
-                            . $set_comparisons[ $key ] . ' '
+                                $set_fields[ $key ] )
+                            . ' = '
                             . $this->prepare_values_for_query(
                                 $set_values[ $key ] ) . ', ';
                     }
@@ -168,72 +138,6 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
 
             /* Return ****************************************************/
             return $update_clause;
-        }
-
-        /** @method build_where_clause
-         * Creates a WHERE clause string for use within an update
-         * statement. Fields should be validated prior to using this
-         * method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
-         * @param mixed string string[] $fields
-         * @param mixed string string[] $comparison_operators
-         * @param mixed string string[] $values
-         * @param string[] $conditional_operators
-         * @return string
-         */
-        function build_where_clause(
-            $fields,
-            $comparison_operators,
-            $values,
-            array $conditional_operators = ['AND'] ) {
-
-            /* Definition ************************************************/
-            $where_clause;
-            $condition_list_returned_value;
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
-
-                $fields = [ $fields ];
-            }
-
-            /* Force $comparison_operators to be Array */
-            if ( ! is_array( $comparison_operators ) ) {
-
-                $comparison_operators = [ $comparison_operators ];
-            }
-
-            /* Force $values to be Array */
-            if ( ! is_array( $values ) ) {
-
-                $values = [ $values ];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $where_clause = 'WHERE ';
-
-            /* Build WHERE Conditions */
-            $condition_list_returned_value = $this->build_condition_list(
-                $fields,
-                $comparison_operators,
-                $values,
-                $conditional_operators );
-
-            if ( false !== $condition_list_returned_value ) {
-
-                $where_clause .= $condition_list_returned_value;
-            }
-            else {
-
-                return false;
-            }
-
-            /* Return ****************************************************/
-            return $where_clause;
         }
 
         /** @method build_insert_into_clause
