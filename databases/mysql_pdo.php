@@ -436,6 +436,15 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             }
         }
 
+        /** @method get_default_value
+         * A getter to make it simpler to add DEFAULT_VALUE into a query.
+         */
+        function get_default_value() {
+
+            /* Processing ************************************************/
+            return self::DEFAULT_VALUE;
+        }
+
         /******************************************************************
         * Private Methods
         ******************************************************************/
