@@ -91,6 +91,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
 
             /* Definition ************************************************/
             $update_statement = '';
+            $set_clause;
             $where_clause;
             $order_by_clause;
             $limit_clause;
@@ -100,16 +101,22 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             /* Build Statement, If Required Values Exist */
             if ( [] !== $set_fields ) {
 
-                $update_clause =
+                $update_statement =
                     'UPDATE '
                     . $this->enclose_database_object_names( $table )
                     . ' ';
 
                 // Add SET Clause
-                $update_clause .=
+                $set_clause =
                     $this->build_set_clause(
                         $set_fields,
                         $set_values );
+                
+                if ( false !== $set_clause ) {
+
+                    $update_statement .=
+                        ' ' . $set_clause;
+                }
 
                 // Conditionally Add WHERE Clause
                 if (
@@ -126,7 +133,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
 
                     if ( false !== $where_clause ) {
 
-                        $update_clause .=
+                        $update_statement .=
                             ' ' . $where_clause;
                     }
                 }
@@ -139,7 +146,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
 
                     if ( false !== $order_by_clause ) {
 
-                        $update_clause .=
+                        $update_statement .=
                             ' ' . $order_by_clause;
                     }
                 }
@@ -154,14 +161,14 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
 
                     if ( false !== $limit_clause ) {
 
-                        $update_clause .=
+                        $update_statement .=
                             ' ' . $limit_clause;
                     }
                 }
             }
 
             /* Return ****************************************************/
-            return $update_clause;
+            return $update_statement;
         }
 
         /** @method build_insert_into_clause
@@ -177,78 +184,40 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          * @param string[] $conditional_operators
          * @return string
          */
-        function build_insert_into_clause(
+        function build_insert_into_statement(
             string $table,
             $set_fields,
             $set_values = [] ) {
 
             /* Definition ************************************************/
-            $insert_into_clause;
+            $insert_into_statement;
+            $set_clause;
 
             /* Processing ************************************************/
             /* Build Statement ------------------------------------------*/
             /* Build Statement, If Required Values Exist */
             if ( [] !== $set_fields ) {
 
-                $update_clause =
+                $insert_into_statement =
                     'INSERT INTO '
                     . $this->enclose_database_object_names( $table )
                     . ' ';
 
                 // Add SET Clause
-                $update_clause .=
+                $set_clause =
                     $this->build_set_clause(
                         $set_fields,
                         $set_values );
-            }
+                
+                if ( false !== $set_clause ) {
 
-            /* Build Clause ---------------------------------------------*/
-            $insert_into_clause = 'INSERT INTO ' . $table;
-
-            /* Build Fields List */
-            $insert_into_clause .= ' (';
-
-            foreach ( $fields as $key => $field ) {
-
-                if ( array_key_exists( $key, $values ) ) {
-
-                    $insert_into_clause .=
-                        $this->enclose_database_object_names( $field )
-                        . ', ';
+                    $insert_into_statement .=
+                        ' ' . $set_clause;
                 }
             }
-
-            // Remove Trailing ', '
-            $insert_into_clause = substr(
-                $insert_into_clause,
-                0,
-                strlen( $insert_into_clause ) - 2 );
-
-            $insert_into_clause .= ') ';
-
-            /* Build Values List */
-            $insert_into_clause .= 'VALUES (';
-
-            foreach ( $values as $key => $value ) {
-
-                if ( array_key_exists( $key, $fields ) ) {
-
-                    $insert_into_clause .=
-                        $this->prepare_values_for_query( $value )
-                        . ', ';
-                }
-            }
-
-            // Remove Trailing ', '
-            $insert_into_clause = substr(
-                $insert_into_clause,
-                0,
-                strlen( $insert_into_clause ) - 2 );
-
-            $insert_into_clause .= ')';
 
             /* Return ****************************************************/
-            return $insert_into_clause;
+            return $insert_into_statement;
         }
 
         /** @method build_delete_statement
