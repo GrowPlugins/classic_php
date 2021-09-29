@@ -622,8 +622,6 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             return $order_by_clause;
         }
 
-        
-
         /** @method build_from_clause
          * Creates a FROM clause string for use within a statement. Does
          * not allow the use of subqueries in the clause. Tables and fields
@@ -764,6 +762,49 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
 
             /* Return ****************************************************/
             return $from_clause;
+        }
+
+        /** @method build_limit_clause
+         * Creates a LIMIT clause string for use within a statement.
+         * @param int $limit
+         * @param int $offset
+         * @return string
+         */
+        protected function build_limit_clause(
+            int $limit,
+            int $offset = 0 ) {
+
+            /* Definition ************************************************/
+            $limit_clause = '';
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Validate $limit */
+            if ( 0 > $limit ) {
+
+                return '';
+            }
+
+            /* Validate $offset */
+            if ( 0 > $offset ) {
+
+                $offset = 0;
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $limit_clause = 'LIMIT ';
+
+            if ( 0 < $offset ) {
+
+                $limit_clause .= $offset . ', ' . $limit;
+            }
+            else {
+
+                $limit_clause .= $limit;
+            }
+
+            /* Return ****************************************************/
+            return $limit_clause;
         }
 
         /*-----------------------------------------------------------------

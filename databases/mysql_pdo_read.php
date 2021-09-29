@@ -263,50 +263,6 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
             return $having_clause;
         }
 
-        /** @method build_limit_clause
-         * Creates a LIMIT clause string for use within a selection
-         * statement.
-         * @param int $limit
-         * @param int $offset
-         * @return string
-         */
-        function build_limit_clause(
-            int $limit,
-            int $offset = 0 ) {
-
-            /* Definition ************************************************/
-            $limit_clause = '';
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Validate $limit */
-            if ( 0 > $limit ) {
-
-                return '';
-            }
-
-            /* Validate $offset */
-            if ( 0 > $offset ) {
-
-                $offset = 0;
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $limit_clause = 'LIMIT ';
-
-            if ( 0 < $offset ) {
-
-                $limit_clause .= $offset . ', ' . $limit;
-            }
-            else {
-
-                $limit_clause .= $limit;
-            }
-
-            /* Return ****************************************************/
-            return $limit_clause;
-        }
-
         /******************************************************************
         * Private Methods
         ******************************************************************/
