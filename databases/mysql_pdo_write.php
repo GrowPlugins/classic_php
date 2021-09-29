@@ -84,7 +84,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             $where_fields = [],
             $where_comparison_operators = [],
             $where_values = [],
-            array $where_conditional_operators = ['AND'],
+            $where_conditional_operators = ['AND'],
             $order_by_fields = [] ) {
 
             /* Definition ************************************************/
