@@ -575,9 +575,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
         }
 
         /** @method build_order_by_clause
-         * Creates a ORDER BY clause string for use within a selection
-         * statement. Fields should be validated prior to using this
-         * method.
+         * Creates a ORDER BY clause string for use within a statement.
+         * Fields should be validated prior to using this method.
          * @param string[] $fields
          * @return string
          */
@@ -621,6 +620,150 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
 
             /* Return ****************************************************/
             return $order_by_clause;
+        }
+
+        
+
+        /** @method build_from_clause
+         * Creates a FROM clause string for use within a statement. Does
+         * not allow the use of subqueries in the clause. Tables and fields
+         * should be validated prior to using this method.
+         * @param string $table
+         * @param string[] $joined_tables
+         * @param string[] $join_types              // Eg, 'LEFT', 'RIGHT'
+         * @param string[] $join_on_fields
+         * @param string[] $join_on_comparisons     // Comparison Operators
+         * @param string[] $join_on_values          // Values sought in ON
+         * @return string
+         */
+        protected function build_from_clause(
+            string $table,
+            array $joined_tables = [],
+            array $join_types = [],
+            array $join_on_fields = [],
+            array $join_on_comparisons = [],
+            array $join_on_values = [] ) {
+
+            /* Definition ************************************************/
+            $from_clause = '';
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Validate $join_types */
+            if (
+                $this->arrays->validate_data_types(
+                    $join_types,
+                    'string' ) ) {
+
+                // Validate Each Join Type
+                foreach ( $join_types as $key => $join_type ) {
+
+                    $join_types[ $key ] =
+                        strtoupper( $join_types[ $key ] );
+
+                    if (
+                        'LEFT' !== $join_types[ $key ]
+                        && 'RIGHT' !== $join_types[ $key ]
+                        && 'LEFT OUTER' !== $join_types[ $key ]
+                        && 'RIGHT OUTER' !== $join_types[ $key ]
+                        && 'INNER' !== $join_types[ $key ]
+                        && 'CROSS' !== $join_types[ $key ]
+                        && 'FULL' !== $join_types[ $key ] ) {
+
+                        $join_types[ $key ] = 'INNER';
+                    }
+                }
+            }
+            else {
+
+                $join_types = [];
+            }
+
+            /* Validate $join_on_fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $join_on_fields,
+                    'string' ) ) {
+
+                $join_on_fields = [];
+            }
+
+            /* Validate $join_on_comparisons */
+            if (
+                $this->arrays->validate_data_types(
+                    $join_on_comparisons,
+                    'string' ) ) {
+
+                // Validate Each ON Comparison Operator
+                foreach (
+                    $join_on_comparisons as $key => $join_on_comparison ) {
+
+                    if (
+                        '=' !== $join_on_comparisons[ $key ]
+                        && '<' !== $join_on_comparisons[ $key ]
+                        && '>' !== $join_on_comparisons[ $key ]
+                        && '<=' !== $join_on_comparisons[ $key ]
+                        && '>=' !== $join_on_comparisons[ $key ]
+                        && '<>' !== $join_on_comparisons[ $key ]
+                        && '!=' !== $join_on_comparisons[ $key ] ) {
+
+                        $join_on_comparisons[ $key ] = '=';
+                    }
+                }
+            }
+            else {
+
+                $join_on_comparisons = [];
+            }
+
+            /* Validate $join_on_values */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $join_on_values,
+                    ['string', 'int', 'float', 'bool'] ) ) {
+
+                $join_on_values = [];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $from_clause =
+                'FROM ' . $this->enclose_database_object_names( $table );
+
+            /* Build Joined Tables into FROM Clause, If Given */
+            if ( [] !== $joined_tables ) {
+
+                foreach ( $joined_tables as $key => $joined_table ) {
+
+                    // Add Join Type If Specified
+                    if ( array_key_exists( $key, $join_types ) ) {
+
+                        $from_clause .= ' ' . $join_types[ $key ];
+                    }
+
+                    // Add Table Join
+                    $from_clause .=
+                        ' JOIN ' . $this->enclose_database_object_names(
+                            $joined_table );
+
+                    // Add ON Subclause If Join Field, Comparison Operator,
+                        // and Value Specified
+                    if (
+                        array_key_exists( $key, $join_on_fields )
+                        && array_key_exists( $key, $join_on_comparisons )
+                        && array_key_exists( $key, $join_on_values ) ) {
+
+                        $from_clause .=
+                            ' ON ' . $this->enclose_database_object_names(
+                                $join_on_fields[ $key ] ) . ' '
+                            . $join_on_comparisons[ $key ] . ' '
+                            . $this->prepare_values_for_query(
+                                $join_on_values[ $key ] );
+                    }
+                }
+            }
+
+            /* Return ****************************************************/
+            return $from_clause;
         }
 
         /*-----------------------------------------------------------------
