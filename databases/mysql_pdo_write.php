@@ -65,12 +65,11 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
         }
 
         /** @method build_update_statement
-         * Creates an UPDATE clause string for use within an update
-         * statement. Tables and fields should be validated prior to
-         * using this method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
+         * Creates an UPDATE statement string. Tables and fields should
+         * be validated prior to using this method. It is highly
+         * suggested to use PDO parameter placeholders (e.g.,
+         * ':placeholder') for values, so you can implement PDO
+         * prepared statements. However, this is not required.
          * @param string $table
          * @param string[] $set_fields
          * @param string[] $set_comparisons     // Comparison Operators
@@ -172,12 +171,11 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
         }
 
         /** @method build_insert_into_clause
-         * Creates a WHERE clause string for use within an update
-         * statement. Fields should be validated prior to using this
-         * method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
+         * Creates an INSERT INTO statement string. Fields should be
+         * validated prior to using this method. It is highly suggested
+         * to use PDO parameter placeholders (e.g., ':placeholder') for
+         * values, so you can implement PDO prepared statements. However,
+         * this is not required.
          * @param mixed string string[] $fields
          * @param mixed string string[] $comparison_operators
          * @param mixed string string[] $values
