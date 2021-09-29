@@ -574,6 +574,55 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             return $where_clause;
         }
 
+        /** @method build_order_by_clause
+         * Creates a ORDER BY clause string for use within a selection
+         * statement. Fields should be validated prior to using this
+         * method.
+         * @param string[] $fields
+         * @return string
+         */
+        protected function build_order_by_clause(
+            array $fields ) {
+
+            /* Definition ************************************************/
+            $order_by_clause = '';
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Validate $fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $fields,
+                    'string' ) ) {
+
+                $fields = [];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            /* Process $fields If Fields Exist */
+            if ( [] !== $fields ) {
+
+                $order_by_clause = 'ORDER BY ';
+
+                foreach ( $fields as $key => $field ) {
+
+                    /* Build Fields into ORDER BY Clause */
+                    $order_by_clause .=
+                        $this->enclose_database_object_names(
+                            $field ) . ', ';
+                }
+
+                // Remove Trailing ', '
+                $order_by_clause = substr(
+                    $order_by_clause,
+                    0,
+                    strlen( $order_by_clause ) - 2 );
+            }
+
+            /* Return ****************************************************/
+            return $order_by_clause;
+        }
+
         /*-----------------------------------------------------------------
          * General Validation/Building Methods
          *---------------------------------------------------------------*/

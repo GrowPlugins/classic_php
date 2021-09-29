@@ -80,7 +80,11 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
         function build_update_clause(
             string $table,
             array $set_fields,
-            array $set_values = [] ) {
+            array $set_values = [],
+            $where_fields = [],
+            $where_comparison_operators = [],
+            $where_values = [],
+            array $where_conditional_operators = ['AND'] ) {
 
             /* Definition ************************************************/
             $update_clause = '';
@@ -100,6 +104,21 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
                     $this->build_set_clause(
                         $set_fields,
                         $set_values );
+
+                // Conditionally Add WHERE Clause
+                if (
+                    [] !== $where_fields
+                    && [] !== $where_comparison_operators
+                    && [] !== $where_values ) {
+
+                    $update_clause .=
+                        ' '
+                        . $this->build_where_clause(
+                            $where_fields,
+                            $where_comparison_operators,
+                            $where_values,
+                            $where_conditional_operators );
+                }
             }
 
             /* Return ****************************************************/

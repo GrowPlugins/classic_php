@@ -450,58 +450,13 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
             return $limit_clause;
         }
 
-        /** @method build_order_by_clause
-         * Creates a ORDER BY clause string for use within a selection
-         * statement. Fields should be validated prior to using this
-         * method.
-         * @param string[] $fields
-         * @return string
-         */
-        function build_order_by_clause(
-            array $fields ) {
-
-            /* Definition ************************************************/
-            $order_by_clause = '';
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Validate $fields */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $fields,
-                    'string' ) ) {
-
-                $fields = [];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            /* Process $fields If Fields Exist */
-            if ( [] !== $fields ) {
-
-                $order_by_clause = 'ORDER BY ';
-
-                foreach ( $fields as $key => $field ) {
-
-                    /* Build Fields into ORDER BY Clause */
-                    $order_by_clause .=
-                        $this->enclose_database_object_names(
-                            $field ) . ', ';
-                }
-
-                // Remove Trailing ', '
-                $order_by_clause = substr(
-                    $order_by_clause,
-                    0,
-                    strlen( $order_by_clause ) - 2 );
-            }
-
-            /* Return ****************************************************/
-            return $order_by_clause;
-        }
-
         /******************************************************************
         * Private Methods
         ******************************************************************/
+
+        /*-----------------------------------------------------------------
+         * Class-Specific Utility Methods
+         *---------------------------------------------------------------*/
 
         /** @method remove_invalid_functions
          * Replaces invalid functions with empty strings. If $return_type
