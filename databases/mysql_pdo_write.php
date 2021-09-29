@@ -96,8 +96,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             $limit_clause;
 
             /* Processing ************************************************/
-            /* Build Clause ---------------------------------------------*/
-            /* Build UPDATE Clause, If Fields Exist */
+            /* Build Statement ------------------------------------------*/
+            /* Build Statement, If Required Values Exist */
             if ( [] !== $set_fields ) {
 
                 $update_clause =
@@ -179,34 +179,27 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          */
         function build_insert_into_clause(
             string $table,
-            $fields,
-            $values ) {
+            $set_fields,
+            $set_values = [] ) {
 
             /* Definition ************************************************/
             $insert_into_clause;
 
             /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Validate $fields */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $fields,
-                    'string' ) ) {
+            /* Build Statement ------------------------------------------*/
+            /* Build Statement, If Required Values Exist */
+            if ( [] !== $set_fields ) {
 
-                if ( is_string( $fields ) ) {
+                $update_clause =
+                    'INSERT INTO '
+                    . $this->enclose_database_object_names( $table )
+                    . ' ';
 
-                    $fields = [ $fields ];
-                }
-                else {
-
-                    $fields = [];
-                }
-            }
-
-            /* Force $values to be Array */
-            if ( ! is_array( $values ) ) {
-
-                $values = [ $values ];
+                // Add SET Clause
+                $update_clause .=
+                    $this->build_set_clause(
+                        $set_fields,
+                        $set_values );
             }
 
             /* Build Clause ---------------------------------------------*/
@@ -295,14 +288,26 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          * @return string
          */
         protected function build_set_clause(
-            array $set_fields,
-            array $set_values = [] ) {
+            $set_fields,
+            $set_values = [] ) {
 
             /* Definition ************************************************/
             $set_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
+            /* Force $set_fields to be Array */
+            if ( ! is_array( $set_fields ) ) {
+
+                $set_fields = [ $set_fields ];
+            }
+
+            /* Force $set_values to be Array */
+            if ( ! is_array( $set_values ) ) {
+
+                $set_values = [ $set_values ];
+            }
+
             /* Validate $set_fields */
             if (
                 ! $this->arrays->validate_data_types(
