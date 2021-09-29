@@ -581,13 +581,19 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
          * @return string
          */
         protected function build_order_by_clause(
-            array $fields ) {
+            $fields ) {
 
             /* Definition ************************************************/
             $order_by_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
+            /* Force $fields to be Array */
+            if ( ! is_array( $fields ) ) {
+
+                $fields = [ $fields ];
+            }
+
             /* Validate $fields */
             if (
                 ! $this->arrays->validate_data_types(
