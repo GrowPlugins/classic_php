@@ -86,7 +86,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             $where_values = [],
             $where_conditional_operators = ['AND'],
             $order_by_fields = [],
-            int $limit = -1 ) {
+            int $limit = -1,
+            int $offset = -1 ) {
 
             /* Definition ************************************************/
             $update_statement = '';
@@ -140,6 +141,21 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
 
                         $update_clause .=
                             ' ' . $order_by_clause;
+                    }
+                }
+
+                // Conditionally Add LIMIT Clause
+                if ( -1 < $limit ) {
+
+                    $limit_clause =
+                        $this->build_limit_clause(
+                            $limit,
+                            $offset );
+
+                    if ( false !== $limit_clause ) {
+
+                        $update_clause .=
+                            ' ' . $limit_clause;
                     }
                 }
             }
