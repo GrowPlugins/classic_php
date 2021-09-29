@@ -53,6 +53,10 @@ if ( ! class_exists( 'MySQLPDO' ) ) {
             $this->arrays = new ArrayProcessing();
         }
 
+        /*-----------------------------------------------------------------
+         * General Database Query Methods
+         *---------------------------------------------------------------*/
+
         /** @method query_database_tables
          * Queries the database for available tables.
          * @return string[] $database_tables
@@ -127,6 +131,10 @@ if ( ! class_exists( 'MySQLPDO' ) ) {
             /* Return ****************************************************/
             return $table_fields;
         }
+
+        /*-----------------------------------------------------------------
+         * Database Object, or Object Attribute, Name Validation Methods
+         *---------------------------------------------------------------*/
 
         /** @method validate_table_names
          * Compares one or more table names to tables that exist in the
@@ -349,6 +357,10 @@ if ( ! class_exists( 'MySQLPDO' ) ) {
             }
         }
 
+        /*-----------------------------------------------------------------
+         * Value Validation Methods
+         *---------------------------------------------------------------*/
+
         /** @method validate_limits
          * Validates limit numbers so they are within acceptible ranges.
          * @param int $offset
@@ -369,6 +381,10 @@ if ( ! class_exists( 'MySQLPDO' ) ) {
                 return false;
             }
         }
+
+        /*-----------------------------------------------------------------
+         * General Query Preparation Methods
+         *---------------------------------------------------------------*/
 
         /** @method enclose_database_object_names
          * Adds name enclosure characters to table and field names to
@@ -407,6 +423,10 @@ if ( ! class_exists( 'MySQLPDO' ) ) {
                 return $value;
             }
         }
+
+        /*-----------------------------------------------------------------
+         * General  Methods
+         *---------------------------------------------------------------*/
 
         /******************************************************************
         * Private Methods
