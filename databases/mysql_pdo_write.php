@@ -86,25 +86,6 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             $update_clause = '';
 
             /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Validate $set_fields */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $set_fields,
-                    'string' ) ) {
-
-                $set_fields = [];
-            }
-
-            /* Validate $set_values */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $set_values,
-                    ['string', 'int', 'float', 'bool'] ) ) {
-
-                $set_values = [];
-            }
-
             /* Build Clause ---------------------------------------------*/
             /* Build UPDATE Clause, If Fields Exist */
             if ( [] !== $set_fields ) {
@@ -112,28 +93,13 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
                 $update_clause =
                     'UPDATE '
                     . $this->enclose_database_object_names( $table )
-                    . ' SET ';
+                    . ' ';
 
-                foreach ( $set_fields as $key => $set_field ) {
-
-                    // Add Next Field, Operator, and Value, If All Exist
-                    if (
-                        array_key_exists( $key, $set_values ) ) {
-
-                        $update_clause .=
-                            $this->enclose_database_object_names(
-                                $set_fields[ $key ] )
-                            . ' = '
-                            . $this->prepare_values_for_query(
-                                $set_values[ $key ] ) . ', ';
-                    }
-                }
-
-                // Remove Trailing ', '
-                $update_clause = substr(
-                    $update_clause,
-                    0,
-                    strlen( $update_clause ) - 2 );
+                // Add SET Clause
+                $update_clause .=
+                    $this->build_set_clause(
+                        $set_fields,
+                        $set_values );
             }
 
             /* Return ****************************************************/
@@ -254,6 +220,80 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
 
             /* Return ****************************************************/
             return $delete_clause;
+        }
+
+        /******************************************************************
+        * Protected Methods
+        ******************************************************************/
+       
+        /*-----------------------------------------------------------------
+         * Write Clause Building Methods
+         *---------------------------------------------------------------*/
+
+        /** @method build_set_clause
+         * Creates a SET clause string for use in write-type query
+         * statements.
+         * @param string[] $set_fields
+         * @param string[] $set_values          // Values sought in SET
+         * @return string
+         */
+        protected function build_set_clause(
+            array $set_fields,
+            array $set_values = [] ) {
+
+            /* Definition ************************************************/
+            $set_clause = '';
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Validate $set_fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $set_fields,
+                    'string' ) ) {
+
+                $set_fields = [];
+            }
+
+            /* Validate $set_values */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $set_values,
+                    ['string', 'int', 'float', 'bool'] ) ) {
+
+                $set_values = [];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            /* Build SET Clause, If Fields Exist */
+            if ( [] !== $set_fields ) {
+
+                $set_clause =
+                    'SET ';
+
+                foreach ( $set_fields as $key => $set_field ) {
+
+                    // Add Next Field, Operator, and Value, If All Exist
+                    if ( array_key_exists( $key, $set_values ) ) {
+
+                        $set_clause .=
+                            $this->enclose_database_object_names(
+                                $set_fields[ $key ] )
+                            . ' = '
+                            . $this->prepare_values_for_query(
+                                $set_values[ $key ] ) . ', ';
+                    }
+                }
+
+                // Remove Trailing ', '
+                $set_clause = substr(
+                    $set_clause,
+                    0,
+                    strlen( $set_clause ) - 2 );
+            }
+
+            /* Return ****************************************************/
+            return $set_clause;
         }
     }
 }
