@@ -13,7 +13,14 @@ while others might be aimed at error handling within project code. Some
 code might only execute when a constant variable exists or results to a
 certain value [for internal debugging options built into code].)
 
-0.1.4
+0.2.0
+- Add methods to MySQLPDO_Manage class to allow direct access
+to the database, such as adding or dropping tables.
+- Try to add methods to MySQLPDO_Write class to allow altering tables in
+the database, such as altering a record.
+- Try to add methods to MySQLPDO_Read class to allow querying table data.
+
+0.3.0
 - Rename array_processing to just array and start adding methods that
 just use PHP array functions. (Comparable to JavaScript's Array class.)
 - Add a method to array:: which allows you to check the next key value.
@@ -28,7 +35,7 @@ automatically placed between conditions where no conditional operator is
 provided, and any trailing conditional operator at list end is removed
 automatically.
 
-0.1.5
+0.4.0
 - Create a FileProcessing class for reading json, ini, other files, and
 for writing those files too.
 - Create string processing class, including method for validating string
