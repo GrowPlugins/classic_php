@@ -794,7 +794,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             /* Validate $limit */
             if ( 0 > $limit ) {
 
-                return '';
+                return false;
             }
 
             /* Validate $offset */
