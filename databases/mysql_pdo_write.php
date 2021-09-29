@@ -64,7 +64,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             parent::__construct( $pdo_connection );
         }
 
-        /** @method build_update_clause
+        /** @method build_update_statement
          * Creates an UPDATE clause string for use within an update
          * statement. Tables and fields should be validated prior to
          * using this method. It is highly suggested to use PDO parameter
@@ -77,17 +77,21 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          * @param string[] $set_values          // Values sought in SET
          * @return string
          */
-        function build_update_clause(
+        function build_update_statement(
             string $table,
             array $set_fields,
             array $set_values = [],
             $where_fields = [],
             $where_comparison_operators = [],
             $where_values = [],
-            array $where_conditional_operators = ['AND'] ) {
+            array $where_conditional_operators = ['AND'],
+            $order_by_fields = [] ) {
 
             /* Definition ************************************************/
-            $update_clause = '';
+            $update_statement = '';
+            $where_clause;
+            $order_by_clause;
+            $limit_clause;
 
             /* Processing ************************************************/
             /* Build Clause ---------------------------------------------*/
@@ -111,13 +115,31 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
                     && [] !== $where_comparison_operators
                     && [] !== $where_values ) {
 
-                    $update_clause .=
-                        ' '
-                        . $this->build_where_clause(
+                    $where_clause =
+                        $this->build_where_clause(
                             $where_fields,
                             $where_comparison_operators,
                             $where_values,
                             $where_conditional_operators );
+
+                    if ( false !== $where_clause ) {
+
+                        $update_clause .=
+                            ' ' . $where_clause;
+                    }
+                }
+
+                // Conditionally Add ORDER BY Clause
+                if ( [] !== $order_by_fields ) {
+
+                    $order_by_clause =
+                        $this->build_order_by_clause( $order_by_fields );
+
+                    if ( false !== $order_by_clause ) {
+
+                        $update_clause .=
+                            ' ' . $order_by_clause;
+                    }
                 }
             }
 
