@@ -187,19 +187,63 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
         function build_insert_into_statement(
             string $table,
             $set_fields,
-            $set_values = [] ) {
+            $set_values = [],
+            $priority = '',
+            bool $delayed_insert = false,
+            bool $ignore_errors = false ) {
 
             /* Definition ************************************************/
             $insert_into_statement;
             $set_clause;
 
             /* Processing ************************************************/
+            /* Validation ************************************************/
+            /* Validate $priority */
+            if (
+                'low' === strtolower( $priority )
+                || 'low_priority' === strtolower( $priority ) ) {
+
+                $priority = 'LOW_PRIORITY';
+            }
+            elseif (
+                'high' === strtolower( $priority )
+                || 'high_priority' === strtolower( $priority ) ) {
+
+                $priority = 'HIGH_PRIORITY';
+            }
+            else {
+
+                $priority = '';
+            }
+
             /* Build Statement ------------------------------------------*/
             /* Build Statement, If Required Values Exist */
             if ( [] !== $set_fields ) {
 
                 $insert_into_statement =
-                    'INSERT INTO '
+                    'INSERT ';
+
+                // Conditionally Add $priority to Statement
+                if ( '' !== $priority ) {
+
+                    $insert_into_statement .= $priority . ' ';
+                }
+
+                // Conditionally Add DELAYED to Statement
+                if ( true === $delayed_insert ) {
+
+                    $insert_into_statement .= 'DELAYED ';
+                }
+
+                // Conditionally Add DELAYED to Statement
+                if ( true === $ignore_errors ) {
+
+                    $insert_into_statement .= 'IGNORE ';
+                }
+
+                // Add Table Name
+                $insert_into_statement .=
+                    'INTO '
                     . $this->enclose_database_object_names( $table )
                     . ' ';
 
