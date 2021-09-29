@@ -418,7 +418,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
 
             /* Processing ************************************************/
             /* Prepare $value as Class Constant Values */
-            if ( self::DEAFULT_VALUE === $value ) {
+            if ( self::DEFAULT_VALUE === $value ) {
 
                 return $value;
             }
