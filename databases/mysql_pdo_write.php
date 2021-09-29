@@ -258,14 +258,13 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             return $insert_into_clause;
         }
 
-        /** @method build_delete_clause
-         * Creates a DELETE clause string for use within an update
-         * statement. The table should be validated prior to using this
-         * method.
+        /** @method build_delete_statement
+         * Creates a DELETE statement. The table should be validated prior
+         * to using this method.
          * @param string $table
          * @return string
          */
-        function build_delete_clause( string $table ) {
+        function build_delete_statement( string $table ) {
 
             /* Definition ************************************************/
             $delete_clause;
