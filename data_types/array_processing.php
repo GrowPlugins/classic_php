@@ -1,6 +1,11 @@
 <?php
 
-namespace ClassicPHP {
+namespace ClassicPHP;
+
+/**************************************************************************
+ * Class Definition -------------------------------------------------------
+ *************************************************************************/
+if ( ! class_exists( '\ClassicPHP\ArrayProcessing' ) ) {
 
     /** Class: ArrayProcessing
      * Allows you to manipulate arrays easier.
@@ -17,7 +22,9 @@ namespace ClassicPHP {
         /** @method remove_value
          * Removes a single value from an array. Uses unset() if the key
          * is a string, otherwise uses array_splice() to prevent unsetting
-         * the array key altogether for keys of type int.
+         * the array key altogether for keys of type int. Returns empty
+         * array if only array value is null (assumed to be array with
+         * last value removed).
          * @param mixed[] &$array
          * @param mixed string int $key
          * @return mixed[] $array
@@ -44,6 +51,14 @@ namespace ClassicPHP {
             else {
 
                 array_splice( $array, $key, 1 );
+            }
+
+            /* Make Array Empty If Only Remaining Element is Null */
+            if (
+                1 === count( $array )
+                && null === $array[ array_keys( $array )[0] ] ) {
+
+                $array = [];
             }
 
             /* Return ****************************************************/
@@ -291,6 +306,60 @@ namespace ClassicPHP {
 
             /* Return ****************************************************/
             return true;
+        }
+
+        /** @method trim_to_length
+         * Trims the array so that the array is the length specified,
+         * removing all elements after that length.
+         * @param array $array
+         * @param int $index
+         * @return array $array
+         */
+        function trim_to_length( array $array, int $index ) {
+
+            /* Definition ************************************************/
+            $new_array = [];
+
+            /* Processing ************************************************/
+            for ( $i = 0; $i < count( $array ); $i++ ) {
+
+                if ( $index > $i ) {
+
+                    $new_array[] = $array[ $i ];
+                }
+                else {
+
+                    break;
+                }
+            }
+
+            /* Return ****************************************************/
+            return $new_array;
+        }
+
+        /** @method shortest_array_length
+         * Determines which array is the shortest, and returns the length
+         * of that array.
+         * @param array $arrays     // An array of arrays to measure
+         * @return int $shortest_array_length
+         */
+        function shortest_array_length( array $arrays ) {
+
+            /* Definition ************************************************/
+            $shortest_array_length =
+                count( $arrays[ array_key_first( $arrays ) ] );
+
+            /* Processing ************************************************/
+            foreach ( $arrays as $array ) {
+
+                if ( $shortest_array_length > count( $array ) ) {
+
+                    $shortest_array_length = count( $array );
+                }
+            }
+
+            /* Return ****************************************************/
+            return $shortest_array_length;
         }
     }
 }
