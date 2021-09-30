@@ -453,132 +453,6 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
          * General Clause Building Methods
          *---------------------------------------------------------------*/
 
-        /** @method build_where_clause
-         * Creates a WHERE clause string for use within a statement, such
-         * as UPDATE or SELECT. Fields should be validated prior to using
-         * this method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
-         * @param mixed string string[] $fields
-         * @param mixed string string[] $comparison_operators
-         * @param mixed string string[] $values
-         * @param string[] $conditional_operators
-         * @return string
-         */
-        protected function build_where_clause(
-            $fields,
-            $comparison_operators,
-            $values,
-            $conditional_operators = ['AND'] ) {
-
-            /* Definition ************************************************/
-            $where_clause = '';
-            $condition_list_returned_value;
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
-
-                $fields = [ $fields ];
-            }
-
-            /* Force $comparison_operators to be Array */
-            if ( ! is_array( $comparison_operators ) ) {
-
-                $comparison_operators = [ $comparison_operators ];
-            }
-
-            /* Force $values to be Array */
-            if ( ! is_array( $values ) ) {
-
-                $values = [ $values ];
-            }
-
-            /* Force $conditional_operators to be Array */
-            if ( ! is_array( $conditional_operators ) ) {
-
-                $conditional_operators = [ $conditional_operators ];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            $where_clause = 'WHERE ';
-
-            /* Build WHERE Conditions */
-            $condition_list_returned_value = $this->build_condition_list(
-                $fields,
-                $comparison_operators,
-                $values,
-                $conditional_operators );
-
-            if ( false !== $condition_list_returned_value ) {
-
-                $where_clause .= $condition_list_returned_value;
-            }
-            else {
-
-                return false;
-            }
-
-            /* Return ****************************************************/
-            return $where_clause;
-        }
-
-        /** @method build_order_by_clause
-         * Creates a ORDER BY clause string for use within a statement.
-         * Fields should be validated prior to using this method.
-         * @param string[] $fields
-         * @return string
-         */
-        protected function build_order_by_clause(
-            $fields ) {
-
-            /* Definition ************************************************/
-            $order_by_clause = '';
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
-
-                $fields = [ $fields ];
-            }
-
-            /* Validate $fields */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $fields,
-                    'string' ) ) {
-
-                $fields = [];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            /* Process $fields If Fields Exist */
-            if ( [] !== $fields ) {
-
-                $order_by_clause = 'ORDER BY ';
-
-                foreach ( $fields as $key => $field ) {
-
-                    /* Build Fields into ORDER BY Clause */
-                    $order_by_clause .=
-                        $this->enclose_database_object_names(
-                            $field ) . ', ';
-                }
-
-                // Remove Trailing ', '
-                $order_by_clause = substr(
-                    $order_by_clause,
-                    0,
-                    strlen( $order_by_clause ) - 2 );
-            }
-
-            /* Return ****************************************************/
-            return $order_by_clause;
-        }
-
         /** @method build_from_clause
          * Creates a FROM clause string for use within a statement. Does
          * not allow the use of subqueries in the clause. Tables and fields
@@ -719,6 +593,132 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
 
             /* Return ****************************************************/
             return $from_clause;
+        }
+
+        /** @method build_where_clause
+         * Creates a WHERE clause string for use within a statement, such
+         * as UPDATE or SELECT. Fields should be validated prior to using
+         * this method. It is highly suggested to use PDO parameter
+         * placeholders (e.g., ':placeholder') for values, so you can
+         * implement PDO prepared statements. However, this is not
+         * required.
+         * @param mixed string string[] $fields
+         * @param mixed string string[] $comparison_operators
+         * @param mixed string string[] $values
+         * @param string[] $conditional_operators
+         * @return string
+         */
+        protected function build_where_clause(
+            $fields,
+            $comparison_operators,
+            $values,
+            $conditional_operators = ['AND'] ) {
+
+            /* Definition ************************************************/
+            $where_clause = '';
+            $condition_list_returned_value;
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Force $fields to be Array */
+            if ( ! is_array( $fields ) ) {
+
+                $fields = [ $fields ];
+            }
+
+            /* Force $comparison_operators to be Array */
+            if ( ! is_array( $comparison_operators ) ) {
+
+                $comparison_operators = [ $comparison_operators ];
+            }
+
+            /* Force $values to be Array */
+            if ( ! is_array( $values ) ) {
+
+                $values = [ $values ];
+            }
+
+            /* Force $conditional_operators to be Array */
+            if ( ! is_array( $conditional_operators ) ) {
+
+                $conditional_operators = [ $conditional_operators ];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $where_clause = 'WHERE ';
+
+            /* Build WHERE Conditions */
+            $condition_list_returned_value = $this->build_condition_list(
+                $fields,
+                $comparison_operators,
+                $values,
+                $conditional_operators );
+
+            if ( false !== $condition_list_returned_value ) {
+
+                $where_clause .= $condition_list_returned_value;
+            }
+            else {
+
+                return false;
+            }
+
+            /* Return ****************************************************/
+            return $where_clause;
+        }
+
+        /** @method build_order_by_clause
+         * Creates a ORDER BY clause string for use within a statement.
+         * Fields should be validated prior to using this method.
+         * @param string[] $fields
+         * @return string
+         */
+        protected function build_order_by_clause(
+            $fields ) {
+
+            /* Definition ************************************************/
+            $order_by_clause = '';
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Force $fields to be Array */
+            if ( ! is_array( $fields ) ) {
+
+                $fields = [ $fields ];
+            }
+
+            /* Validate $fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $fields,
+                    'string' ) ) {
+
+                $fields = [];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            /* Process $fields If Fields Exist */
+            if ( [] !== $fields ) {
+
+                $order_by_clause = 'ORDER BY ';
+
+                foreach ( $fields as $key => $field ) {
+
+                    /* Build Fields into ORDER BY Clause */
+                    $order_by_clause .=
+                        $this->enclose_database_object_names(
+                            $field ) . ', ';
+                }
+
+                // Remove Trailing ', '
+                $order_by_clause = substr(
+                    $order_by_clause,
+                    0,
+                    strlen( $order_by_clause ) - 2 );
+            }
+
+            /* Return ****************************************************/
+            return $order_by_clause;
         }
 
         /** @method build_limit_clause
