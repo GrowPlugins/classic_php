@@ -186,7 +186,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             string $table,
             $set_fields,
             $set_values = [],
-            $priority = '',
+            string $priority = '',
             bool $delayed_insert = false,
             bool $ignore_errors = false ) {
 
