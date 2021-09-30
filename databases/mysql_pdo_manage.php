@@ -123,7 +123,10 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             /* Validate $data_types */
             $data_types = $this->validate_data_types( $data_types );
 
-            var_dump($data_types);
+            if ( [] === $data_types ) {
+
+                return false;
+            }
 
             /* Validate $field_options */
             if (
@@ -131,7 +134,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
                     $field_options,
                     'string' ) ) {
 
-                $field_options = [];
+                return false;
             }
 
             /* Build Clause ---------------------------------------------*/
