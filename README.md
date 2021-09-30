@@ -3,6 +3,9 @@ A collection of project agnostic helper classes for simplifying every-day tasks.
 
 Official Version: 0.1.2
 
+## Requirements
+* PHP >= 7.4 (Suggested: PHP >= 8.0)
+
 ## Class List
 Classes found in Classic.php include:
 
