@@ -75,29 +75,28 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
             $select_fields,
             string $from_table,
 
-            $where_fields = '',
-            $where_comparison_operators = '',
-            $where_values = '',
-            $group_by_fields = '',
-            $having_fields = '',
-            $having_comparison_operators = '',
-            $having_values = '',
-            $order_by_fields = '',
-            int $limit_limit = -1,
-            int $limit_offset = -1,
-
             $select_functions = [''],
+            bool $select_all = false,
+            bool $select_distinct = false,
+            bool $select_high_priority = false,
+            bool $select_straight_join = false,
             $from_joined_tables = [],
             $from_join_types = [],
             $from_join_on_fields = [],
             $from_join_on_comparisons = [],
             $from_join_on_values = [],
+            $where_fields = '',
+            $where_comparison_operators = '',
+            $where_values = '',
             $where_conditional_operators = ['AND'],
+            $group_by_fields = '',
+            $having_fields = '',
+            $having_comparison_operators = '',
+            $having_values = '',
             $having_conditional_operators = ['AND'],
-            bool $select_all = false,
-            bool $select_distinct = false,
-            bool $select_high_priority = false,
-            bool $select_straight_join = false ) {
+            $order_by_fields = '',
+            int $limit_limit = -1,
+            int $limit_offset = -1 ) {
 
             /* Definition ************************************************/
             $select_statement = '';
