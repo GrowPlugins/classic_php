@@ -89,12 +89,6 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
 
             /* Definition ************************************************/
             $create_table_clause;
-            $mysql_data_types =
-                $this->read_json_file(
-                    CLASSIC_PHP_DIR
-                    . '/classic_php_data_files/mysql_data_types.json' );
-            $data_type_valid = false;
-            $data_type_open_parenthesis_position = 0;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -128,6 +122,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
 
             /* Validate $data_types */
             $data_types = $this->validate_data_types( $data_types );
+
+            var_dump($data_types);
 
             /* Validate $field_options */
             if (
@@ -230,7 +226,9 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
                     CLASSIC_PHP_DIR
                     . '/classic_php_data_files/mysql_data_types.json' );
             $data_type_valid = false;
-            $data_type_open_parenthesis_position = 0;
+            $parenthesis_found = false;
+            $open_parenthesis_position = 0;
+            $data_type_parenthesis_presence = 'not allowed';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -241,48 +239,103 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
                 $data_types = [ $data_types ];
             }
 
-            /* Validate $data_types */
+            /* Validate $data_types -------------------------------------*/
             foreach( $data_types as $key => $data_type ) {
 
                 $data_type_valid = false;
+                $parenthesis_found = false;
+                $data_type_parenthesis_presence = 'not allowed';
 
-                // Force All Data Types to Uppercase
+                /* Force All Data Types to Uppercase */
                 $data_types[ $key ] = strtoupper( $data_types[ $key ] );
 
-                // Compare $data_types to $mysql_data_types
+                // Search in $data_types for '(', Record If Found
+                $open_parenthesis_position =
+                    strpos( $data_types[ $key ], '(' );
+
+                if ( false === $open_parenthesis_position ) {
+
+                    $open_parenthesis_position =
+                        strlen( $data_types[ $key ] );
+                }
+                else {
+                    
+                    $parenthesis_found = true;
+                }
+
+                /* Compare $data_types to $mysql_data_types */
                 foreach( $mysql_data_types as $mysql_data_type ) {
 
-                    // Search in $data_types for '('
-                    $data_type_open_parenthesis_position =
-                        strpos( $data_types[ $key ], '(' );
-
-                    if ( false === $data_type_open_parenthesis_position ) {
-
-                        $data_type_open_parenthesis_position =
-                            strlen( $data_types[ $key ] );
-                    }
-
-                    // Compare Uppercase $data_types to $mysql_data_types
+                    // Compare $data_types to $mysql_data_types->name
                         // Without Parenthesis
                     if (
-                        $mysql_data_type ===
+                        $mysql_data_type->name ===
                             substr(
                                 $data_types[ $key ],
                                 0,
-                                $data_type_open_parenthesis_position ) ) {
+                                $open_parenthesis_position ) ) {
+
+                        $data_type_parenthesis_presence =
+                            $mysql_data_type->parenthesis;
 
                         $data_type_valid = true;
+
+                        break;
+                    }
+
+                    // Compare $data_types to $mysql_data_types->synonyms
+                    else {
+
+                        foreach (
+                            $mysql_data_type->synonyms
+                            as $synonym ) {
+
+                            if (
+                                $synonym ===
+                                    substr(
+                                        $data_types[ $key ],
+                                        0,
+                                        $open_parenthesis_position ) ) {
+        
+                                        $data_type_parenthesis_presence =
+                                            $mysql_data_type->parenthesis;
+                
+                                        $data_type_valid = true;
+                
+                                        break;
+                            }
+                        }
                     }
                 }
 
-                // If No Valid Data Type Found, Mark $data_types Value
+                /* Validate Based on Parenthesis */
+                // Invalidate If Parenthesis Required and Missing
+                if (
+                    $data_type_valid
+                    && 'required' === $data_type_parenthesis_presence
+                    && ! $parenthesis_found ) {
+
+                    $data_type_valid = false;
+                }
+
+                // Invalidate if Paranthesis Not Allowed and Present
+                elseif (
+                    $data_type_valid
+                    && 'not allowed' === $data_type_parenthesis_presence
+                    && $parenthesis_found
+                ) {
+
+                    $data_type_valid = false;
+                }
+
+                /* If No Valid Data Type Found, Mark $data_types Value */
                 if ( ! $data_type_valid ) {
 
                     $this->arrays->mark_value_null( $data_types, $key );
                 }
             }
 
-            // Remove Invalid, Marked, $data_types Values
+            /* Remove All Invalid, Marked, $data_types Values -----------*/
             $this->arrays->remove_null_values( $data_types );
 
             /* Return ****************************************************/

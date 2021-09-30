@@ -1,38 +1,132 @@
 [
-        "INT",
-        "INTEGER",
-        "SMALLINT",
-        "MEDIUMINT",
-        "BIGINT",
+        {
+                "name": "INT",
+                "parenthesis": "optional",
+                "synonyms":
+                [
+                        "INTEGER"
+                ]
+        },
+        {
+                "name": "SMALLINT",
+                "parenthesis": "optional",
+                "synonyms": []
+        },
+        {
+                "name": "MEDIUMINT",
+                "parenthesis": "optional",
+                "synonyms": []
+        },
+        {
+                "name": "BIGINT",
+                "parenthesis": "optional",
+                "synonyms": []
+        },
 
-        "BOOL",
-        "BOOLEAN",
-        "SERIAL",
+        {
+                "name": "BOOL",
+                "parenthesis": "not allowed",
+                "synonyms":
+                [
+                        "BOOLEAN"
+                ]
+        },
+        {
+                "name": "SERIAL",
+                "parenthesis": "not allowed",
+                "synonyms": []
+        },
 
-        "DEC",
-        "DECIMAL",
-        "NUMERIC",
-        "FIXED",
+        {
+                "name": "DEC",
+                "parenthesis": "required",
+                "synonyms":
+                [
+                        "DECIMAL",
+                        "NUMERIC",
+                        "FIXED"
+                ]
+        },
 
-        "FLOAT",
-        "DOUBLE",
-        "REAL",
-        "DOUBLE PRECISION",
+        {
+                "name": "FLOAT",
+                "parenthesis": "required",
+                "synonyms": []
+        },
+        {
+                "name": "DOUBLE",
+                "parenthesis": "required",
+                "synonyms":
+                [
+                        "REAL",
+                        "DOUBLE PRECISION"
+                ]
+        },
 
-        "DATE",
-        "TIME",
-        "DATETIME",
-        "TIMESTAMP",
-        "YEAR",
+        {
+                "name": "DATE",
+                "parenthesis": "not allowed",
+                "synonyms": []
+        },
+        {
+                "name": "TIME",
+                "parenthesis": "not allowed",
+                "synonyms": []
+        },
+        {
+                "name": "DATETIME",
+                "parenthesis": "not allowed",
+                "synonyms": []
+        },
+        {
+                "name": "TIMESTAMP",
+                "parenthesis": "not allowed",
+                "synonyms": []
+        },
+        {
+                "name": "YEAR",
+                "parenthesis": "not allowed",
+                "synonyms": []
+        },
 
-        "CHAR",
-        "VARCHAR",
-        "BINARY",
-        "VARBINARY",
-        "BLOB",
-        "TEXT",
-        "ENUM",
-        "SET",
-
-        "JSON"
+        {
+                "name": "CHAR",
+                "parenthesis": "required",
+                "synonyms": []
+        },
+        {
+                "name": "VARCHAR",
+                "parenthesis": "required",
+                "synonyms": []
+        },
+        {
+                "name": "BINARY",
+                "parenthesis": "required",
+                "synonyms": []
+        },
+        {
+                "name": "VARBINARY",
+                "parenthesis": "required",
+                "synonyms": []
+        },
+        {
+                "name": "BLOB",
+                "parenthesis": "not allowed",
+                "synonyms": []
+        },
+        {
+                "name": "TEXT",
+                "parenthesis": "not allowed",
+                "synonyms": []
+        },
+        {
+                "name": "ENUM",
+                "parenthesis": "required",
+                "synonyms": []
+        },
+        {
+                "name": "SET",
+                "parenthesis": "not allowed",
+                "synonyms": []
+        }
 ]
