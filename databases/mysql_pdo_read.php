@@ -174,21 +174,35 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
             return $selection_clause;
         }
 
+        /******************************************************************
+        * Protected Methods
+        ******************************************************************/
+       
+        /*-----------------------------------------------------------------
+         * Write Clause Building Methods
+         *---------------------------------------------------------------*/
+
         /** @method build_group_by_clause
          * Creates a GROUP BY clause string for use within a selection
          * statement. Fields should be validated prior to using this
          * method.
-         * @param string[] $fields
+         * @param array|string $fields
          * @return string
          */
-        function build_group_by_clause(
-            array $fields ) {
+        protected function build_group_by_clause(
+            $fields ) {
 
             /* Definition ************************************************/
             $group_by_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
+            /* Force $fields to be Array */
+            if ( ! is_array( $fields ) ) {
+
+                $fields = [ $fields ];
+            }
+
             /* Validate $fields */
             if (
                 ! $this->arrays->validate_data_types(
@@ -241,7 +255,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
             $fields,
             $comparison_operators,
             $values,
-            array $conditional_operators = ['AND'] ) {
+            $conditional_operators = ['AND'] ) {
 
             /* Definition ************************************************/
             $having_clause = '';

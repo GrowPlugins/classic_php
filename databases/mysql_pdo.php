@@ -446,82 +446,6 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
         }
 
         /******************************************************************
-        * Private Methods
-        ******************************************************************/
-
-        /** @method validate_argument_return_type
-         * Forces $return_type to be a string with any of the following
-         * values:
-         *      array
-         *      string
-         *      bool
-         *      boolean
-         * @param string $return_type
-         * @return string $return_type
-         */
-        private function validate_argument_return_type(
-            string $return_type ) {
-
-            /* Processing ************************************************/
-            /* Prevent Case Invalidation */
-            $return_type = strtolower( $return_type );
-
-            /* Validate String Value */
-            if (
-                'array' !== $return_type
-                && 'string' !== $return_type
-                && 'bool' !== $return_type
-                && 'boolean' !== $return_type ) {
-
-                $return_type = 'array';
-            }
-
-            /* Return ****************************************************/
-            return $return_type;
-        }
-
-        /** @method validate_argument_values_array
-         * Ensures $values_array is an array, or else an expected
-         * alternative data type. When $return_type is bool, returns false
-         * if $values_array is not an array. When $return_type is string,
-         * returns a string from $values_array.
-         * @param string $return_type
-         * @return string $return_type
-         */
-        private function validate_argument_values_array(
-            $values_array,
-            string $return_type = 'array') {
-
-            /* Processing ************************************************/
-            /* Verify Array if Array */
-            if ( ! is_array( $values_array ) ) {
-
-                // Return False on Invalid Input and Boolean Return Type
-                if (
-                    'bool' === $return_type
-                    || 'boolean' === $return_type ) {
-
-                    return false;
-                }
-
-                // Return String When Invalid Input and String Return Type
-                elseif( 'string' === $return_type ) {
-
-                    return strval( $values_array );
-                }
-
-                // Return Array Otherwise (eg, Invalid Array Return Type)
-                else {
-
-                    return [ $values_array ];
-                }
-            }
-
-            /* Return ****************************************************/
-            return $values_array;
-        }
-
-        /******************************************************************
         * Protected Methods
         ******************************************************************/
        
@@ -1043,6 +967,82 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
 
                 return false;
             }
+        }
+
+        /******************************************************************
+        * Private Methods
+        ******************************************************************/
+
+        /** @method validate_argument_return_type
+         * Forces $return_type to be a string with any of the following
+         * values:
+         *      array
+         *      string
+         *      bool
+         *      boolean
+         * @param string $return_type
+         * @return string $return_type
+         */
+        private function validate_argument_return_type(
+            string $return_type ) {
+
+            /* Processing ************************************************/
+            /* Prevent Case Invalidation */
+            $return_type = strtolower( $return_type );
+
+            /* Validate String Value */
+            if (
+                'array' !== $return_type
+                && 'string' !== $return_type
+                && 'bool' !== $return_type
+                && 'boolean' !== $return_type ) {
+
+                $return_type = 'array';
+            }
+
+            /* Return ****************************************************/
+            return $return_type;
+        }
+
+        /** @method validate_argument_values_array
+         * Ensures $values_array is an array, or else an expected
+         * alternative data type. When $return_type is bool, returns false
+         * if $values_array is not an array. When $return_type is string,
+         * returns a string from $values_array.
+         * @param string $return_type
+         * @return string $return_type
+         */
+        private function validate_argument_values_array(
+            $values_array,
+            string $return_type = 'array') {
+
+            /* Processing ************************************************/
+            /* Verify Array if Array */
+            if ( ! is_array( $values_array ) ) {
+
+                // Return False on Invalid Input and Boolean Return Type
+                if (
+                    'bool' === $return_type
+                    || 'boolean' === $return_type ) {
+
+                    return false;
+                }
+
+                // Return String When Invalid Input and String Return Type
+                elseif( 'string' === $return_type ) {
+
+                    return strval( $values_array );
+                }
+
+                // Return Array Otherwise (eg, Invalid Array Return Type)
+                else {
+
+                    return [ $values_array ];
+                }
+            }
+
+            /* Return ****************************************************/
+            return $values_array;
         }
     }
 }
