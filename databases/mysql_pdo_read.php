@@ -63,115 +63,133 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
             parent::__construct( $pdo_connection );
         }
 
-        /** @method build_select_clause
-         * Creates a SELECT clause string for use within a selection
-         * statement. Does not allow the use of subqueries in the clause.
-         * Fields should be validated prior to using this method.
+        /** @method build_select_statement
+         * Creates a SELECT statement string. Does not allow the use of
+         * subqueries in the clause. Fields should be validated prior to
+         * using this method.
          * @param string[] $fields
-         * @param mixed string[] string $functions
+         * @param  string $functions
          * @return string
          */
-        function build_select_clause(
-            array $fields,
-            $functions = [''] ) {
+        function build_select_statement(
+            $select_fields,
+            string $from_table,
+
+            $where_fields = '',
+            $where_comparison_operators = '',
+            $where_values = '',
+            $group_by_fields = '',
+            $having_fields = '',
+            $having_comparison_operators = '',
+            $having_values = '',
+            $order_by_fields = '',
+            int $limit_limit = -1,
+            int $limit_offset = -1,
+
+            $select_functions = [''],
+            $from_joined_tables = [],
+            $from_join_types = [],
+            $from_join_on_fields = [],
+            $from_join_on_comparisons = [],
+            $from_join_on_values = [],
+            $where_conditional_operators = ['AND'],
+            $having_conditional_operators = ['AND'],
+            bool $select_all = false,
+            bool $select_distinct = false,
+            bool $select_high_priority = false,
+            bool $select_straight_join = false ) {
 
             /* Definition ************************************************/
-            $selection_clause = '';
+            $select_statement = '';
 
             /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Validate $fields */
+            /* Build Statement ------------------------------------------*/
+            $select_statement =
+                $this->build_select_clause(
+                    $select_fields,
+                    $select_functions,
+                    $select_all,
+                    $select_distinct,
+                    $select_high_priority,
+                    $select_straight_join )
+                . ' ';
+
+            $select_statement .=
+                $this->build_from_clause(
+                    $from_table,
+                    $from_joined_tables,
+                    $from_join_types,
+                    $from_join_on_fields,
+                    $from_join_on_comparisons,
+                    $from_join_on_values )
+                . ' ';
+
+            /* Conditionally Add WHERE Clause */
             if (
-                ! $this->arrays->validate_data_types(
-                    $fields,
-                    'string' ) ) {
+                '' !== $where_fields
+                && '' !== $where_comparison_operators
+                && '' !== $where_values ) {
 
-                $fields = [];
+                $select_statement .=
+                    $this->build_where_clause(
+                        $where_fields,
+                        $where_comparison_operators,
+                        $where_values,
+                        $where_conditional_operators )
+                    . ' ';
             }
 
-            /* Validate $functions */
-            $functions = $this->remove_invalid_functions( $functions );
+            /* Conditionally Add GROUP BY Clause */
+            if ( '' !== $group_by_fields ) {
 
-            if ( false === $functions ) {
-
-                $functions = [''];
+                $select_statement .=
+                    $this->build_group_by_clause( $group_by_fields )
+                    . ' ';
             }
 
-            /* Build Clause ---------------------------------------------*/
-            $selection_clause = 'SELECT ';
+            /* Conditionally Add HAVING Clause */
+            if (
+                '' !== $group_by_fields
+                && '' !== $having_fields
+                && '' !== $having_comparison_operators
+                && '' !== $having_values ) {
 
-            /* Process $fields If Fields Exist */
-            if ( [] !== $fields ) {
-
-                foreach ( $fields as $key => $field ) {
-
-                    /* Build Fields into SELECT Clause */
-                    // Add Field with Valid Function
-                    if (
-                        array_key_exists( $key, $functions )
-                        && '' !== $functions[ $key ] ) {
-
-                        $selection_clause .=
-                            $functions[ $key ] . '(';
-
-                        if ( '*' === $field ) {
-
-                            $selection_clause .=
-                                $field . '), ';
-                        }
-                        else {
-
-                            $selection_clause .=
-                                $this->enclose_database_object_names(
-                                    $field ) . '), ';
-                        }
-                    }
-
-                    // Add Field without Function
-                    else {
-
-                        if ( '*' === $field ) {
-
-                            $selection_clause .=
-                                $field . ', ';
-                        }
-                        else {
-
-                            $selection_clause .=
-                                $this->enclose_database_object_names(
-                                    $field ) . ', ';
-                        }
-                    }
-
-                    /* Handle Case where '*' is Now in SELECT Clause */
-                    if ( '*' === $field ) {
-
-                        if ( $key === array_key_first( $fields ) ) {
-
-                            break;
-                        }
-                        else {
-
-                            return false;
-                        }
-                    }
-                }
-
-                // Remove Trailing ', '
-                $selection_clause = substr(
-                    $selection_clause,
-                    0,
-                    strlen( $selection_clause ) - 2 );
+                $select_statement .=
+                    $this->build_having_clause(
+                        $having_fields,
+                        $having_comparison_operators,
+                        $having_values,
+                        $having_conditional_operators )
+                    . ' ';
             }
 
-            /* If No Fields, If Invalidated $fields Array, Use '*' */
-            else {
+            /* Conditionally Add ORDER BY Clause */
+            if ( '' !== $order_by_fields ) {
 
-                $selection_clause .= '*';
+                $select_statement .=
+                    $this->build_order_by_clause(
+                        $order_by_fields )
+                    . ' ';
             }
+
+            /* Conditionally Add LIMIT Clause */
+            if ( 0 <= $limit_limit ) {
+
+                $select_statement .=
+                    $this->build_limit_clause(
+                        $limit_limit,
+                        $limit_offset )
+                    . ' ';
+            }
+
+            /* Remove Trailing Space ------------------------------------*/
+            $select_statement = substr(
+                $select_statement,
+                0,
+                strlen( $select_statement ) - 1 );
 
             /* Return ****************************************************/
-            return $selection_clause;
+            return $select_statement;
         }
 
         /******************************************************************
@@ -251,7 +269,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
          * @return string
          * @return false
          */
-        function build_having_clause(
+        protected function build_having_clause(
             $fields,
             $comparison_operators,
             $values,
@@ -280,6 +298,158 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
         /******************************************************************
         * Private Methods
         ******************************************************************/
+
+        /*-----------------------------------------------------------------
+         * Clause Building Methods
+         *---------------------------------------------------------------*/
+
+        /** @method build_select_clause
+         * Creates a SELECT clause string for use in a SELECT statement.
+         * Does not allow the use of subqueries in the clause. Fields
+         * should be validated prior to using this method.
+         * @param string[] $fields
+         * @param  string $functions
+         * @return string
+         */
+        private function build_select_clause(
+            $fields,
+            $functions = [''],
+            bool $all = false,
+            bool $distinct = false,
+            bool $high_priority = false,
+            bool $straight_join = false ) {
+
+            /* Definition ************************************************/
+            $select_clause = '';
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Force $fields to be Array */
+            if ( ! is_array( $fields ) ) {
+
+                $fields = [ $fields ];
+            }
+            
+            /* Force $functions to be Array */
+            if ( ! is_array( $functions ) ) {
+
+                $functions = [ $functions ];
+            }
+
+            /* Validate $fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $fields,
+                    'string' ) ) {
+
+                $fields = [];
+            }
+
+            /* Validate $functions */
+            $functions = $this->remove_invalid_functions( $functions );
+
+            if ( false === $functions ) {
+
+                $functions = [''];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $select_clause = 'SELECT ';
+
+            /* Conditionally Add SELECT Clause Options */
+            if ( $all ) {
+
+                $select_clause .= 'ALL ';
+            }
+
+            if ( $distinct ) {
+
+                $select_clause .= 'DISTINCT ';
+            }
+
+            if ( $high_priority ) {
+
+                $select_clause .= 'HIGH_PRIORITY ';
+            }
+
+            if ( $straight_join ) {
+
+                $select_clause .= 'STRAIGHT_JOIN ';
+            }
+
+            /* Process $fields If Fields Exist */
+            if ( [] !== $fields ) {
+
+                foreach ( $fields as $key => $field ) {
+
+                    /* Build Fields into SELECT Clause */
+                    // Add Field with Valid Function
+                    if (
+                        array_key_exists( $key, $functions )
+                        && '' !== $functions[ $key ] ) {
+
+                        $select_clause .=
+                            $functions[ $key ] . '(';
+
+                        if ( '*' === $field ) {
+
+                            $select_clause .=
+                                $field . '), ';
+                        }
+                        else {
+
+                            $select_clause .=
+                                $this->enclose_database_object_names(
+                                    $field ) . '), ';
+                        }
+                    }
+
+                    // Add Field without Function
+                    else {
+
+                        if ( '*' === $field ) {
+
+                            $select_clause .=
+                                $field . ', ';
+                        }
+                        else {
+
+                            $select_clause .=
+                                $this->enclose_database_object_names(
+                                    $field ) . ', ';
+                        }
+                    }
+
+                    /* Handle Case where '*' is Now in SELECT Clause */
+                    if ( '*' === $field ) {
+
+                        if ( $key === array_key_first( $fields ) ) {
+
+                            break;
+                        }
+                        else {
+
+                            return false;
+                        }
+                    }
+                }
+
+                // Remove Trailing ', '
+                $select_clause = substr(
+                    $select_clause,
+                    0,
+                    strlen( $select_clause ) - 2 );
+            }
+
+            /* If No Fields, If Invalidated $fields Array, Use '*' */
+            else {
+
+                $select_clause .= '*';
+            }
+
+            /* Return ****************************************************/
+            return $select_clause;
+        }
 
         /*-----------------------------------------------------------------
          * Class-Specific Utility Methods
