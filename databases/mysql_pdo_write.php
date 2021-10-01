@@ -33,7 +33,7 @@ require_once( __DIR__ . '/mysql_pdo.php' );
         (fields)
         VALUES (values)
 
-        DELETE table
+        DELETE FROM table
         WHERE field = value
 */
 

@@ -39,7 +39,7 @@ require_once( __DIR__ . '/mysql_pdo.php' );
         |
         [RENAME TO tableName]
 
-        DROP table
+        DROP TABLE table
 */
 
 /**************************************************************************
