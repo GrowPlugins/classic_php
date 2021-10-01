@@ -422,6 +422,15 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
 
                 return $value;
             }
+            
+            /* Prepare $value Where PDO Placeholder is Used */
+            elseif(
+                is_string( $value )
+                && ':' === $value[0]
+                || '?' === $value ) {
+
+                return $value;
+            }
 
             /* Prepare $value Based on Data Type */
             elseif( is_string( $value ) ) {
@@ -462,6 +471,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             /* Definition ************************************************/
             $pdo_statement;
             $pdo_value_type;
+
+            var_dump($fields_to_bind);
 
             /* Processing ************************************************/
             /* Prepare Query --------------------------------------------*/
