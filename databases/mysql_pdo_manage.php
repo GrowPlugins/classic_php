@@ -69,18 +69,21 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             parent::__construct( $pdo_connection );
         }
 
-        /** @method build_create_table_clause
-         * Creates a CREATE clause string. It is highly suggested to use
-         * PDO parameter placeholders (e.g., ':placeholder') for values,
-         * so you can implement PDO prepared statements. However, this is
-         * not required.
-         * @param mixed string string[] $fields
-         * @param mixed string string[] $comparison_operators
-         * @param mixed string string[] $values
-         * @param string[] $conditional_operators
+        /** @method build_create_table_statement
+         * Creates a CREATE TABLE statement string. $field_options are not
+         * validated for SQL validity, so be sure you pass the right
+         * field options. It is highly suggested to use PDO parameter
+         * placeholders (e.g., ':placeholder') for values, so you can
+         * implement PDO prepared statements. However, this is not
+         * required.
+         * @param string $table
+         * @param mixed string|array $fields
+         * @param mixed string|array $data_types
+         * @param mixed string|array $field_options
+         * @param bool $check_existence
          * @return string
          */
-        function build_create_table_clause(
+        function build_create_table_statement(
             string $table,
             $fields,
             $data_types,
@@ -121,7 +124,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             }
 
             /* Validate $data_types */
-            $data_types = $this->validate_data_types( $data_types );
+            $data_types = $this->validate_sql_data_types( $data_types );
 
             if ( [] === $data_types ) {
 
@@ -164,7 +167,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
                     if ( array_key_exists( $key, $field_options ) ) {
 
                         $create_table_clause .=
-                            ' ' . $field_options[ $key ];
+                            ' ' . strtoupper( $field_options[ $key ] );
                     }
 
                     $create_table_clause .= ', ';
@@ -213,15 +216,15 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
          * General Validation/Building Methods
          *---------------------------------------------------------------*/
 
-        /** @method validate_data_types
-         * Ensures the data type(s) provided 
+        /** @method validate_sql_data_types
+         * Ensures the data type(s) provided are valid SQL data types.
          * @param mixed string string[] $fields
          * @param mixed string string[] $comparison_operators
          * @param mixed string string[] $values
          * @param string[] $conditional_operators
          * @return string
          */
-        private function validate_data_types( $data_types ) {
+        private function validate_sql_data_types( $data_types ) {
 
             /* Definition ************************************************/
             $mysql_data_types =
