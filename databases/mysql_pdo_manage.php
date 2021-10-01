@@ -33,7 +33,8 @@ require_once( __DIR__ . '/mysql_pdo.php' );
         [ADD fieldName fieldDefinition [FIRST | AFTER fieldName]][,
         [MODIFY fieldName fieldDefinition [FIRST | AFTER fieldName]]]
         |
-        [CHANGE COLUMN originalFieldName newFieldName fieldDefinition [FIRST | AFTER fieldName]]
+        [CHANGE COLUMN originalFieldName newFieldName fieldDefinition
+            [FIRST | AFTER fieldName]]
         |
         [DROP COLUMN fieldName]
         |
@@ -194,6 +195,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
          */
         function build_alter_table_statement(
             $table,
+            $alter_specification_names,
             $alter_specifications,
             bool $check_existence = false,
             int $wait = -1,
@@ -204,24 +206,15 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
 
             /* Processing ************************************************/
             /* Validation ************************************************/
-            /* Force Parameters to be Arrays */
-            // Force $alter_specifications to be Array
-            if ( ! is_array( $alter_specifications ) ) {
+            /* Validate Alter Specifications */
+            $alter_specification_names =
+                $this->validate_sql_alter_specifications(
+                    $alter_specification_names,
+                    $alter_specifications );
 
-                $alter_specifications = [ $alter_specifications ];
-            }
-
-            /* Validate $alter_specifications */
             if (
-                ! $this->arrays->validate_data_types(
-                    $alter_specifications,
-                    'string' ) ) {
-
-                return false;
-            }
-            elseif (
-                [] === $alter_specifications
-                || empty( $alter_specifications ) ) {
+                [] === $alter_specification_names
+                || empty( $alter_specification_names ) ) {
 
                 return false;
             }
@@ -250,13 +243,15 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             elseif ( $no_wait ) {
 
                 $alter_table_statement .=
-                    'NO WAIT ';
+                    'NOWAIT ';
             }
 
             /* Add Alter Specifications */
-            foreach ( $alter_specifications as $specification ) {
+            foreach ( $alter_specification_names as $key => $name ) {
 
-                $alter_table_statement .= $specification . ', ';
+                $alter_table_statement .=
+                    $alter_specification_names[ $key ] . ' '
+                    . $alter_specifications[ $key ] . ', ';
             }
 
             // Remove Trailing ', '
@@ -551,6 +546,113 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
 
             /* Return ****************************************************/
             return $data_types;
+        }
+
+        /** @method validate_sql_alter_specifications
+         * Validates the ALTER TABLE specifications provided are valid.
+         * @param mixed string string[] $fields
+         * @param mixed string string[] $comparison_operators
+         * @param mixed string string[] $values
+         * @param string[] $conditional_operators
+         * @return string
+         */
+        private function validate_sql_alter_specifications(
+            $alter_table_action_keywords,
+            $alter_table_actions ) {
+
+            /* Definition ************************************************/
+            $mysql_alter_table_action_keywords =
+                $this->read_json_file(
+                    CLASSIC_PHP_DIR
+                    . '/classic_php_data_files/'
+                    . 'mysql_alter_table_action_keywords.json' );
+            $is_action_valid = false;
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Force Parameters to be Arrays */
+            // Force $alter_table_action_keywords to be Array
+            if ( ! is_array( $alter_table_action_keywords ) ) {
+
+                $alter_table_action_keywords =
+                    [ $alter_table_action_keywords ];
+            }
+            
+            // Force $alter_table_actions to be Array
+            if ( ! is_array( $alter_table_actions ) ) {
+
+                $alter_table_actions = [ $alter_table_actions ];
+            }
+
+            /* Validate $alter_table_action_keywords */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $alter_table_action_keywords,
+                    'string' ) ) {
+
+                return false;
+            }
+            elseif (
+                [] === $alter_table_action_keywords
+                || empty( $alter_table_action_keywords ) ) {
+
+                return false;
+            }
+            
+            /* Validate $alter_table_actions */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $alter_table_actions,
+                    'string' ) ) {
+
+                return false;
+            }
+            elseif (
+                [] === $alter_table_actions
+                || empty( $alter_table_actions ) ) {
+
+                return false;
+            }
+
+            /* Validate $alter_table_action -----------------------------*/
+            foreach( $alter_table_action_keywords as $key => $keyword ) {
+
+                $is_action_valid = false;
+                
+                /* Force All Action Keywords to Uppercase */
+                $alter_table_action_keywords[ $key ] =
+                    strtoupper( $keyword );
+
+                /* Compare $data_types to $mysql_data_types */
+                foreach(
+                    $mysql_alter_table_action_keywords
+                    as $sql_action ) {
+
+                    if (
+                        $alter_table_action_keywords[ $key ] ===
+                            strtoupper( $sql_action ) ) {
+
+                        $is_action_valid = true;
+
+                        break;
+                    }
+                }
+
+                /* If No Valid Data Type Found, Mark $data_types Value */
+                if ( ! $is_action_valid ) {
+
+                    $this->arrays->mark_value_null(
+                        $alter_table_action_keywords,
+                        $key );
+                }
+            }
+
+            /* Remove All Invalid, Marked, $data_types Values -----------*/
+            $this->arrays->remove_null_values(
+                $alter_table_action_keywords );
+
+            /* Return ****************************************************/
+            return $alter_table_action_keywords;
         }
     }
 }
