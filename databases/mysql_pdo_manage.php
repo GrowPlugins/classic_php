@@ -91,7 +91,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             bool $check_existence = false ) {
 
             /* Definition ************************************************/
-            $create_table_clause;
+            $create_table_statement;
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -141,17 +141,17 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             }
 
             /* Build Clause ---------------------------------------------*/
-            $create_table_clause = 'CREATE TABLE ';
+            $create_table_statement = 'CREATE TABLE ';
 
             if ( $check_existence ) {
 
-                $create_table_clause .= 'IF NOT EXISTS ';
+                $create_table_statement .= 'IF NOT EXISTS ';
             }
 
-            $create_table_clause .= $table;
+            $create_table_statement .= $table;
 
             /* Build Fields List */
-            $create_table_clause .= ' (';
+            $create_table_statement .= ' (';
 
             foreach ( $fields as $key => $field ) {
 
@@ -159,31 +159,31 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
                     array_key_exists( $key, $fields )
                     && array_key_exists( $key, $data_types ) ) {
 
-                    $create_table_clause .=
+                    $create_table_statement .=
                         $this->enclose_database_object_names(
                             $fields[ $key ] )
                         . ' ' . $data_types[ $key ];
 
                     if ( array_key_exists( $key, $field_options ) ) {
 
-                        $create_table_clause .=
+                        $create_table_statement .=
                             ' ' . strtoupper( $field_options[ $key ] );
                     }
 
-                    $create_table_clause .= ', ';
+                    $create_table_statement .= ', ';
                 }
             }
 
             // Remove Trailing ', '
-            $create_table_clause = substr(
-                $create_table_clause,
+            $create_table_statement = substr(
+                $create_table_statement,
                 0,
-                strlen( $create_table_clause ) - 2 );
+                strlen( $create_table_statement ) - 2 );
 
-            $create_table_clause .= ')';
+            $create_table_statement .= ')';
 
             /* Return ****************************************************/
-            return $create_table_clause;
+            return $create_table_statement;
         }
 
         /** @method build_delete_clause
