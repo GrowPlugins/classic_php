@@ -251,8 +251,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
                 // Add Table Name
                 $insert_into_statement .=
                     'INTO '
-                    . $this->enclose_database_object_names( $table )
-                    . ' ';
+                    . $this->enclose_database_object_names( $table );
 
                 // Add SET Clause
                 $set_clause =
