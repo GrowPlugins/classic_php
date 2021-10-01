@@ -229,9 +229,12 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
                     CLASSIC_PHP_DIR
                     . '/classic_php_data_files/mysql_data_types.json' );
             $data_type_valid = false;
-            $parenthesis_found = false;
+            $open_parenthesis_found = false;
+            $close_parenthesis_found = false;
             $open_parenthesis_position = 0;
-            $data_type_parenthesis_presence = 'not allowed';
+            $close_parenthesis_position = 0;
+            $parentheses_position = 0;
+            $data_type_parentheses_presence = 'not allowed';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
@@ -246,24 +249,64 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             foreach( $data_types as $key => $data_type ) {
 
                 $data_type_valid = false;
-                $parenthesis_found = false;
-                $data_type_parenthesis_presence = 'not allowed';
+                $data_type_parentheses_presence = 'not allowed';
 
                 /* Force All Data Types to Uppercase */
                 $data_types[ $key ] = strtoupper( $data_types[ $key ] );
 
-                // Search in $data_types for '(', Record If Found
+                /* Search in $data_types for Parenthesis */
                 $open_parenthesis_position =
                     strpos( $data_types[ $key ], '(' );
+                
+                $close_parenthesis_position =
+                    strpos( $data_types[ $key ], ')' );
 
-                if ( false === $open_parenthesis_position ) {
+                // Record If Parenthesis Found
+                if ( false !== $open_parenthesis_position ) {
 
-                    $open_parenthesis_position =
-                        strlen( $data_types[ $key ] );
+                    $open_parenthesis_found = true;
                 }
+
+                if ( false !== $close_parenthesis_position ) {
+
+                    $close_parenthesis_found = true;
+                }
+
+                // Record Where Parentheses Begin
+                // Open Parenthesis Comes First
+                if (
+                    $open_parenthesis_found
+                    && $close_parenthesis_found
+                    && $close_parenthesis_position > $open_parenthesis_position ) {
+
+                    $parentheses_position = $open_parenthesis_position;
+                }
+
+                // Closed Parenthesis Comes First
+                elseif (
+                    $open_parenthesis_found
+                    && $close_parenthesis_found ) {
+
+                    $parentheses_position = $close_parenthesis_position;
+                }
+
+                // Only Open Parenthesis Found
+                elseif ( $open_parenthesis_found ) {
+
+                    $parentheses_position = $open_parenthesis_position;
+                }
+
+                // Only Close Parenthesis Found
+                elseif ( $close_parenthesis_found ) {
+
+                    $parentheses_position = $close_parenthesis_position;
+                }
+
+                // No Parenthesis Found
                 else {
-                    
-                    $parenthesis_found = true;
+
+                    $parentheses_position =
+                        strlen( $data_types[ $key ] );
                 }
 
                 /* Compare $data_types to $mysql_data_types */
@@ -276,9 +319,9 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
                             substr(
                                 $data_types[ $key ],
                                 0,
-                                $open_parenthesis_position ) ) {
+                                $parentheses_position ) ) {
 
-                        $data_type_parenthesis_presence =
+                        $data_type_parentheses_presence =
                             $mysql_data_type->parenthesis;
 
                         $data_type_valid = true;
@@ -300,7 +343,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
                                         0,
                                         $open_parenthesis_position ) ) {
         
-                                        $data_type_parenthesis_presence =
+                                        $data_type_parentheses_presence =
                                             $mysql_data_type->parenthesis;
                 
                                         $data_type_valid = true;
@@ -311,24 +354,66 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
                     }
                 }
 
-                /* Validate Based on Parenthesis */
-                // Invalidate If Parenthesis Required and Missing
-                if (
-                    $data_type_valid
-                    && 'required' === $data_type_parenthesis_presence
-                    && ! $parenthesis_found ) {
+                /* Validate Based on Parentheses */
+                if ( $data_type_valid ) {
 
-                    $data_type_valid = false;
-                }
+                    // Invalidate If Parentheses Required and Missing Open
+                    if (
+                        'required' === $data_type_parentheses_presence
+                        && ! $open_parenthesis_found ) {
 
-                // Invalidate if Paranthesis Not Allowed and Present
-                elseif (
-                    $data_type_valid
-                    && 'not allowed' === $data_type_parenthesis_presence
-                    && $parenthesis_found
-                ) {
+                        $data_type_valid = false;
+                    }
+                    
+                    // Invalidate If Parentheses Required and Missing Close
+                    elseif (
+                        'required' === $data_type_parentheses_presence
+                        && ! $close_parenthesis_found ) {
 
-                    $data_type_valid = false;
+                        $data_type_valid = false;
+                    }
+
+                    // Invalidate if Parantheses Not Allowed and Open Present
+                    elseif (
+                        'not allowed' === $data_type_parentheses_presence
+                        && $open_parenthesis_found ) {
+
+                        $data_type_valid = false;
+                    }
+
+                    // Invalidate if Parantheses Not Allowed and Close Present
+                    elseif (
+                        'not allowed' === $data_type_parentheses_presence
+                        && $close_parenthesis_found ) {
+
+                        $data_type_valid = false;
+                    }
+
+                    // Invalidate if Open Paranthesis Present Without Close
+                    elseif (
+                        $open_parenthesis_found
+                        && ! $close_parenthesis_found ) {
+
+                        $data_type_valid = false;
+                    }
+
+                    // Invalidate if Close Paranthesis Present Without Open
+                    elseif (
+                        $close_parenthesis_found
+                        && ! $open_parenthesis_found ) {
+
+                        $data_type_valid = false;
+                    }
+
+                    // Invalidate if Parantheses Present and in Wrong Order
+                    elseif (
+                        $open_parenthesis_found
+                        && $close_parenthesis_found
+                        && $close_parenthesis_position
+                                < $open_parenthesis_position ) {
+
+                        $data_type_valid = false;
+                    }
                 }
 
                 /* If No Valid Data Type Found, Mark $data_types Value */
