@@ -266,21 +266,96 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          * Creates a DELETE statement. The table should be validated prior
          * to using this method.
          * @param string $table
+         * @param string|array $where_fields
+         * @param string|array $where_comparison_operators
+         * @param string|array $where_values
+         * @param string|array $where_conditional_operators
+         * @param string|array $order_by_fields
+         * @param int $limit_limit
+         * @param int $limit_offset
+         * @param bool $low_priority
+         * @param bool $quick
+         * @param bool $ignore
          * @return string
          */
-        function build_delete_statement( string $table ) {
+        function build_delete_statement(
+            string $table,
+            $where_fields = '',
+            $where_comparison_operators = '',
+            $where_values = '',
+            $where_conditional_operators = ['AND'],
+            $order_by_fields = '',
+            int $limit_limit = -1,
+            int $limit_offset = -1,
+            bool $low_priority = false,
+            bool $quick = false,
+            bool $ignore = false ) {
 
             /* Definition ************************************************/
-            $delete_clause;
+            $delete_statement;
 
             /* Processing ************************************************/
             /* Build Clause ---------------------------------------------*/
-            $delete_clause =
-                'DELETE '
+            $delete_statement =
+                'DELETE ';
+
+            /* Conditionally Add DELETE Options */
+            if ( $low_priority ) {
+
+                $delete_statement .= 'LOW_PRIORITY ';
+            }
+
+            if ( $quick ) {
+
+                $delete_statement .= 'QUICK ';
+            }
+
+            if ( $ignore ) {
+
+                $delete_statement .= 'IGNORE ';
+            }
+
+            /* Add Selected Table to Statement */
+            $delete_statement .=
+                'FROM '
                 . $this->enclose_database_object_names( $table );
 
+            /* Conditionally Add WHERE Clause */
+            if (
+                '' !== $where_fields
+                || '' !== $where_comparison_operators
+                || '' !== $where_values ) {
+
+                $delete_statement .=
+                    ' '
+                    . $this->build_where_clause(
+                        $where_fields,
+                        $where_comparison_operators,
+                        $where_values,
+                        $where_conditional_operators );
+            }
+
+            /* Conditionally Add ORDER BY Clause */
+            if ( '' !== $order_by_fields ) {
+
+                $delete_statement .=
+                    ' '
+                    . $this->build_order_by_clause(
+                        $order_by_fields );
+            }
+
+            /* Conditionally Add LIMIT Clause */
+            if ( -1 < $limit_limit ) {
+
+                $delete_statement .=
+                    ' '
+                    . $this->build_limit_clause(
+                        $limit_limit,
+                        $limit_offset );
+            }
+
             /* Return ****************************************************/
-            return $delete_clause;
+            return $delete_statement;
         }
 
         /******************************************************************
