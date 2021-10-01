@@ -98,7 +98,9 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             /* Processing ************************************************/
             /* Build Statement ------------------------------------------*/
             /* Build Statement, If Required Values Exist */
-            if ( [] !== $set_fields ) {
+            if (
+                [] !== $set_fields
+                && ! empty( $set_fields ) ) {
 
                 $update_statement =
                     'UPDATE '
@@ -120,8 +122,11 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
                 // Conditionally Add WHERE Clause
                 if (
                     [] !== $where_fields
+                    && ! empty( $where_fields )
                     && [] !== $where_comparison_operators
-                    && [] !== $where_values ) {
+                    && ! empty( $where_comparison_operators )
+                    && [] !== $where_values
+                    && ! empty( $where_values ) ) {
 
                     $where_clause =
                         $this->build_where_clause(
@@ -138,7 +143,9 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
                 }
 
                 // Conditionally Add ORDER BY Clause
-                if ( [] !== $order_by_fields ) {
+                if (
+                    [] !== $order_by_fields 
+                    && ! empty( $order_by_fields ) ) {
 
                     $order_by_clause =
                         $this->build_order_by_clause( $order_by_fields );
@@ -216,7 +223,9 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
 
             /* Build Statement ------------------------------------------*/
             /* Build Statement, If Required Values Exist */
-            if ( [] !== $set_fields ) {
+            if (
+                [] !== $set_fields
+                && ! empty( $set_fields ) ) {
 
                 $insert_into_statement =
                     'INSERT ';

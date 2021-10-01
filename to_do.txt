@@ -24,6 +24,8 @@ the database, such as altering a record.
 - Rename array_processing to just array and start adding methods that
 just use PHP array functions. (Comparable to JavaScript's Array class.)
 - Add a method to array:: which allows you to check the next key value.
+- Add a method to array:: which tests for an empty array (like
+[] === || empty() )
 - Add a string class, and start adding methods that just use PHP string
 functions.  (Comparable to JavaScript's String class.)
 - Add a method to string:: which allows you to replace an occurance of a
