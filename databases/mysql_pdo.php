@@ -509,6 +509,15 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
                 $join_on_values = [ $join_on_values ];
             }
 
+            /* Validate $joined_tables */
+            if (
+                $this->arrays->validate_data_types(
+                    $joined_tables,
+                    'string' ) ) {
+
+                $joined_tables = [];
+            }
+
             /* Validate $join_types */
             if (
                 $this->arrays->validate_data_types(
