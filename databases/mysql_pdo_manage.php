@@ -186,26 +186,62 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             return $create_table_statement;
         }
 
-        /** @method build_delete_clause
-         * Creates a DELETE clause string for use within an update
-         * statement. The table should be validated prior to using this
-         * method.
+        /** @method build_drop_table_statement
+         * Creates a DROP TABLE statement string. The table should be
+         * validated prior to using this method.
          * @param string $table
          * @return string
          */
-        function build_delete_clause( string $table ) {
+        function build_drop_table_statement(
+            $tables,
+            bool $check_existence = false ) {
 
             /* Definition ************************************************/
-            $delete_clause;
+            $drop_table_statement;
 
             /* Processing ************************************************/
+            /* Validation ************************************************/
+            /* Force Parameters to be Arrays */
+            // Force $tables to be Array
+            if ( ! is_array( $tables ) ) {
+
+                $tables = [ $tables ];
+            }
+
+            /* Validate $tables */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $tables,
+                    'string' ) ) {
+
+                return false;
+            }
+
             /* Build Clause ---------------------------------------------*/
-            $delete_clause =
-                'DELETE '
-                . $this->enclose_database_object_names( $table );
+            $drop_table_statement =
+                'DROP TABLE ';
+
+            /* Conditionally Add Table Check */
+            if ( $check_existence ) {
+
+                $drop_table_statement .= 'IF EXISTS ';
+            }
+
+            foreach ( $tables as $table ) {
+
+                $drop_table_statement .=
+                    $this->enclose_database_object_names( $table )
+                    . ', ';
+            }
+
+            // Remove Trailing ', '
+            $drop_table_statement = substr(
+                $drop_table_statement,
+                0,
+                strlen( $drop_table_statement ) - 2 );
 
             /* Return ****************************************************/
-            return $delete_clause;
+            return $drop_table_statement;
         }
 
         /******************************************************************
