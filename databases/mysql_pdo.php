@@ -454,7 +454,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             return self::DEFAULT_VALUE;
         }
 
-        /** @method pdo_execute_safe_query ********************************
+        /** @method execute_safe_query ************************************
          * Uses PDO to prepare the selected query, bind all selected
          * parameters to that query, and then execute that query. Requires
          * that the query uses prepared statement placeholders.
@@ -464,15 +464,13 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
         * @param array $fields_to_bind
         * @return true
         ******************************************************************/
-        function pdo_execute_safe_query(
+        function execute_safe_query(
             string $query,
             array $fields_to_bind ) {
 
             /* Definition ************************************************/
             $pdo_statement;
             $pdo_value_type;
-
-            var_dump($fields_to_bind);
 
             /* Processing ************************************************/
             /* Prepare Query --------------------------------------------*/
