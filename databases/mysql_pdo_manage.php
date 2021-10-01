@@ -186,10 +186,94 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             return $create_table_statement;
         }
 
+        /** @method build_alter_table_statement
+         * Creates an ALTER TABLE statement string. The table should be
+         * validated prior to using this method.
+         * @param string $table
+         * @return string
+         */
+        function build_alter_table_statement(
+            $table,
+            $alter_specifications,
+            bool $check_existence = false,
+            int $wait = -1,
+            bool $no_wait = false ) {
+
+            /* Definition ************************************************/
+            $alter_table_statement;
+
+            /* Processing ************************************************/
+            /* Validation ************************************************/
+            /* Force Parameters to be Arrays */
+            // Force $alter_specifications to be Array
+            if ( ! is_array( $alter_specifications ) ) {
+
+                $alter_specifications = [ $alter_specifications ];
+            }
+
+            /* Validate $alter_specifications */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $alter_specifications,
+                    'string' ) ) {
+
+                return false;
+            }
+            elseif (
+                [] === $alter_specifications
+                || empty( $alter_specifications ) ) {
+
+                return false;
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            $alter_table_statement =
+                'ALTER TABLE ';
+
+            /* Conditionally Add Table Check */
+            if ( $check_existence ) {
+
+                $alter_table_statement .= 'IF EXISTS ';
+            }
+
+            /* Add Table Name */
+            $alter_table_statement .=
+                $this->enclose_database_object_names( $table )
+                . ' ';
+
+            /* Conditionally Add WAIT or NO WAIT */
+            if ( -1 < $wait ) {
+
+                $alter_table_statement .=
+                    'WAIT ' . strval( $wait ) . ' ';
+            }
+            elseif ( $no_wait ) {
+
+                $alter_table_statement .=
+                    'NO WAIT ';
+            }
+
+            /* Add Alter Specifications */
+            foreach ( $alter_specifications as $specification ) {
+
+                $alter_table_statement .= $specification . ', ';
+            }
+
+            // Remove Trailing ', '
+            $alter_table_statement = substr(
+                $alter_table_statement,
+                0,
+                strlen( $alter_table_statement ) - 2 );
+
+            /* Return ****************************************************/
+            return $alter_table_statement;
+        }
+
         /** @method build_drop_table_statement
          * Creates a DROP TABLE statement string. The table should be
          * validated prior to using this method.
          * @param string $table
+         * @param bool $check_existence
          * @return string
          */
         function build_drop_table_statement(
