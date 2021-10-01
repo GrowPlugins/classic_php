@@ -445,6 +445,60 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             return self::DEFAULT_VALUE;
         }
 
+        /** @method pdo_execute_safe_query ********************************
+         * Uses PDO to prepare the selected query, bind all selected
+         * parameters to that query, and then execute that query. Requires
+         * that the query uses prepared statement placeholders.
+         * Returns true on success.
+         *-----------------------------------------------------------------
+        * @param string $query
+        * @param array $fields_to_bind
+        * @return true
+        ******************************************************************/
+        function pdo_execute_safe_query(
+            string $query,
+            array $fields_to_bind ) {
+
+            /* Definition ************************************************/
+            $pdo_statement;
+            $pdo_value_type;
+
+            /* Processing ************************************************/
+            /* Prepare Query --------------------------------------------*/
+            $pdo_statement = $this->pdo->prepare( $query );
+                
+            /* Bind Parameters */
+            // Bind Set Clause Parameters
+            foreach ( $fields_to_bind as $key => $field ) {
+
+                // Determine PDO Value Type
+                if ( is_int( $field ) ) {
+
+                    $pdo_value_type = PDO::PARAM_INT;
+                }
+                elseif ( is_bool( $field ) ) {
+
+                    $pdo_value_type = PDO::PARAM_BOOL;
+                }
+                else {
+
+                    $pdo_value_type = PDO::PARAM_STR;
+                }
+                
+                // Bind Parameter
+                $pdo_statement->bindParam(
+                    ':' . $key,
+                    $fields_to_bind[ $key ],
+                    $pdo_value_type );
+            }
+
+            /* Execute Query --------------------------------------------*/
+            $pdo_statement->execute();
+
+            /* Return ****************************************************/
+            return true;
+        }
+
         /******************************************************************
         * Protected Methods
         ******************************************************************/
