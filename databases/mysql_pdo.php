@@ -526,6 +526,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
          * @param string[] $join_on_fields
          * @param string[] $join_on_comparisons     // Comparison Operators
          * @param string[] $join_on_values          // Values sought in ON
+         * @param bool $use_prepared_statements
          * @return string
          */
         protected function build_from_clause(
@@ -715,7 +716,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             $fields,
             $comparison_operators,
             $values,
-            $conditional_operators = ['AND'] ) {
+            $conditional_operators = ['AND'],
+            bool $use_prepared_statements = false ) {
 
             /* Definition ************************************************/
             $where_clause = '';
@@ -1030,6 +1032,30 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
 
             /* Return ****************************************************/
             return $field_value_list;
+        }
+
+        /** @method create_pdo_placeholder_values
+         * Creates a new array of PDO placeholders in place of the values
+         * found in the provided field. Use this method on an array of
+         * field values, such as in a WHERE statement.
+         * @param string[] $fields
+         * @param string[] $comparison_operators
+         * @param array $values
+         * @param array $logic_operators
+         * @return string
+         * @return false
+         */
+        protected function create_pdo_placeholder_values(
+            array $field_values = [] ) {
+
+            /* Processing ************************************************/
+            foreach ( $field_values as $key => $value ) {
+
+                $field_values[ $key ] = ':' . strval( $key );
+            }
+
+            /* Return ****************************************************/
+            return $field_values;
         }
 
         /*-----------------------------------------------------------------
