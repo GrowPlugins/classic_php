@@ -195,8 +195,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             $set_values = [],
             string $priority = '',
             bool $delayed_insert = false,
-            bool $ignore_errors = false,
-            bool $use_pdo_prepared_statements = false ) {
+            bool $ignore_errors = false ) {
 
             /* Definition ************************************************/
             $insert_into_statement;

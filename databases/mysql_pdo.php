@@ -749,6 +749,12 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
                 $conditional_operators = [ $conditional_operators ];
             }
 
+            /* Conditionally Use PDO Placeholders Instead of Values -----*/
+            if ( $use_prepared_statements ) {
+
+                $values = $this->create_pdo_placeholder_values( $values );
+            }
+
             /* Build Clause ---------------------------------------------*/
             $where_clause = 'WHERE ';
 

@@ -96,7 +96,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
             $having_conditional_operators = ['AND'],
             $order_by_fields = '',
             int $limit_limit = -1,
-            int $limit_offset = -1 ) {
+            int $limit_offset = -1,
+            bool $use_prepared_statements = false ) {
 
             /* Definition ************************************************/
             $select_statement = '';
@@ -134,7 +135,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
                         $where_fields,
                         $where_comparison_operators,
                         $where_values,
-                        $where_conditional_operators )
+                        $where_conditional_operators,
+                        $use_prepared_statements )
                     . ' ';
             }
 
