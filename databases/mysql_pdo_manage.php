@@ -149,7 +149,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
                 $create_table_statement .= 'IF NOT EXISTS ';
             }
 
-            $create_table_statement .= $table;
+            $create_table_statement .=
+                $this->enclose_database_object_names( $table );
 
             /* Build Fields List */
             $create_table_statement .= ' (';
