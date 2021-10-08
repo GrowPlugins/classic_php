@@ -82,9 +82,10 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          * or WHERE values are different. See:
          * https://www.php.net/manual/en/pdo.prepared-statements.php
          * 
-         * Optionally return a query string instead of a
-         * PDOStatement, by setting the $return_string_only argument to
-         * true.
+         * Optionally return a query string by setting the
+         * $return_string_only argument to true. This is optional, instead
+         * of sending a query directly to the database, or returning a
+         * PDOStatement object.
          * 
          * @param string $table
          * @param array $set_fields
@@ -242,9 +243,10 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          * values are different. See:
          * https://www.php.net/manual/en/pdo.prepared-statements.php
          * 
-         * Optionally return a query string instead of a
-         * PDOStatement, by setting the $return_string_only argument to
-         * true.
+         * Optionally return a query string by setting the
+         * $return_string_only argument to true. This is optional, instead
+         * of sending a query directly to the database, or returning a
+         * PDOStatement object.
          * 
          * @param string $table,
          * @param $set_fields,
@@ -380,9 +382,10 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          * values are different. See:
          * https://www.php.net/manual/en/pdo.prepared-statements.php
          * 
-         * Optionally return a query string instead of a
-         * PDOStatement, by setting the $return_string_only argument to
-         * true.
+         * Optionally return a query string by setting the
+         * $return_string_only argument to true. This is optional, instead
+         * of sending a query directly to the database, or returning a
+         * PDOStatement object.
          * 
          * @param string $table
          * @param string|array $where_fields
