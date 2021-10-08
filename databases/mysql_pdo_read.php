@@ -63,10 +63,30 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
             parent::__construct( $pdo_connection );
         }
 
-        /** @method build_select_statement
-         * Creates a SELECT statement string. Does not allow the use of
-         * subqueries in the clause. Fields should be validated prior to
-         * using this method.
+        /** @method select_query
+         * Returns a PDOStatement object for pulling data from the selected
+         * database.
+         * 
+         * After getting a returned PDOStatement object, use one of its
+         * fetch methods to access the selected database data. Note
+         * that if $use_prepared_statements is true (as is highly
+         * recommended), you must use the MySQLPDO::execute_safe_query()
+         * method on the PDOStatement object before you can call any of the
+         * PDOStatement's fetch methods. However, note that with
+         * $use_prepared_statements true, you can store the PDOStatement
+         * object somewhere and simply recall MySQLPDO::execute_safe_query()
+         * and then the PDOStatement's fetch methods each time you want to
+         * query new database data with the same query, where only the WHERE
+         * values are different. See:
+         * https://www.php.net/manual/en/pdo.prepared-statements.php
+         * 
+         * Optionally return a query string instead of a
+         * PDOStatement, by setting the $return_string_only argument to
+         * true.
+         * 
+         * The existence of fields in the selected table should be
+         * verified prior to using this method.
+         * 
          * @param $select_fields,
          * @param string $from_table,
          *
@@ -92,10 +112,11 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
          * @param $order_by_fields
          * @param int $limit_limit
          * @param int $limit_offset
+         * @param bool $return_string_only
          * @param bool $use_prepared_statements
-         * @return string
+         * @return PDOStatement|false|string
          */
-        function build_select_statement(
+        function select_query(
             $select_fields,
             string $from_table,
 
@@ -121,6 +142,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
             $order_by_fields = '',
             int $limit_limit = -1,
             int $limit_offset = -1,
+            bool $return_string_only = false,
             bool $use_prepared_statements = false ) {
 
             /* Definition ************************************************/
@@ -219,7 +241,14 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
                 strlen( $select_statement ) - 1 );
 
             /* Return ****************************************************/
-            return $select_statement;
+            if ( $return_string_only ) {
+
+                return $select_statement;
+            }
+            else {
+
+                return $this->pdo->query( $select_statement );
+            }
         }
 
         /******************************************************************
