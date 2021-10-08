@@ -74,10 +74,10 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
          * method on the PDOStatement object before you can call any of the
          * PDOStatement's fetch methods. However, note that with
          * $use_prepared_statements true, you can store the PDOStatement
-         * object somewhere and simply recall MySQLPDO::execute_safe_query()
-         * and then the PDOStatement's fetch methods each time you want to
-         * query new database data with the same query, where only the WHERE
-         * values are different. See:
+         * object somewhere and simply re-call
+         * MySQLPDO::execute_safe_query() and then the PDOStatement's
+         * fetch methods each time you want to query new database data with
+         * the same query, where only the WHERE values are different. See:
          * https://www.php.net/manual/en/pdo.prepared-statements.php
          * 
          * Optionally return a query string instead of a
