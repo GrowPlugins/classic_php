@@ -64,19 +64,43 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             parent::__construct( $pdo_connection );
         }
 
-        /** @method build_update_statement
-         * Creates an UPDATE statement string. Tables and fields should
-         * be validated prior to using this method. It is highly
-         * suggested to use PDO parameter placeholders (e.g.,
-         * ':placeholder') for values, so you can implement PDO
-         * prepared statements. However, this is not required.
+        /** @method update_query
+         * Sends a query to the database and updates records in the
+         * database immediately, or returns a PDOStatement object for later
+         * execution.
+         * 
+         * With $use_prepared_statements false (not recommended), the
+         * update query is executed immediately and true is returned. With
+         * $use_prepared_statements true (highly recommended), a
+         * PDOStatement object is returned. When a PDOStatement object is
+         * returned, you must use the MySQLPDO::execute_safe_query() method
+         * on the PDOStatement object to actually send the query to the
+         * database for execution. Note that you can store the PDOStatement
+         * object somewhere and simply re-call
+         * MySQLPDO::execute_safe_query() each time you want to send a new
+         * query to the database using the same query, where only the SET
+         * or WHERE values are different. See:
+         * https://www.php.net/manual/en/pdo.prepared-statements.php
+         * 
+         * Optionally return a query string instead of a
+         * PDOStatement, by setting the $return_string_only argument to
+         * true.
+         * 
          * @param string $table
-         * @param string[] $set_fields
-         * @param string[] $set_comparisons     // Comparison Operators
-         * @param string[] $set_values          // Values sought in SET
-         * @return string
+         * @param array $set_fields
+         * @param array $set_values
+         * @param $where_fields
+         * @param $where_comparison_operators
+         * @param $where_values
+         * @param $where_conditional_operators
+         * @param $order_by_fields
+         * @param int $limit
+         * @param int $offset
+         * @param bool $return_string_only
+         * @param bool $use_prepared_statements
+         * @return bool|PDOStatement|string
          */
-        function build_update_statement(
+        function update_query(
             string $table,
             array $set_fields,
             array $set_values = [],
@@ -87,6 +111,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             $order_by_fields = [],
             int $limit = -1,
             int $offset = -1,
+            bool $return_string_only = false,
             bool $use_prepared_statements = false ) {
 
             /* Definition ************************************************/
@@ -180,29 +205,65 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             }
 
             /* Return ****************************************************/
-            return $update_statement;
+            if ( $return_string_only ) {
+
+                return $update_statement;
+            }
+            else {
+
+                if ( $use_prepared_statements ) {
+
+                    return $this->pdo->prepare( $update_statement );
+                }
+                else {
+
+                    $this->pdo->query( $update_statement );
+
+                    return true;
+                }
+            }
         }
 
-        /** @method build_insert_into_statement
-         * Creates an INSERT INTO statement string. Fields should be
-         * validated prior to using this method. It is highly suggested
-         * to use PDO parameter placeholders (e.g., ':placeholder') for
-         * values, so you can implement PDO prepared statements. However,
-         * this is not required.
-         * @param string $table
-         * @param $set_fields
-         * @param $set_values
-         * @param bool $use_prepared_statements
-         * @param string $priority
-         * @param bool $delayed_insert = false
+        /** @method insert_into_query
+         * Sends a query to the database and inserts records into the
+         * database immediately, or returns a PDOStatement object for later
+         * execution.
+         * 
+         * With $use_prepared_statements false (not recommended), the
+         * insert query is executed immediately and true is returned. With
+         * $use_prepared_statements true (highly recommended), a
+         * PDOStatement object is returned. When a PDOStatement object is
+         * returned, you must use the MySQLPDO::execute_safe_query() method
+         * on the PDOStatement object to actually send the query to the
+         * database for execution. Note that you can store the PDOStatement
+         * object somewhere and simply re-call
+         * MySQLPDO::execute_safe_query() each time you want to send a new
+         * query to the database using the same query, where only the SET
+         * values are different. See:
+         * https://www.php.net/manual/en/pdo.prepared-statements.php
+         * 
+         * Optionally return a query string instead of a
+         * PDOStatement, by setting the $return_string_only argument to
+         * true.
+         * 
+         * @param string $table,
+         * @param $set_fields,
+         * @param $set_values = [],
+         * @param bool $return_string_only = false,
+         * @param bool $use_prepared_statements = false,
+
+         * @param string $priority = '',
+         * @param bool $delayed_insert = false,
          * @param bool $ignore_errors = false
-         * @return string
+         * @return bool|PDOStatement|string
          */
-        function build_insert_into_statement(
+        function insert_into_query(
             string $table,
             $set_fields,
             $set_values = [],
+            bool $return_string_only = false,
             bool $use_prepared_statements = false,
+
             string $priority = '',
             bool $delayed_insert = false,
             bool $ignore_errors = false ) {
@@ -282,12 +343,47 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             }
 
             /* Return ****************************************************/
-            return $insert_into_statement;
+            if ( $return_string_only ) {
+
+                return $insert_into_statement;
+            }
+            else {
+
+                if ( $use_prepared_statements ) {
+
+                    return $this->pdo->prepare( $insert_into_statement );
+                }
+                else {
+
+                    $this->pdo->query( $insert_into_statement );
+
+                    return true;
+                }
+            }
         }
 
         /** @method build_delete_statement
-         * Creates a DELETE statement. The table should be validated prior
-         * to using this method.
+         * Sends a query to the database and deletes records from the
+         * database immediately, or returns a PDOStatement object for later
+         * execution.
+         * 
+         * With $use_prepared_statements false (not recommended), the
+         * delete query is executed immediately and true is returned. With
+         * $use_prepared_statements true (highly recommended), a
+         * PDOStatement object is returned. When a PDOStatement object is
+         * returned, you must use the MySQLPDO::execute_safe_query() method
+         * on the PDOStatement object to actually send the query to the
+         * database for execution. Note that you can store the PDOStatement
+         * object somewhere and simply re-call
+         * MySQLPDO::execute_safe_query() each time you want to send a new
+         * query to the database using the same query, where only the WHERE
+         * values are different. See:
+         * https://www.php.net/manual/en/pdo.prepared-statements.php
+         * 
+         * Optionally return a query string instead of a
+         * PDOStatement, by setting the $return_string_only argument to
+         * true.
+         * 
          * @param string $table
          * @param string|array $where_fields
          * @param string|array $where_comparison_operators
@@ -310,6 +406,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             $order_by_fields = '',
             int $limit_limit = -1,
             int $limit_offset = -1,
+            bool $return_string_only = false,
             bool $use_prepared_statements = false,
             bool $low_priority = false,
             bool $quick = false,
@@ -384,7 +481,24 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             }
 
             /* Return ****************************************************/
-            return $delete_statement;
+            if ( $return_string_only ) {
+
+                return $delete_statement;
+            }
+
+            else {
+
+                if ( $use_prepared_statements ) {
+
+                    return $this->pdo->prepare( $delete_statement );
+                }
+                else {
+
+                    $this->pdo->query( $delete_statement );
+
+                    return true;
+                }
+            }
         }
 
         /******************************************************************
