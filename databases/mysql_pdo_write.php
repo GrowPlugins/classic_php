@@ -86,7 +86,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             $where_conditional_operators = ['AND'],
             $order_by_fields = [],
             int $limit = -1,
-            int $offset = -1 ) {
+            int $offset = -1,
+            bool $use_prepared_statements = false ) {
 
             /* Definition ************************************************/
             $update_statement = '';
@@ -96,6 +97,10 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             $limit_clause;
 
             /* Processing ************************************************/
+            /* Prepare to Build Statement -------------------------------*/
+            /* Clear PDO Placeholders */
+            $this->clear_pdo_placeholders();
+
             /* Build Statement ------------------------------------------*/
             /* Build Statement, If Required Values Exist */
             if (
@@ -104,14 +109,14 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
 
                 $update_statement =
                     'UPDATE '
-                    . $this->enclose_database_object_names( $table )
-                    . ' ';
+                    . $this->enclose_database_object_names( $table );
 
                 // Add SET Clause
                 $set_clause =
                     $this->build_set_clause(
                         $set_fields,
-                        $set_values );
+                        $set_values,
+                        $use_prepared_statements );
                 
                 if ( false !== $set_clause ) {
 
@@ -133,7 +138,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
                             $where_fields,
                             $where_comparison_operators,
                             $where_values,
-                            $where_conditional_operators );
+                            $where_conditional_operators,
+                            $use_prepared_statements );
 
                     if ( false !== $where_clause ) {
 
@@ -183,16 +189,20 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          * to use PDO parameter placeholders (e.g., ':placeholder') for
          * values, so you can implement PDO prepared statements. However,
          * this is not required.
-         * @param mixed string string[] $fields
-         * @param mixed string string[] $comparison_operators
-         * @param mixed string string[] $values
-         * @param string[] $conditional_operators
+         * @param string $table
+         * @param $set_fields
+         * @param $set_values
+         * @param bool $use_prepared_statements
+         * @param string $priority
+         * @param bool $delayed_insert = false
+         * @param bool $ignore_errors = false
          * @return string
          */
         function build_insert_into_statement(
             string $table,
             $set_fields,
             $set_values = [],
+            bool $use_prepared_statements = false,
             string $priority = '',
             bool $delayed_insert = false,
             bool $ignore_errors = false ) {
@@ -220,6 +230,10 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
 
                 $priority = '';
             }
+
+            /* Prepare to Build Statement -------------------------------*/
+            /* Clear PDO Placeholders */
+            $this->clear_pdo_placeholders();
 
             /* Build Statement ------------------------------------------*/
             /* Build Statement, If Required Values Exist */
@@ -257,7 +271,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
                 $set_clause =
                     $this->build_set_clause(
                         $set_fields,
-                        $set_values );
+                        $set_values,
+                        $use_prepared_statements );
                 
                 if ( false !== $set_clause ) {
 
@@ -295,6 +310,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             $order_by_fields = '',
             int $limit_limit = -1,
             int $limit_offset = -1,
+            bool $use_prepared_statements = false,
             bool $low_priority = false,
             bool $quick = false,
             bool $ignore = false ) {
@@ -303,6 +319,10 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             $delete_statement;
 
             /* Processing ************************************************/
+            /* Prepare to Build Statement -------------------------------*/
+            /* Clear PDO Placeholders */
+            $this->clear_pdo_placeholders();
+
             /* Build Clause ---------------------------------------------*/
             $delete_statement =
                 'DELETE ';
@@ -340,7 +360,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
                         $where_fields,
                         $where_comparison_operators,
                         $where_values,
-                        $where_conditional_operators );
+                        $where_conditional_operators,
+                        $use_prepared_statements );
             }
 
             /* Conditionally Add ORDER BY Clause */
@@ -383,7 +404,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          */
         protected function build_set_clause(
             $set_fields,
-            $set_values = [] ) {
+            $set_values = [],
+            bool $use_prepared_statements = false ) {
 
             /* Definition ************************************************/
             $set_clause = '';
@@ -418,6 +440,14 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
                     ['string', 'int', 'float', 'bool'] ) ) {
 
                 $set_values = [];
+            }
+
+            /* Conditionally Use PDO Prepared Statement Placeholders ----*/
+            if ( $use_prepared_statements ) {
+
+                $set_values =
+                    $this->create_pdo_placeholder_values(
+                        $set_values );
             }
 
             /* Build Clause ---------------------------------------------*/

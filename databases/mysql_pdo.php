@@ -45,6 +45,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
         protected PDO $pdo;
         protected ArrayProcessing $arrays;
 
+        protected array $prepared_statement_placeholders;
+
         /******************************************************************
         * Public Methods
         ******************************************************************/
@@ -465,20 +467,28 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
         * @return true
         ******************************************************************/
         function execute_safe_query(
-            string $query,
-            array $fields_to_bind ) {
+            string $query ) {
 
             /* Definition ************************************************/
             $pdo_statement;
             $pdo_value_type;
 
             /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            if ( empty( $this->prepared_statement_placeholders ) ) {
+
+                return false;
+            }
+
             /* Prepare Query --------------------------------------------*/
             $pdo_statement = $this->pdo->prepare( $query );
                 
             /* Bind Parameters */
             // Bind Set Clause Parameters
-            foreach ( $fields_to_bind as $key => $field ) {
+            foreach (
+                $this->prepared_statement_placeholders
+                as $key
+                => $field ) {
 
                 // Determine PDO Value Type
                 if ( is_int( $field ) ) {
@@ -496,8 +506,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
                 
                 // Bind Parameter
                 $pdo_statement->bindParam(
-                    ':' . $key,
-                    $fields_to_bind[ $key ],
+                    $key + 1,
+                    $this->prepared_statement_placeholders[ $key ],
                     $pdo_value_type );
             }
 
@@ -702,14 +712,12 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
         /** @method build_where_clause
          * Creates a WHERE clause string for use within a statement, such
          * as UPDATE or SELECT. Fields should be validated prior to using
-         * this method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
+         * this method.
          * @param mixed string string[] $fields
          * @param mixed string string[] $comparison_operators
          * @param mixed string string[] $values
          * @param string[] $conditional_operators
+         * @param bool $use_prepared_statements
          * @return string
          */
         protected function build_where_clause(
@@ -749,10 +757,12 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
                 $conditional_operators = [ $conditional_operators ];
             }
 
-            /* Conditionally Use PDO Placeholders Instead of Values -----*/
+            /* Conditionally Use PDO Prepared Statement Placeholders ----*/
             if ( $use_prepared_statements ) {
 
-                $values = $this->create_pdo_placeholder_values( $values );
+                $values =
+                    $this->create_pdo_placeholder_values(
+                        $values );
             }
 
             /* Build Clause ---------------------------------------------*/
@@ -1057,11 +1067,30 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
             /* Processing ************************************************/
             foreach ( $field_values as $key => $value ) {
 
-                $field_values[ $key ] = ':' . strval( $key );
+                $field_values[ $key ] = '?';
+
+                $this->prepared_statement_placeholders[] =
+                    $value;
             }
 
             /* Return ****************************************************/
             return $field_values;
+        }
+
+        /** @method clear_pdo_placeholders
+         * Clears the class property $prepared_statement_placeholders in
+         * preparation for creating a new query string.
+         * @param string[] $fields
+         * @param string[] $comparison_operators
+         * @param array $values
+         * @param array $logic_operators
+         * @return string
+         * @return false
+         */
+        protected function clear_pdo_placeholders() {
+
+            /* Processing ************************************************/
+            unset( $this->prepared_statement_placeholders );
         }
 
         /*-----------------------------------------------------------------

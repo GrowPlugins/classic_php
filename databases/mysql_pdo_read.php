@@ -67,8 +67,32 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
          * Creates a SELECT statement string. Does not allow the use of
          * subqueries in the clause. Fields should be validated prior to
          * using this method.
-         * @param string[] $fields
-         * @param  string $functions
+         * @param $select_fields,
+         * @param string $from_table,
+         *
+         * @param $select_functions
+         * @param bool $select_all
+         * @param bool $select_distinct
+         * @param bool $select_high_priority
+         * @param bool $select_straight_join
+         * @param $from_joined_tables
+         * @param $from_join_types
+         * @param $from_join_on_fields
+         * @param $from_join_on_comparisons
+         * @param $from_join_on_values
+         * @param $where_fields
+         * @param $where_comparison_operators
+         * @param $where_values
+         * @param $where_conditional_operators
+         * @param $group_by_fields
+         * @param $having_fields
+         * @param $having_comparison_operators
+         * @param $having_values
+         * @param $having_conditional_operators
+         * @param $order_by_fields
+         * @param int $limit_limit
+         * @param int $limit_offset
+         * @param bool $use_prepared_statements
          * @return string
          */
         function build_select_statement(
@@ -103,6 +127,10 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
             $select_statement = '';
 
             /* Processing ************************************************/
+            /* Prepare to Build Statement -------------------------------*/
+            /* Clear PDO Placeholders */
+            $this->clear_pdo_placeholders();
+
             /* Build Statement ------------------------------------------*/
             $select_statement =
                 $this->build_select_clause(
@@ -160,7 +188,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
                         $having_fields,
                         $having_comparison_operators,
                         $having_values,
-                        $having_conditional_operators )
+                        $having_conditional_operators,
+                        $use_prepared_statements )
                     . ' ';
             }
 
@@ -196,113 +225,6 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
         /******************************************************************
         * Protected Methods
         ******************************************************************/
-       
-        /*-----------------------------------------------------------------
-         * Write Clause Building Methods
-         *---------------------------------------------------------------*/
-
-        /** @method build_group_by_clause
-         * Creates a GROUP BY clause string for use within a selection
-         * statement. Fields should be validated prior to using this
-         * method.
-         * @param array|string $fields
-         * @return string
-         */
-        protected function build_group_by_clause(
-            $fields ) {
-
-            /* Definition ************************************************/
-            $group_by_clause = '';
-
-            /* Processing ************************************************/
-            /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
-
-                $fields = [ $fields ];
-            }
-
-            /* Validate $fields */
-            if (
-                ! $this->arrays->validate_data_types(
-                    $fields,
-                    'string' ) ) {
-
-                $fields = [];
-            }
-
-            /* Build Clause ---------------------------------------------*/
-            /* Process $fields If Fields Exist */
-            if ( [] !== $fields ) {
-
-                $group_by_clause = 'GROUP BY ';
-
-                foreach ( $fields as $key => $field ) {
-
-                    /* Build Fields into GROUP BY Clause */
-                    $group_by_clause .=
-                        $this->enclose_database_object_names(
-                            $field ) . ', ';
-                }
-
-                // Remove Trailing ', '
-                $group_by_clause = substr(
-                    $group_by_clause,
-                    0,
-                    strlen( $group_by_clause ) - 2 );
-            }
-
-            /* Return ****************************************************/
-            return $group_by_clause;
-        }
-
-        /** @method build_having_clause
-         * Creates a HAVING clause string for use within a selection
-         * statement. Fields should be validated prior to using this
-         * method. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
-         * @param mixed string string[] $fields
-         * @param mixed string string[] $comparison_operators
-         * @param mixed $values
-         * @param string[] $conditional_operators
-         * @return string
-         * @return false
-         */
-        protected function build_having_clause(
-            $fields,
-            $comparison_operators,
-            $values,
-            $conditional_operators = ['AND'] ) {
-
-            /* Definition ************************************************/
-            $having_clause = '';
-
-            /* Processing ************************************************/
-            /* Build WHERE Clause, Since Having is the Same */
-            $having_clause =
-                $this->build_where_clause(
-                    $fields,
-                    $comparison_operators,
-                    $values,
-                    $conditional_operators );
-
-            /* Replace WHERE with HAVING */
-            $having_clause =
-                str_replace( 'WHERE', 'HAVING', $having_clause );
-
-            /* Return ****************************************************/
-            return $having_clause;
-        }
-
-        /******************************************************************
-        * Private Methods
-        ******************************************************************/
-
-        /*-----------------------------------------------------------------
-         * Clause Building Methods
-         *---------------------------------------------------------------*/
 
         /** @method build_select_clause
          * Creates a SELECT clause string for use in a SELECT statement.
@@ -312,7 +234,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
          * @param  string $functions
          * @return string
          */
-        private function build_select_clause(
+        protected function build_select_clause(
             $fields,
             $functions = [''],
             bool $all = false,
@@ -451,6 +373,109 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
             /* Return ****************************************************/
             return $select_clause;
         }
+       
+        /*-----------------------------------------------------------------
+         * Write Clause Building Methods
+         *---------------------------------------------------------------*/
+
+        /** @method build_group_by_clause
+         * Creates a GROUP BY clause string for use within a selection
+         * statement. Fields should be validated prior to using this
+         * method.
+         * @param array|string $fields
+         * @return string
+         */
+        protected function build_group_by_clause(
+            $fields ) {
+
+            /* Definition ************************************************/
+            $group_by_clause = '';
+
+            /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Force $fields to be Array */
+            if ( ! is_array( $fields ) ) {
+
+                $fields = [ $fields ];
+            }
+
+            /* Validate $fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $fields,
+                    'string' ) ) {
+
+                $fields = [];
+            }
+
+            /* Build Clause ---------------------------------------------*/
+            /* Process $fields If Fields Exist */
+            if ( [] !== $fields ) {
+
+                $group_by_clause = 'GROUP BY ';
+
+                foreach ( $fields as $key => $field ) {
+
+                    /* Build Fields into GROUP BY Clause */
+                    $group_by_clause .=
+                        $this->enclose_database_object_names(
+                            $field ) . ', ';
+                }
+
+                // Remove Trailing ', '
+                $group_by_clause = substr(
+                    $group_by_clause,
+                    0,
+                    strlen( $group_by_clause ) - 2 );
+            }
+
+            /* Return ****************************************************/
+            return $group_by_clause;
+        }
+
+        /** @method build_having_clause
+         * Creates a HAVING clause string for use within a selection
+         * statement. Fields should be validated prior to using this
+         * method.
+         * @param mixed string string[] $fields
+         * @param mixed string string[] $comparison_operators
+         * @param mixed $values
+         * @param string|array $conditional_operators
+         * @param bool $use_prepared_statements
+         * @return string
+         * @return false
+         */
+        protected function build_having_clause(
+            $fields,
+            $comparison_operators,
+            $values,
+            $conditional_operators = ['AND'],
+            bool $use_prepared_statements = false ) {
+
+            /* Definition ************************************************/
+            $having_clause = '';
+
+            /* Processing ************************************************/
+            /* Build WHERE Clause, Since Having is the Same */
+            $having_clause =
+                $this->build_where_clause(
+                    $fields,
+                    $comparison_operators,
+                    $values,
+                    $conditional_operators,
+                    $use_prepared_statements );
+
+            /* Replace WHERE with HAVING */
+            $having_clause =
+                str_replace( 'WHERE', 'HAVING', $having_clause );
+
+            /* Return ****************************************************/
+            return $having_clause;
+        }
+
+        /******************************************************************
+        * Private Methods
+        ******************************************************************/
 
         /*-----------------------------------------------------------------
          * Class-Specific Utility Methods
