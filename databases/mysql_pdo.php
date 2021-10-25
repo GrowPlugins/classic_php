@@ -457,17 +457,15 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
         }
 
         /** @method execute_safe_query ************************************
-         * Uses PDO to prepare the selected query, bind all selected
-         * parameters to that query, and then execute that query. Requires
-         * that the query uses prepared statement placeholders.
-         * Returns true on success.
+         * Uses PDO to bind all selected parameters to that query, and then
+         * execute the query. Requires that the query uses prepared
+         * statement placeholders. Returns true on success.
          *-----------------------------------------------------------------
-        * @param string $query
-        * @param array $fields_to_bind
-        * @return true
+        * @param PDOStatement $pdo_statement
+        * @return bool
         ******************************************************************/
         function execute_safe_query(
-            string $query ) {
+            PDOStatement $pdo_statement ) { // <<<<<<<< Working on moving from requiring users to run this method after a build query string method (only if PDO prepared states used), to calling this method if PDO prep states used automatically in every query function. Depends on $this->prepared_statement_placeholders to hold valid placeholders for this query. $this->prepared_statement_placeholders needs to be cleared each time a new query method is used?
 
             /* Definition ************************************************/
             $pdo_statement;
@@ -479,18 +477,14 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
 
                 return false;
             }
-
-            /* Prepare Query --------------------------------------------*/
-            $pdo_statement = $this->pdo->prepare( $query );
-                
-            /* Bind Parameters */
-            // Bind Set Clause Parameters
+             
+            /* Bind Parameters ------------------------------------------*/
             foreach (
                 $this->prepared_statement_placeholders
                 as $key
                 => $field ) {
 
-                // Determine PDO Value Type
+                /* Determine PDO Value Type */
                 if ( is_int( $field ) ) {
 
                     $pdo_value_type = PDO::PARAM_INT;
@@ -504,7 +498,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
                     $pdo_value_type = PDO::PARAM_STR;
                 }
                 
-                // Bind Parameter
+                /* Bind Parameter */
                 $pdo_statement->bindParam(
                     $key + 1,
                     $this->prepared_statement_placeholders[ $key ],

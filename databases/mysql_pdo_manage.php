@@ -70,26 +70,29 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             parent::__construct( $pdo_connection );
         }
 
-        /** @method build_create_table_statement
-         * Creates a CREATE TABLE statement string. $field_options are not
-         * validated for SQL validity, so be sure you pass the right
-         * field options. It is highly suggested to use PDO parameter
-         * placeholders (e.g., ':placeholder') for values, so you can
-         * implement PDO prepared statements. However, this is not
-         * required.
+        /** @method create_table_query
+         * Sends a query to the database and creates a table in the
+         * database immediately, returning true.
+         * 
+         * Optionally return a query string by setting the
+         * $return_string_only argument to true. This is optional, instead
+         * of sending a query directly to the database.
+         * 
          * @param string $table
          * @param mixed string|array $fields
          * @param mixed string|array $data_types
          * @param mixed string|array $field_options
          * @param bool $check_existence
+         * @param bool $return_string_only
          * @return string
          */
-        function build_create_table_statement(
+        function create_table_query(
             string $table,
             $fields,
             $data_types,
             $field_options = [],
-            bool $check_existence = false ) {
+            bool $check_existence = false,
+            bool $return_string_only = false ) {
 
             /* Definition ************************************************/
             $create_table_statement;
@@ -185,20 +188,42 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             $create_table_statement .= ')';
 
             /* Return ****************************************************/
-            return $create_table_statement;
+            if ( $return_string_only ) {
+
+                return $create_table_statement;
+
+            }
+            else {
+
+                $this->pdo->query( $create_table_statement );
+
+                return true;
+            }
         }
 
-        /** @method build_alter_table_statement
-         * Creates an ALTER TABLE statement string. The table should be
-         * validated prior to using this method.
-         * @param string $table
+        /** @method alter_table_query
+         * Sends a query to the database and changes a table in the
+         * database immediately, returning true.
+         * 
+         * Optionally return a query string by setting the
+         * $return_string_only argument to true. This is optional, instead
+         * of sending a query directly to the database.
+         * 
+         * @param $table
+         * @param $alter_specification_names
+         * @param $alter_specifications
+         * @param bool $check_existence
+         * @param bool $return_string_only
+         * @param int $wait
+         * @param bool $no_wait
          * @return string
          */
-        function build_alter_table_statement(
-            $table,
+        function alter_table_query(
+            string $table,
             $alter_specification_names,
             $alter_specifications,
             bool $check_existence = false,
+            bool $return_string_only = false,
             int $wait = -1,
             bool $no_wait = false ) {
 
@@ -262,19 +287,35 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
                 strlen( $alter_table_statement ) - 2 );
 
             /* Return ****************************************************/
-            return $alter_table_statement;
+            if ( $return_string_only ) {
+
+                return $alter_table_statement;
+            }
+            else {
+
+                $this->pdo->query( $alter_table_statement );
+
+                return true;
+            }
         }
 
-        /** @method build_drop_table_statement
-         * Creates a DROP TABLE statement string. The table should be
-         * validated prior to using this method.
-         * @param string $table
+        /** @method drop_table_query
+         * Sends a query to the database and removes a table from the
+         * database immediately, returning true.
+         * 
+         * Optionally return a query string by setting the
+         * $return_string_only argument to true. This is optional, instead
+         * of sending a query directly to the database.
+         * 
+         * @param string|array $tables
          * @param bool $check_existence
+         * @param bool $return_string_only
          * @return string
          */
-        function build_drop_table_statement(
+        function drop_table_query(
             $tables,
-            bool $check_existence = false ) {
+            bool $check_existence = false,
+            bool $return_string_only = false ) {
 
             /* Definition ************************************************/
             $drop_table_statement;
@@ -321,7 +362,16 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
                 strlen( $drop_table_statement ) - 2 );
 
             /* Return ****************************************************/
-            return $drop_table_statement;
+            if ( $return_string_only ) {
+
+                return $drop_table_statement;
+            }
+            else {
+
+                $this->pdo->prepare( $drop_table_statement );
+
+                return true;
+            }
         }
 
         /******************************************************************
