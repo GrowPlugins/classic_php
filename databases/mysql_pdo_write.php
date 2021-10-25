@@ -364,7 +364,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
             }
         }
 
-        /** @method build_delete_statement
+        /** @method delete_query
          * Sends a query to the database and deletes records from the
          * database immediately, or returns a PDOStatement object for later
          * execution.
@@ -400,7 +400,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          * @param bool $ignore
          * @return string
          */
-        function build_delete_statement(
+        function delete_query(
             string $table,
             $where_fields = '',
             $where_comparison_operators = '',
