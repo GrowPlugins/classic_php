@@ -12,7 +12,7 @@ use \PDO as PDO;
 // Determine ClassicPHP Base Path
 if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
-    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php';
+    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php/V0_1_2';
 
     define( 'CLASSIC_PHP_DIR', $dir );
 
@@ -396,8 +396,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             $mysql_data_types =
                 $this->read_json_file(
                     CLASSIC_PHP_DIR
-                    . '/classic_php_data_files/mysql_data_types.json',
-                    true );
+                    . '/classic_php_data_files/mysql_data_types.json' );
             $data_type_valid = false;
             $open_parenthesis_found = false;
             $close_parenthesis_found = false;
