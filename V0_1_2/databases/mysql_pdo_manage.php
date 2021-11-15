@@ -1,6 +1,6 @@
 <?php
 
-namespace ClassicPHP;
+namespace ClassicPHP\V0_1_2;
 
 /**************************************************************************
  * Class Header -----------------------------------------------------------
@@ -396,7 +396,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
             $mysql_data_types =
                 $this->read_json_file(
                     CLASSIC_PHP_DIR
-                    . '/classic_php_data_files/mysql_data_types.json' );
+                    . '/classic_php_data_files/mysql_data_types.json',
+                    true );
             $data_type_valid = false;
             $open_parenthesis_found = false;
             $close_parenthesis_found = false;
