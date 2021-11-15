@@ -465,7 +465,8 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
         * @return bool
         ******************************************************************/
         function execute_safe_query(
-            PDOStatement $pdo_statement ) { // <<<<<<<< Working on moving from requiring users to run this method after a build query string method (only if PDO prepared states used), to calling this method if PDO prep states used automatically in every query function. Depends on $this->prepared_statement_placeholders to hold valid placeholders for this query. $this->prepared_statement_placeholders needs to be cleared each time a new query method is used?
+            \PDOStatement $pdo_statement,
+            array $prepared_statement_placeholders = [] ) {
 
             /* Definition ************************************************/
             $pdo_statement;
@@ -473,14 +474,22 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
-            if ( empty( $this->prepared_statement_placeholders ) ) {
+            if (
+                [] === $prepared_statement_placeholders
+                && empty( $this->prepared_statement_placeholders ) ) {
 
                 return false;
             }
              
             /* Bind Parameters ------------------------------------------*/
+            if ( [] === $prepared_statement_placeholders ) {
+
+                $prepared_statement_placeholders =
+                    $this->prepared_statement_placeholders;
+            }
+
             foreach (
-                $this->prepared_statement_placeholders
+                $prepared_statement_placeholders
                 as $key
                 => $field ) {
 
@@ -501,7 +510,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
                 /* Bind Parameter */
                 $pdo_statement->bindParam(
                     $key + 1,
-                    $this->prepared_statement_placeholders[ $key ],
+                    $prepared_statement_placeholders[ $key ],
                     $pdo_value_type );
             }
 
@@ -1084,7 +1093,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
         protected function clear_pdo_placeholders() {
 
             /* Processing ************************************************/
-            unset( $this->prepared_statement_placeholders );
+            $this->prepared_statement_placeholders = [];
         }
 
         /*-----------------------------------------------------------------
