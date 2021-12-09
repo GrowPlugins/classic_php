@@ -46,7 +46,7 @@ require_once( __DIR__ . '/mysql_pdo.php' );
 /**************************************************************************
  * Class Definition -------------------------------------------------------
  *************************************************************************/
-if ( ! class_exists( '\ClassicPHP\MySQLPDO_Manage' ) ) {
+if ( ! class_exists( '\ClassicPHP\V0_2_0\MySQLPDO_Manage' ) ) {
 
     /** Class: MySQLPDO_Manage
      * Helps you more quickly manage database tables.

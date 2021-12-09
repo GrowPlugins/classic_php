@@ -25,7 +25,7 @@ require_once( CLASSIC_PHP_DIR . '/data_types/array_processing.php' );
 /**************************************************************************
  * Class Definition -------------------------------------------------------
  *************************************************************************/
-if ( ! class_exists( '\ClassicPHP\MySQLPDO' ) ) {
+if ( ! class_exists( '\ClassicPHP\V0_2_0\MySQLPDO' ) ) {
 
     /** Class: MySQLPDO
      * Allows you to validate table names, field names, and limits with a

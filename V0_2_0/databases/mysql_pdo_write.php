@@ -40,7 +40,7 @@ require_once( __DIR__ . '/mysql_pdo.php' );
 /**************************************************************************
  * Class Definition -------------------------------------------------------
  *************************************************************************/
-if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
+if ( ! class_exists( '\ClassicPHP\V0_2_0\MySQLPDO_Write' ) ) {
 
     /** Class: MySQLPDO_Write
      * Helps you more quickly change database data safely using PDO.

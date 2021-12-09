@@ -5,7 +5,7 @@ namespace ClassicPHP\V0_2_0;
 /**************************************************************************
  * Class Definition -------------------------------------------------------
  *************************************************************************/
-if ( ! class_exists( '\ClassicPHP\ArrayProcessing' ) ) {
+if ( ! class_exists( '\ClassicPHP\V0_2_0\ArrayProcessing' ) ) {
 
     /** Class: ArrayProcessing
      * Allows you to manipulate arrays easier.

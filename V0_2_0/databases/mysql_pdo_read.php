@@ -39,7 +39,7 @@ require_once( __DIR__ . '/mysql_pdo.php' );
 /**************************************************************************
  * Class Definition -------------------------------------------------------
  *************************************************************************/
-if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
+if ( ! class_exists( '\ClassicPHP\V0_2_0\MySQLPDO_Read' ) ) {
 
     /** Class: MySQLPDO_Read
      * Helps you more quickly query a database safely using PDO.
