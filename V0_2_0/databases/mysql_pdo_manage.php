@@ -1,6 +1,6 @@
 <?php
 
-namespace ClassicPHP\V0_1_2;
+namespace ClassicPHP\V0_2_0;
 
 /**************************************************************************
  * Class Header -----------------------------------------------------------
@@ -12,7 +12,7 @@ use \PDO as PDO;
 // Determine ClassicPHP Base Path
 if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
-    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php/V0_1_2';
+    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php/V0_2_0';
 
     define( 'CLASSIC_PHP_DIR', $dir );
 
