@@ -1,8 +1,6 @@
 # Classic.php
 A library of project agnostic helper classes for simplifying every-day tasks. Classic.php classes are focused on specific tasks and iplementation-generic, which makes them great for use in virtually any project. These classes are primarily intended to reduce the need to code and recode the same every-day algorithms in various projects. Each class is relatively independent, so you can include only those you need, and not the ones you don't. By focusing on every-day tasks, this collection remains simple to pick up and start using, while remaining relevant to the task at hand.
 
-Official Version: 0.1.2
-
 ## Requirements
 * PHP >= 7.4 (Suggested: PHP >= 8.0)
 
