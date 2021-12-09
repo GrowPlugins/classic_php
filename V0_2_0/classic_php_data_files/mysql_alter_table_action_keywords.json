@@ -1,0 +1,18 @@
+[
+    "ADD",
+    "ALTER",
+    "CHANGE",
+    "MODIFY",
+    "DROP",
+    "DISABLE",
+    "ENABLE",
+    "RENAME",
+    "ORDER",
+    "CONVERT",
+    "DEFAULT",
+    "DISCARD",
+    "IMPORT",
+    "ALGORITHM",
+    "LOCK",
+    "FORCE"
+]
