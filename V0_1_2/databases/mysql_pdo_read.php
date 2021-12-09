@@ -67,17 +67,16 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
          * Returns a PDOStatement object for pulling data from the selected
          * database.
          * 
-         * After getting a returned PDOStatement object, use one of its
-         * fetch methods to access the selected database data. Note
-         * that if $use_prepared_statements is true (as is highly
-         * recommended), you must use the MySQLPDO::execute_safe_query()
-         * method on the PDOStatement object before you can call any of the
-         * PDOStatement's fetch methods. However, note that with
-         * $use_prepared_statements true, you can store the PDOStatement
-         * object somewhere and simply re-call
-         * MySQLPDO::execute_safe_query() and then the PDOStatement's
-         * fetch methods each time you want to query new database data with
-         * the same query, where only the WHERE values are different. See:
+         * With $use_prepared_statements false (not recommended), the
+         * select query is executed without using PDO for security. With
+         * $use_prepared_statements true (highly recommended), the query
+         * is executed and a PDOStatement object is returned so that the
+         * same basic query can be executed afterward with different
+         * values, if desired. In order to re-execute the query, call
+         * execute_safe_query() with the PDOStatement object as the
+         * first argument. Note that the SET or WHERE values may be
+         * different, but you must have the same number of SET and/or WHERE
+         * values. See:
          * https://www.php.net/manual/en/pdo.prepared-statements.php
          * 
          * Optionally return a query string instead of a
@@ -147,6 +146,7 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
 
             /* Definition ************************************************/
             $select_statement = '';
+            $pdo_statement;
 
             /* Processing ************************************************/
             /* Prepare to Build Statement -------------------------------*/
@@ -245,6 +245,22 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Read' ) ) {
 
                 return $select_statement;
             }
+
+            elseif ( $use_prepared_statements ) {
+
+                $pdo_statement =
+                    $this->pdo->prepare( $select_statement );
+
+                if ( true === $this->execute_safe_query( $pdo_statement ) ) {
+
+                    return $pdo_statement;
+                }
+                else {
+
+                    return false;
+                }
+            }
+
             else {
 
                 return $this->pdo->query( $select_statement );
