@@ -75,14 +75,10 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          * is executed and a PDOStatement object is returned so that the
          * same basic query can be executed afterward with different
          * values, if desired. In order to re-execute the query, call
-         * execute_safe_query()<<<<<< with the PDOStatement object as the first argument ......<<<<
-         * returned, you must use the MySQLPDO::execute_safe_query() method
-         * on the PDOStatement object to actually send the query to the
-         * database for execution. Note that you can store the PDOStatement
-         * object somewhere and simply re-call
-         * MySQLPDO::execute_safe_query() each time you want to send a new
-         * query to the database using the same query, where only the SET
-         * or WHERE values are different. See:
+         * execute_safe_query() with the PDOStatement object as the
+         * first argument. Note that the SET or WHERE values may be
+         * different, but you must have the same number of SET and/or WHERE
+         * values. See:
          * https://www.php.net/manual/en/pdo.prepared-statements.php
          * 
          * Optionally return a query string by setting the
@@ -244,16 +240,15 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          * execution.
          * 
          * With $use_prepared_statements false (not recommended), the
-         * insert query is executed immediately and true is returned. With
-         * $use_prepared_statements true (highly recommended), a
-         * PDOStatement object is returned. When a PDOStatement object is
-         * returned, you must use the MySQLPDO::execute_safe_query() method
-         * on the PDOStatement object to actually send the query to the
-         * database for execution. Note that you can store the PDOStatement
-         * object somewhere and simply re-call
-         * MySQLPDO::execute_safe_query() each time you want to send a new
-         * query to the database using the same query, where only the SET
-         * values are different. See:
+         * insert query is executed without using PDO for security. With
+         * $use_prepared_statements true (highly recommended), the query
+         * is executed and a PDOStatement object is returned so that the
+         * same basic query can be executed afterward with different
+         * values, if desired. In order to re-execute the query, call
+         * execute_safe_query() with the PDOStatement object as the
+         * first argument. Note that the SET or WHERE values may be
+         * different, but you must have the same number of SET and/or WHERE
+         * values. See:
          * https://www.php.net/manual/en/pdo.prepared-statements.php
          * 
          * Optionally return a query string by setting the
@@ -393,16 +388,15 @@ if ( ! class_exists( '\ClassicPHP\MySQLPDO_Write' ) ) {
          * execution.
          * 
          * With $use_prepared_statements false (not recommended), the
-         * delete query is executed immediately and true is returned. With
-         * $use_prepared_statements true (highly recommended), a
-         * PDOStatement object is returned. When a PDOStatement object is
-         * returned, you must use the MySQLPDO::execute_safe_query() method
-         * on the PDOStatement object to actually send the query to the
-         * database for execution. Note that you can store the PDOStatement
-         * object somewhere and simply re-call
-         * MySQLPDO::execute_safe_query() each time you want to send a new
-         * query to the database using the same query, where only the WHERE
-         * values are different. See:
+         * delete query is executed without using PDO for security. With
+         * $use_prepared_statements true (highly recommended), the query
+         * is executed and a PDOStatement object is returned so that the
+         * same basic query can be executed afterward with different
+         * values, if desired. In order to re-execute the query, call
+         * execute_safe_query() with the PDOStatement object as the
+         * first argument. Note that the SET or WHERE values may be
+         * different, but you must have the same number of SET and/or WHERE
+         * values. See:
          * https://www.php.net/manual/en/pdo.prepared-statements.php
          * 
          * Optionally return a query string by setting the
