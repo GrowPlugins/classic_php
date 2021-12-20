@@ -1,5 +1,5 @@
 # Classic.php
-A library of project agnostic helper classes for simplifying every-day tasks. Classic.php classes are focused on specific tasks that are implementation-generic, which makes them great for use in virtually any project. These classes are primarily intended to reduce the need to code and recode the same every-day algorithms in various projects. Each class is relatively independent, so you can include only those you need, and not the ones you don't. By focusing on every-day tasks, this collection remains simple to pick up and start using, while remaining relevant to the task at hand.
+A library of helper classes for simplifying every-day tasks in PHP. Classic.php classes are great for use in virtually any project. These classes are primarily intended to reduce the need to code and recode the same every-day algorithms in various projects. Each class is relatively independent, so you can include only those you need, and not the ones you don't. By focusing on every-day tasks, this collection remains simple to pick up and start using, while remaining relevant to the task at hand.
 
 ## Class List
 Classes found in Classic.php include:
