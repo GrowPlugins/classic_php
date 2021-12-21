@@ -428,6 +428,7 @@ if ( ! class_exists( '\ClassicPHP\V0_2_0\MySQLPDO' ) ) {
             /* Prepare $value Where PDO Placeholder is Used */
             elseif(
                 is_string( $value )
+                && 0 < strlen( $value )
                 && ':' === $value[0]
                 || '?' === $value ) {
 
