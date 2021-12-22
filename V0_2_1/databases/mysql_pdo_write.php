@@ -1,6 +1,6 @@
 <?php
 
-namespace ClassicPHP\V0_2_0;
+namespace ClassicPHP\V0_2_1;
 
 /**************************************************************************
  * Class Header -----------------------------------------------------------
@@ -12,7 +12,7 @@ use \PDO as PDO;
 // Determine ClassicPHP Base Path
 if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
-    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php/V0_2_0';
+    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php/V0_2_1';
 
     define( 'CLASSIC_PHP_DIR', $dir );
 
@@ -40,7 +40,7 @@ require_once( __DIR__ . '/mysql_pdo.php' );
 /**************************************************************************
  * Class Definition -------------------------------------------------------
  *************************************************************************/
-if ( ! class_exists( '\ClassicPHP\V0_2_0\MySQLPDO_Write' ) ) {
+if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Write' ) ) {
 
     /** Class: MySQLPDO_Write
      * Helps you more quickly change database data safely using PDO.
@@ -303,9 +303,47 @@ if ( ! class_exists( '\ClassicPHP\V0_2_0\MySQLPDO_Write' ) ) {
                 $priority = '';
             }
 
+            /* Force $set_fields to be Array */
+            if ( ! is_array( $set_fields ) ) {
+
+                $set_fields = [ $set_fields ];
+            }
+
+            /* Force $set_values to be Array */
+            if ( ! is_array( $set_values ) ) {
+
+                $set_values = [ $set_values ];
+            }
+
+            /* Validate $set_fields */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $set_fields,
+                    'string' ) ) {
+
+                $set_fields = [];
+            }
+
+            /* Validate $set_values */
+            if (
+                ! $this->arrays->validate_data_types(
+                    $set_values,
+                    ['string', 'int', 'float', 'bool'] ) ) {
+
+                $set_values = [];
+            }
+
             /* Prepare to Build Statement -------------------------------*/
             /* Clear PDO Placeholders */
             $this->clear_pdo_placeholders();
+
+            /* Conditionally Use PDO Prepared Statement Placeholders ----*/
+            if ( $use_prepared_statements ) {
+
+                $set_values =
+                    $this->create_pdo_placeholder_values(
+                        $set_values );
+            }
 
             /* Build Statement ------------------------------------------*/
             /* Build Statement, If Required Values Exist */
@@ -338,19 +376,26 @@ if ( ! class_exists( '\ClassicPHP\V0_2_0\MySQLPDO_Write' ) ) {
                 $insert_into_statement .=
                     'INTO '
                     . $this->enclose_database_object_names( $table );
-
-                // Add SET Clause
-                $set_clause =
-                    $this->build_set_clause(
-                        $set_fields,
-                        $set_values,
-                        $use_prepared_statements );
                 
-                if ( false !== $set_clause ) {
+                // Build Field List
+                $insert_into_statement .= ' (';
 
-                    $insert_into_statement .=
-                        ' ' . $set_clause;
+                foreach ( $set_fields as $set_field ) {
+
+                    $insert_into_statement .= $set_field . ', ';
                 }
+
+                $insert_into_statement[ strlen( $insert_into_statement ) - 2 ] = ')';
+
+                // Use $dealer_fields to Build VALUES Clause
+                $insert_into_statement .= ' VALUES (';
+
+                foreach ( $set_values as $set_value ) {
+
+                    $insert_into_statement .= $set_value . ', ';
+                }
+
+                $insert_into_statement[ strlen( $insert_into_statement ) - 2 ] = ')';
             }
 
             /* Return ****************************************************/

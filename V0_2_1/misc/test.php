@@ -1,11 +1,11 @@
 <?php
 
-namespace ClassicPHP\V0_2_0;
+namespace ClassicPHP\V0_2_1;
 
 /**************************************************************************
  * Class Definition -------------------------------------------------------
  *************************************************************************/
-if ( ! class_exists( '\ClassicPHP\V0_2_0\Test' ) ) {
+if ( ! class_exists( '\ClassicPHP\V0_2_1\Test' ) ) {
 
     /** Class: Test
      * Allows you to test/debug code easier and faster.

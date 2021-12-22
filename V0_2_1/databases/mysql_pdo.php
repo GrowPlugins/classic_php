@@ -1,6 +1,6 @@
 <?php
 
-namespace ClassicPHP\V0_2_0;
+namespace ClassicPHP\V0_2_1;
 
 /**************************************************************************
  * Class Header -----------------------------------------------------------
@@ -12,7 +12,7 @@ use \PDO as PDO;
 // Determine ClassicPHP Base Path
 if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
-    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php/V0_2_0';
+    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php/V0_2_1';
 
     define( 'CLASSIC_PHP_DIR', $dir );
 
@@ -25,7 +25,7 @@ require_once( CLASSIC_PHP_DIR . '/data_types/array_processing.php' );
 /**************************************************************************
  * Class Definition -------------------------------------------------------
  *************************************************************************/
-if ( ! class_exists( '\ClassicPHP\V0_2_0\MySQLPDO' ) ) {
+if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO' ) ) {
 
     /** Class: MySQLPDO
      * Allows you to validate table names, field names, and limits with a
@@ -417,7 +417,7 @@ if ( ! class_exists( '\ClassicPHP\V0_2_0\MySQLPDO' ) ) {
          * @param string $value                 // The value to be prepared
          */
         function prepare_values_for_query( $value ) {
-
+            
             /* Processing ************************************************/
             /* Prepare $value as Class Constant Values */
             if ( self::DEFAULT_VALUE === $value ) {
