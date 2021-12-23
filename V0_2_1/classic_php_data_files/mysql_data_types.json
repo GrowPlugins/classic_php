@@ -120,6 +120,21 @@
                 "synonyms": []
         },
         {
+                "name": "TINYTEXT",
+                "parenthesis": "not allowed",
+                "synonyms": []
+        },
+        {
+                "name": "MEDIUMTEXT",
+                "parenthesis": "not allowed",
+                "synonyms": []
+        },
+        {
+                "name": "LONGTEXT",
+                "parenthesis": "not allowed",
+                "synonyms": []
+        },
+        {
                 "name": "ENUM",
                 "parenthesis": "required",
                 "synonyms": []
