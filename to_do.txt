@@ -1,6 +1,10 @@
 TO DO:
 
 0.3.0
+- Make MYSQLPDO_Manage::alter_table_query() so it uses parameters to
+simplify the creation of an SQL update statement.
+
+0.4.0
 - Add more error methods to ErrorHandling, such as for backtracing/var
 dumping, without throwing an error, or for throwing an error without var
 dump. (Consider that some methods might be aimed at manual debugging only,
@@ -8,7 +12,7 @@ while others might be aimed at error handling within project code. Some
 code might only execute when a constant variable exists or results to a
 certain value [for internal debugging options built into code].)
 
-0.4.0
+0.5.0
 - Rename array_processing to just array and start adding methods that
 just use PHP array functions. (Comparable to JavaScript's Array class.)
 - Add a method to array:: which allows you to check the next key value.
@@ -25,7 +29,7 @@ automatically placed between conditions where no conditional operator is
 provided, and any trailing conditional operator at list end is removed
 automatically.
 
-0.5.0
+0.6.0
 - Create a FileProcessing class for reading json, ini, other files, and
 for writing those files too.
 - Create string processing class, including method for validating string
