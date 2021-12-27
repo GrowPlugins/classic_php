@@ -419,6 +419,8 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
 
                 $data_type_valid = false;
                 $data_type_parentheses_presence = 'not allowed';
+                $open_parenthesis_found = false;
+                $close_parenthesis_found = false;
 
                 /* Force All Data Types to Uppercase */
                 $data_types[ $key ] = strtoupper( $data_types[ $key ] );
@@ -474,8 +476,7 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
                 // No Parenthesis Found
                 else {
 
-                    $parentheses_position =
-                        null;
+                    $parentheses_position = strlen( $data_types[ $key ] );
                 }
 
                 /* Compare $data_types to $mysql_data_types */
