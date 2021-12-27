@@ -513,7 +513,7 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
                                     substr(
                                         $data_types[ $key ],
                                         0,
-                                        $open_parenthesis_position ) ) {
+                                        $parentheses_position ) ) {
         
                                         $data_type_parentheses_presence =
                                             $mysql_data_type->parenthesis;
