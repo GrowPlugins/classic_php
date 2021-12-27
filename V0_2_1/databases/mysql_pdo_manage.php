@@ -372,7 +372,7 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
             }
             else {
 
-                $this->pdo->prepare( $drop_table_statement );
+                $this->pdo->query( $drop_table_statement );
 
                 return true;
             }
