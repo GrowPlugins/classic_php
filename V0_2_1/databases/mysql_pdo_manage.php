@@ -204,24 +204,27 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
 
         /** @method alter_table_query
          * Sends a query to the database and changes a table in the
-         * database immediately, returning true.
+         * database immediately, returning true. Note that unlike
+         * this::create_table_query(), most of the query data isn't created
+         * for you.
          * 
          * Optionally return a query string by setting the
          * $return_string_only argument to true. This is optional, instead
          * of sending a query directly to the database.
          * 
          * @param $table
-         * @param $alter_specification_names
+         * @param $alter_specification_keywords -- Keywords may be ADD,
+         *      ALTER, DROP, etc.
          * @param $alter_specifications
          * @param bool $check_existence
          * @param bool $return_string_only
          * @param int $wait
          * @param bool $no_wait
-         * @return string
+         * @return string|false
          */
         function alter_table_query(
             string $table,
-            $alter_specification_names,
+            $alter_specification_keywords,
             $alter_specifications,
             bool $check_existence = false,
             bool $return_string_only = false,
@@ -234,14 +237,14 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
             /* Processing ************************************************/
             /* Validation ************************************************/
             /* Validate Alter Specifications */
-            $alter_specification_names =
+            $alter_specification_keywords =
                 $this->validate_sql_alter_specifications(
-                    $alter_specification_names,
+                    $alter_specification_keywords,
                     $alter_specifications );
 
             if (
-                [] === $alter_specification_names
-                || empty( $alter_specification_names ) ) {
+                [] === $alter_specification_keywords
+                || empty( $alter_specification_keywords ) ) {
 
                 return false;
             }
@@ -274,10 +277,10 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
             }
 
             /* Add Alter Specifications */
-            foreach ( $alter_specification_names as $key => $name ) {
+            foreach ( $alter_specification_keywords as $key => $name ) {
 
                 $alter_table_statement .=
-                    $alter_specification_names[ $key ] . ' '
+                    $alter_specification_keywords[ $key ] . ' '
                     . $alter_specifications[ $key ] . ', ';
             }
 
@@ -601,11 +604,9 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
 
         /** @method validate_sql_alter_specifications
          * Validates the ALTER TABLE specifications provided are valid.
-         * @param mixed string string[] $fields
-         * @param mixed string string[] $comparison_operators
-         * @param mixed string string[] $values
-         * @param string[] $conditional_operators
-         * @return string
+         * @param mixed string string[] $alter_table_action_keywords
+         * @param mixed string string[] $alter_table_actions
+         * @return array|false
          */
         private function validate_sql_alter_specifications(
             $alter_table_action_keywords,
@@ -692,15 +693,9 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
                 /* If No Valid Data Type Found, Mark $data_types Value */
                 if ( ! $is_action_valid ) {
 
-                    $this->arrays->mark_value_null(
-                        $alter_table_action_keywords,
-                        $key );
+                    return false;
                 }
             }
-
-            /* Remove All Invalid, Marked, $data_types Values -----------*/
-            $this->arrays->remove_null_values(
-                $alter_table_action_keywords );
 
             /* Return ****************************************************/
             return $alter_table_action_keywords;
