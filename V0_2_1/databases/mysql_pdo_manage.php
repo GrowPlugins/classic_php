@@ -72,7 +72,8 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
 
         /** @method create_table_query
          * Sends a query to the database and creates a table in the
-         * database immediately, returning true.
+         * database immediately, returning true. Returns false if\
+         * incorrect arguments are provided.
          * 
          * Optionally return a query string by setting the
          * $return_string_only argument to true. This is optional, instead
@@ -84,7 +85,7 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
          * @param mixed string|array $field_options
          * @param bool $check_existence
          * @param bool $return_string_only
-         * @return string
+         * @return string|false
          */
         function create_table_query(
             string $table,
@@ -130,7 +131,7 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
             /* Validate $data_types */
             $data_types = $this->validate_sql_data_types( $data_types );
 
-            if ( [] === $data_types ) {
+            if ( false === $data_types ) {
 
                 return false;
             }
@@ -383,12 +384,13 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
          *---------------------------------------------------------------*/
 
         /** @method validate_sql_data_types
-         * Ensures the data type(s) provided are valid SQL data types.
+         * Ensures the data type(s) provided are valid SQL data types. If
+         * not, returns false so execution can be halted.
          * @param mixed string string[] $fields
          * @param mixed string string[] $comparison_operators
          * @param mixed string string[] $values
          * @param string[] $conditional_operators
-         * @return string
+         * @return string|false
          */
         private function validate_sql_data_types( $data_types ) {
 
@@ -589,12 +591,9 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
                 /* If No Valid Data Type Found, Mark $data_types Value */
                 if ( ! $data_type_valid ) {
 
-                    $this->arrays->mark_value_null( $data_types, $key );
+                    return false;
                 }
             }
-
-            /* Remove All Invalid, Marked, $data_types Values -----------*/
-            $this->arrays->remove_null_values( $data_types );
 
             /* Return ****************************************************/
             return $data_types;
