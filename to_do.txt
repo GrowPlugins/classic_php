@@ -3,6 +3,11 @@ TO DO:
 0.3.0
 - Make MYSQLPDO_Manage::alter_table_query() so it uses parameters to
 simplify the creation of an SQL update statement.
+- Force all queries to be secured via PDO unless $return_string_only
+is true? Otherwise queries without prepared statements are totally
+insecure, which isn't a useful option.
+- Secure MYSQLPDO_Manage methods using prepared statements wherever
+possible.
 
 0.4.0
 - Add more error methods to ErrorHandling, such as for backtracing/var
