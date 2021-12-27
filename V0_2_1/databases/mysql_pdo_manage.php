@@ -475,7 +475,7 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Manage' ) ) {
                 else {
 
                     $parentheses_position =
-                        strlen( $data_types[ $key ] );
+                        null;
                 }
 
                 /* Compare $data_types to $mysql_data_types */
