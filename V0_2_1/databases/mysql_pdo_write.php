@@ -123,85 +123,89 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Write' ) ) {
             $pdo_statement;
 
             /* Processing ************************************************/
+            /* Validation -----------------------------------------------*/
+            /* Require $set_fields to be Non-Empty Array */
+            if (
+                [] === $set_fields
+                && empty( $set_fields ) ) {
+            
+                return false;
+            }
+
             /* Prepare to Build Statement -------------------------------*/
             /* Clear PDO Placeholders */
             $this->clear_pdo_placeholders();
 
             /* Build Statement ------------------------------------------*/
-            /* Build Statement, If Required Values Exist */
+            /* Build Statement */
+            $update_statement =
+                'UPDATE '
+                . $this->enclose_database_object_names( $table );
+
+            // Add SET Clause
+            $set_clause =
+                $this->build_set_clause(
+                    $set_fields,
+                    $set_values,
+                    $use_prepared_statements );
+            
+            if ( false !== $set_clause ) {
+
+                $update_statement .=
+                    ' ' . $set_clause;
+            }
+
+            // Conditionally Add WHERE Clause
             if (
-                [] !== $set_fields
-                && ! empty( $set_fields ) ) {
+                [] !== $where_fields
+                && ! empty( $where_fields )
+                && [] !== $where_comparison_operators
+                && ! empty( $where_comparison_operators )
+                && [] !== $where_values
+                && ! empty( $where_values ) ) {
 
-                $update_statement =
-                    'UPDATE '
-                    . $this->enclose_database_object_names( $table );
-
-                // Add SET Clause
-                $set_clause =
-                    $this->build_set_clause(
-                        $set_fields,
-                        $set_values,
+                $where_clause =
+                    $this->build_where_clause(
+                        $where_fields,
+                        $where_comparison_operators,
+                        $where_values,
+                        $where_conditional_operators,
                         $use_prepared_statements );
-                
-                if ( false !== $set_clause ) {
+
+                if ( false !== $where_clause ) {
 
                     $update_statement .=
-                        ' ' . $set_clause;
+                        ' ' . $where_clause;
                 }
+            }
 
-                // Conditionally Add WHERE Clause
-                if (
-                    [] !== $where_fields
-                    && ! empty( $where_fields )
-                    && [] !== $where_comparison_operators
-                    && ! empty( $where_comparison_operators )
-                    && [] !== $where_values
-                    && ! empty( $where_values ) ) {
+            // Conditionally Add ORDER BY Clause
+            if (
+                [] !== $order_by_fields 
+                && ! empty( $order_by_fields ) ) {
 
-                    $where_clause =
-                        $this->build_where_clause(
-                            $where_fields,
-                            $where_comparison_operators,
-                            $where_values,
-                            $where_conditional_operators,
-                            $use_prepared_statements );
+                $order_by_clause =
+                    $this->build_order_by_clause( $order_by_fields );
 
-                    if ( false !== $where_clause ) {
+                if ( false !== $order_by_clause ) {
 
-                        $update_statement .=
-                            ' ' . $where_clause;
-                    }
+                    $update_statement .=
+                        ' ' . $order_by_clause;
                 }
+            }
 
-                // Conditionally Add ORDER BY Clause
-                if (
-                    [] !== $order_by_fields 
-                    && ! empty( $order_by_fields ) ) {
+            // Conditionally Add LIMIT Clause
+            if ( -1 < $limit ) {
 
-                    $order_by_clause =
-                        $this->build_order_by_clause( $order_by_fields );
+                $limit_clause =
+                    $this->build_limit_clause(
+                        $limit,
+                        $offset );
 
-                    if ( false !== $order_by_clause ) {
+                if ( false !== $limit_clause ) {
 
-                        $update_statement .=
-                            ' ' . $order_by_clause;
-                    }
-                }
-
-                // Conditionally Add LIMIT Clause
-                if ( -1 < $limit ) {
-
-                    $limit_clause =
-                        $this->build_limit_clause(
-                            $limit,
-                            $offset );
-
-                    if ( false !== $limit_clause ) {
-
-                        $update_statement .=
-                            ' ' . $limit_clause;
-                    }
+                    $update_statement .=
+                        ' ' . $limit_clause;
                 }
             }
 
@@ -557,7 +561,12 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Write' ) ) {
                 $pdo_statement =
                     $this->pdo->prepare( $delete_statement );
 
-                if ( true === $this->execute_safe_query( $pdo_statement ) ) {
+                if ( false === strpos( $delete_statement, '?' ) ) {
+
+                    return $this->pdo->query( $delete_statement );
+                }
+
+                elseif ( true === $this->execute_safe_query( $pdo_statement ) ) {
 
                     return $pdo_statement;
                 }

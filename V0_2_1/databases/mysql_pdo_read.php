@@ -250,11 +250,17 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Read' ) ) {
 
                 $pdo_statement =
                     $this->pdo->prepare( $select_statement );
+                
+                if ( false === strpos( $select_statement, '?' ) ) {
 
-                if ( true === $this->execute_safe_query( $pdo_statement ) ) {
+                    return $this->pdo->query( $select_statement );
+                }
+
+                elseif ( true === $this->execute_safe_query( $pdo_statement ) ) {
 
                     return $pdo_statement;
                 }
+
                 else {
 
                     return false;

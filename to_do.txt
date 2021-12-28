@@ -7,7 +7,7 @@ simplify the creation of an SQL update statement.
 is true? Otherwise queries without prepared statements are totally
 insecure, which isn't a useful option.
 - Secure MYSQLPDO_Manage methods using prepared statements wherever
-possible.
+possible. Also secure MYSQLPDO::query_table_fields().
 
 0.4.0
 - Add more error methods to ErrorHandling, such as for backtracing/var
