@@ -108,7 +108,10 @@ if ( ! class_exists( '\ClassicPHP\V0_2_1\MySQLPDO_Read' ) ) {
          * @param $having_comparison_operators
          * @param $having_values
          * @param $having_conditional_operators
-         * @param $order_by_fields
+         * @param array|string $order_by_fields -- May include the field
+         *      name followed by the direction to order. E.g.
+         *      [ 'field1 ASC', 'field2 DESC' ]. Where the order isn't
+         *      provided, DESC is assumed.
          * @param int $limit_limit
          * @param int $limit_offset
          * @param bool $return_string_only
