@@ -733,7 +733,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
             $comparison_operators,
             $values,
             $conditional_operators = ['AND'],
-            bool $use_prepared_statements = false ) {
+            bool $use_prepared_statements = true ) {
 
             /* Definition ************************************************/
             $where_clause = '';

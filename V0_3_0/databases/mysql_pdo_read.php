@@ -145,7 +145,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
             int $limit_limit = -1,
             int $limit_offset = -1,
             bool $return_string_only = false,
-            bool $use_prepared_statements = false ) {
+            bool $use_prepared_statements = true ) {
 
             /* Definition ************************************************/
             $select_statement = '';
@@ -504,7 +504,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
             $comparison_operators,
             $values,
             $conditional_operators = ['AND'],
-            bool $use_prepared_statements = false ) {
+            bool $use_prepared_statements = true ) {
 
             /* Definition ************************************************/
             $having_clause = '';

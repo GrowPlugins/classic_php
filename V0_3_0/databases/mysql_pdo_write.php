@@ -112,7 +112,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
             int $limit = -1,
             int $offset = -1,
             bool $return_string_only = false,
-            bool $use_prepared_statements = false ) {
+            bool $use_prepared_statements = true ) {
 
             /* Definition ************************************************/
             $update_statement = '';
@@ -264,7 +264,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
          * @param $set_fields,
          * @param $set_values = [],
          * @param bool $return_string_only = false,
-         * @param bool $use_prepared_statements = false,
+         * @param bool $use_prepared_statements = true,
 
          * @param string $priority = '',
          * @param bool $delayed_insert = false,
@@ -276,7 +276,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
             $set_fields,
             $set_values = [],
             bool $return_string_only = false,
-            bool $use_prepared_statements = false,
+            bool $use_prepared_statements = true,
 
             string $priority = '',
             bool $delayed_insert = false,
@@ -476,7 +476,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
             int $limit_limit = -1,
             int $limit_offset = -1,
             bool $return_string_only = false,
-            bool $use_prepared_statements = false,
+            bool $use_prepared_statements = true,
             bool $low_priority = false,
             bool $quick = false,
             bool $ignore = false ) {
@@ -602,7 +602,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
         protected function build_set_clause(
             $set_fields,
             $set_values = [],
-            bool $use_prepared_statements = false ) {
+            bool $use_prepared_statements = true ) {
 
             /* Definition ************************************************/
             $set_clause = '';
