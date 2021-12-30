@@ -55,6 +55,10 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
 
             $this->pdo = $pdo_connection;
             $this->arrays = new ArrayProcessing();
+
+            /* Processing ************************************************/
+            /* Ensure PDO Prepared Statements Aren't Only Emulated */
+            $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         }
 
         /*-----------------------------------------------------------------
