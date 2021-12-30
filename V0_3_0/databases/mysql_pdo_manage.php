@@ -1,6 +1,6 @@
 <?php
 
-namespace ClassicPHP\V0_2_2;
+namespace ClassicPHP\V0_3_0;
 
 /**************************************************************************
  * Class Header -----------------------------------------------------------
@@ -12,7 +12,7 @@ use \PDO as PDO;
 // Determine ClassicPHP Base Path
 if ( ! defined( 'CLASSIC_PHP_DIR' ) ) {
 
-    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php/V0_2_2';
+    $dir = strstr( __DIR__, 'classic_php', true ) . 'classic_php/V0_3_0';
 
     define( 'CLASSIC_PHP_DIR', $dir );
 
@@ -46,7 +46,7 @@ require_once( __DIR__ . '/mysql_pdo.php' );
 /**************************************************************************
  * Class Definition -------------------------------------------------------
  *************************************************************************/
-if ( ! class_exists( '\ClassicPHP\V0_2_2\MySQLPDO_Manage' ) ) {
+if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Manage' ) ) {
 
     /** Class: MySQLPDO_Manage
      * Helps you more quickly manage database tables.

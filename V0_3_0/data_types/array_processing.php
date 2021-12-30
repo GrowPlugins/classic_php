@@ -1,11 +1,11 @@
 <?php
 
-namespace ClassicPHP\V0_2_2;
+namespace ClassicPHP\V0_3_0;
 
 /**************************************************************************
  * Class Definition -------------------------------------------------------
  *************************************************************************/
-if ( ! class_exists( '\ClassicPHP\V0_2_2\ArrayProcessing' ) ) {
+if ( ! class_exists( '\ClassicPHP\V0_3_0\ArrayProcessing' ) ) {
 
     /** Class: ArrayProcessing
      * Allows you to manipulate arrays easier.
