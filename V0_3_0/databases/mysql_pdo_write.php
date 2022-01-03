@@ -116,10 +116,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
 
             /* Definition ************************************************/
             $update_statement = '';
-            $set_clause;
-            $where_clause;
-            $order_by_clause;
-            $limit_clause;
+            $returned_value;
             $pdo_statement;
 
             /* Processing ************************************************/
@@ -143,16 +140,19 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
                 . $this->enclose_database_object_names( $table );
 
             // Add SET Clause
-            $set_clause =
+            $returned_value =
                 $this->build_set_clause(
                     $set_fields,
                     $set_values,
                     $use_prepared_statements );
-            
-            if ( false !== $set_clause ) {
 
-                $update_statement .=
-                    ' ' . $set_clause;
+            if ( false !== $returned_value ) {
+        
+                $update_statement .= $returned_value . ' ';
+            }
+            else {
+                
+                return false;
             }
 
             // Conditionally Add WHERE Clause
@@ -164,7 +164,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
                 && [] !== $where_values
                 && ! empty( $where_values ) ) {
 
-                $where_clause =
+                $returned_value =
                     $this->build_where_clause(
                         $where_fields,
                         $where_comparison_operators,
@@ -172,10 +172,13 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
                         $where_conditional_operators,
                         $use_prepared_statements );
 
-                if ( false !== $where_clause ) {
-
-                    $update_statement .=
-                        ' ' . $where_clause;
+                if ( false !== $returned_value ) {
+            
+                    $update_statement .= $returned_value . ' ';
+                }
+                else {
+                    
+                    return false;
                 }
             }
 
@@ -184,28 +187,34 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
                 [] !== $order_by_fields 
                 && ! empty( $order_by_fields ) ) {
 
-                $order_by_clause =
+                $returned_value =
                     $this->build_order_by_clause( $order_by_fields );
 
-                if ( false !== $order_by_clause ) {
-
-                    $update_statement .=
-                        ' ' . $order_by_clause;
+                if ( false !== $returned_value ) {
+            
+                    $update_statement .= $returned_value . ' ';
+                }
+                else {
+                    
+                    return false;
                 }
             }
 
             // Conditionally Add LIMIT Clause
             if ( -1 < $limit ) {
 
-                $limit_clause =
+                $returned_value =
                     $this->build_limit_clause(
                         $limit,
                         $offset );
 
-                if ( false !== $limit_clause ) {
-
-                    $update_statement .=
-                        ' ' . $limit_clause;
+                if ( false !== $returned_value ) {
+    
+                    $update_statement .= $returned_value . ' ';
+                }
+                else {
+                    
+                    return false;
                 }
             }
 
@@ -284,7 +293,6 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
 
             /* Definition ************************************************/
             $insert_into_statement;
-            $set_clause;
             $pdo_statement;
 
             /* Processing ************************************************/
@@ -483,8 +491,8 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
 
             /* Definition ************************************************/
             $delete_statement;
+            $returned_value;
             $pdo_statement;
-            $where_clause;
 
             /* Processing ************************************************/
             /* Prepare to Build Statement -------------------------------*/
@@ -522,7 +530,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
                 && [] !== $where_comparison_operators
                 && [] !== $where_values ) {
 
-                $where_clause =
+                $returned_value =
                     $this->build_where_clause(
                         $where_fields,
                         $where_comparison_operators,
@@ -530,30 +538,49 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
                         $where_conditional_operators,
                         $use_prepared_statements );
 
-                if ( false !== $where_clause ) {
-
-                    $delete_statement .=
-                        ' ' . $where_clause;
+                if ( false !== $returned_value ) {
+    
+                    $delete_statement .= ' ' . $returned_value;
+                }
+                else {
+                    
+                    return false;
                 }
             }
 
             /* Conditionally Add ORDER BY Clause */
             if ( '' !== $order_by_fields ) {
 
-                $delete_statement .=
-                    ' '
-                    . $this->build_order_by_clause(
+                $returned_value =
+                    $this->build_order_by_clause(
                         $order_by_fields );
+
+                if ( false !== $returned_value ) {
+    
+                    $delete_statement .= ' ' . $returned_value;
+                }
+                else {
+                    
+                    return false;
+                }
             }
 
             /* Conditionally Add LIMIT Clause */
             if ( -1 < $limit_limit ) {
 
-                $delete_statement .=
-                    ' '
-                    . $this->build_limit_clause(
+                $returned_value =
+                    $this->build_limit_clause(
                         $limit_limit,
                         $limit_offset );
+
+                if ( false !== $returned_value ) {
+    
+                    $delete_statement .= ' ' . $returned_value;
+                }
+                else {
+                    
+                    return false;
+                }
             }
 
             /* Return ****************************************************/

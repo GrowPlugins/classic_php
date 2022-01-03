@@ -149,6 +149,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
 
             /* Definition ************************************************/
             $select_statement = '';
+            $returned_value;
             $pdo_statement;
 
             /* Processing ************************************************/
@@ -157,25 +158,41 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
             $this->clear_pdo_placeholders();
 
             /* Build Statement ------------------------------------------*/
-            $select_statement =
+            $returned_value =
                 $this->build_select_clause(
                     $select_fields,
                     $select_functions,
                     $select_all,
                     $select_distinct,
                     $select_high_priority,
-                    $select_straight_join )
-                . ' ';
+                    $select_straight_join );
 
-            $select_statement .=
+            if ( false !== $returned_value ) {
+
+                $select_statement = $returned_value . ' ';
+            }
+            else {
+
+                return false;
+            }
+
+            $returned_value =
                 $this->build_from_clause(
                     $from_table,
                     $from_joined_tables,
                     $from_join_types,
                     $from_join_on_fields,
                     $from_join_on_comparisons,
-                    $from_join_on_values )
-                . ' ';
+                    $from_join_on_values );
+
+            if ( false !== $returned_value ) {
+
+                $select_statement .= $returned_value . ' ';
+            }
+            else {
+                
+                return false;
+            }
 
             /* Conditionally Add WHERE Clause */
             if (
@@ -183,22 +200,38 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
                 && [] !== $where_comparison_operators
                 && [] !== $where_values ) {
 
-                $select_statement .=
+                $returned_value =
                     $this->build_where_clause(
                         $where_fields,
                         $where_comparison_operators,
                         $where_values,
                         $where_conditional_operators,
-                        $use_prepared_statements )
-                    . ' ';
+                        $use_prepared_statements );
+
+                    if ( false !== $returned_value ) {
+        
+                        $select_statement .= $returned_value . ' ';
+                    }
+                    else {
+                        
+                        return false;
+                    }
             }
 
             /* Conditionally Add GROUP BY Clause */
             if ( '' !== $group_by_fields ) {
 
-                $select_statement .=
-                    $this->build_group_by_clause( $group_by_fields )
-                    . ' ';
+                $returned_value =
+                    $this->build_group_by_clause( $group_by_fields );
+
+                if ( false !== $returned_value ) {
+    
+                    $select_statement .= $returned_value . ' ';
+                }
+                else {
+                    
+                    return false;
+                }
             }
 
             /* Conditionally Add HAVING Clause */
@@ -208,33 +241,57 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
                 && [] !== $having_comparison_operators
                 && [] !== $having_values ) {
 
-                $select_statement .=
+                $returned_value =
                     $this->build_having_clause(
                         $having_fields,
                         $having_comparison_operators,
                         $having_values,
                         $having_conditional_operators,
-                        $use_prepared_statements )
-                    . ' ';
+                        $use_prepared_statements );
+
+                if ( false !== $returned_value ) {
+    
+                    $select_statement .= $returned_value . ' ';
+                }
+                else {
+                    
+                    return false;
+                }
             }
 
             /* Conditionally Add ORDER BY Clause */
             if ( '' !== $order_by_fields ) {
 
-                $select_statement .=
+                $returned_value =
                     $this->build_order_by_clause(
-                        $order_by_fields )
-                    . ' ';
+                        $order_by_fields );
+
+                if ( false !== $returned_value ) {
+    
+                    $select_statement .= $returned_value . ' ';
+                }
+                else {
+                    
+                    return false;
+                }
             }
 
             /* Conditionally Add LIMIT Clause */
             if ( 0 <= $limit_limit ) {
 
-                $select_statement .=
+                $returned_value =
                     $this->build_limit_clause(
                         $limit_limit,
-                        $limit_offset )
-                    . ' ';
+                        $limit_offset );
+
+                if ( false !== $returned_value ) {
+    
+                    $select_statement .= $returned_value . ' ';
+                }
+                else {
+                    
+                    return false;
+                }
             }
 
             /* Remove Trailing Space ------------------------------------*/
