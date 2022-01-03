@@ -701,7 +701,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
             array $fields,
             array $comparison_operators,
             array $values,
-            array $conditional_operators = ['AND'],
+            array $conditional_operators = [],
             bool $use_prepared_statements = true ) {
 
             /* Definition ************************************************/
@@ -712,7 +712,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
             /* Validation -----------------------------------------------*/
             /* Validate $fields Isn't Empty or Invalid */
             if (
-                [] !== $fields
+                [] === $fields
                 || [''] === $fields
                 || '' === $fields[ array_key_first( $fields ) ] ) {
 
@@ -721,7 +721,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
             
             /* Validate $comparison_operators Isn't Empty or Invalid */
             if (
-                [] !== $comparison_operators
+                [] === $comparison_operators
                 || [''] === $comparison_operators
                 || '' ===
                     $comparison_operators[
@@ -732,20 +732,9 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
             
             /* Validate $values Isn't Empty or Invalid */
             if (
-                [] !== $values
+                [] === $values
                 || [''] === $values
                 || '' === $values[ array_key_first( $values ) ] ) {
-
-                return false;
-            }
-
-            /* Validate $conditional_operators Isn't Empty or Invalid */
-            if (
-                [] !== $conditional_operators
-                || [''] === $conditional_operators
-                || '' ===
-                    $conditional_operators[
-                        array_key_first( $conditional_operators ) ] ) {
 
                 return false;
             }
@@ -902,7 +891,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
             if (
                 count( $fields ) !== count( $comparison_operators )
                 || count( $comparison_operators ) !== count( $values )
-                || count( $values ) !== count( $logic_operators ) ) {
+                || count( $values ) !== count( $logic_operators ) + 1 ) {
 
                 return false;
             }

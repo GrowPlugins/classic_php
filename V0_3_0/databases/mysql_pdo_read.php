@@ -135,12 +135,12 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
             array $where_fields = [],
             array $where_comparison_operators = [],
             array $where_values = [],
-            array $where_conditional_operators = ['AND'],
+            array $where_conditional_operators = [],
             array $group_by_fields = [],
             array $having_fields = [],
             array $having_comparison_operators = [],
             array $having_values = [],
-            array $having_conditional_operators = ['AND'],
+            array $having_conditional_operators = [],
             array $order_by_fields = [],
             int $limit_limit = -1,
             int $limit_offset = -1,
@@ -554,7 +554,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
             array $fields,
             array $comparison_operators,
             array $values,
-            array $conditional_operators = ['AND'],
+            array $conditional_operators = [],
             bool $use_prepared_statements = true ) {
 
             /* Definition ************************************************/
