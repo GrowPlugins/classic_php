@@ -127,21 +127,21 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
             bool $select_distinct = false,
             bool $select_high_priority = false,
             bool $select_straight_join = false,
-            $from_joined_tables = [],
-            $from_join_types = [],
-            $from_join_on_fields = [],
-            $from_join_on_comparisons = [],
-            $from_join_on_values = [],
+            array $from_joined_tables = [],
+            array $from_join_types = [],
+            array $from_join_on_fields = [],
+            array $from_join_on_comparisons = [],
+            array $from_join_on_values = [],
             array $where_fields = [],
             array $where_comparison_operators = [],
             array $where_values = [],
             array $where_conditional_operators = ['AND'],
-            $group_by_fields = '',
-            $having_fields = '',
-            $having_comparison_operators = '',
-            $having_values = '',
-            $having_conditional_operators = ['AND'],
-            $order_by_fields = '',
+            array $group_by_fields = [],
+            array $having_fields = [],
+            array $having_comparison_operators = [],
+            array $having_values = [],
+            array $having_conditional_operators = ['AND'],
+            array $order_by_fields = [],
             int $limit_limit = -1,
             int $limit_offset = -1,
             bool $return_string_only = false,
@@ -219,7 +219,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
             }
 
             /* Conditionally Add GROUP BY Clause */
-            if ( '' !== $group_by_fields ) {
+            if ( [] !== $group_by_fields ) {
 
                 $returned_value =
                     $this->build_group_by_clause( $group_by_fields );
@@ -260,7 +260,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
             }
 
             /* Conditionally Add ORDER BY Clause */
-            if ( '' !== $order_by_fields ) {
+            if ( [] !== $order_by_fields ) {
 
                 $returned_value =
                     $this->build_order_by_clause(
@@ -497,19 +497,13 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
          * @return string
          */
         protected function build_group_by_clause(
-            $fields ) {
+            array $fields ) {
 
             /* Definition ************************************************/
             $group_by_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
-
-                $fields = [ $fields ];
-            }
-
             /* Validate $fields */
             if (
                 ! $this->arrays->validate_data_types(

@@ -549,48 +549,17 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
          */
         protected function build_from_clause(
             string $table,
-            $joined_tables = [],
-            $join_types = [],
-            $join_on_fields = [],
-            $join_on_comparisons = [],
-            $join_on_values = [] ) {
+            array $joined_tables = [],
+            array $join_types = [],
+            array $join_on_fields = [],
+            array $join_on_comparisons = [],
+            array $join_on_values = [] ) {
 
             /* Definition ************************************************/
             $from_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
-            /* Force Variables to be Arrays */
-            // Force $joined_tables to be Array
-            if ( ! is_array( $joined_tables ) ) {
-
-                $joined_tables = [ $joined_tables ];
-            }
-            
-            // Force $join_types to be Array
-            if ( ! is_array( $join_types ) ) {
-
-                $join_types = [ $join_types ];
-            }
-            
-            // Force $join_on_fields to be Array
-            if ( ! is_array( $join_on_fields ) ) {
-
-                $join_on_fields = [ $join_on_fields ];
-            }
-            
-            // Force $join_on_comparisons to be Array
-            if ( ! is_array( $join_on_comparisons ) ) {
-
-                $join_on_comparisons = [ $join_on_comparisons ];
-            }
-            
-            // Force $join_on_values to be Array
-            if ( ! is_array( $join_on_values ) ) {
-
-                $join_on_values = [ $join_on_values ];
-            }
-
             /* Validate $joined_tables */
             if (
                 $this->arrays->validate_data_types(
@@ -819,19 +788,13 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
          * @return string
          */
         protected function build_order_by_clause(
-            $fields ) {
+            array $fields ) {
 
             /* Definition ************************************************/
             $order_by_clause = '';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
-
-                $fields = [ $fields ];
-            }
-
             /* Validate $fields */
             if (
                 ! $this->arrays->validate_data_types(
