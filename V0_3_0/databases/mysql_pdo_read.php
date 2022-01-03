@@ -520,8 +520,11 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
                     $use_prepared_statements );
 
             /* Replace WHERE with HAVING */
-            $having_clause =
-                str_replace( 'WHERE', 'HAVING', $having_clause );
+            if ( ! is_bool( $having_clause ) ) {
+
+                $having_clause =
+                    str_replace( 'WHERE', 'HAVING', $having_clause );
+            }
 
             /* Return ****************************************************/
             return $having_clause;
