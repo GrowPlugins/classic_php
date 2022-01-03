@@ -132,10 +132,10 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
             $from_join_on_fields = [],
             $from_join_on_comparisons = [],
             $from_join_on_values = [],
-            $where_fields = '',
-            $where_comparison_operators = '',
-            $where_values = '',
-            $where_conditional_operators = ['AND'],
+            array $where_fields = [],
+            array $where_comparison_operators = [],
+            array $where_values = [],
+            array $where_conditional_operators = ['AND'],
             $group_by_fields = '',
             $having_fields = '',
             $having_comparison_operators = '',
@@ -179,9 +179,9 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
 
             /* Conditionally Add WHERE Clause */
             if (
-                '' !== $where_fields
-                && '' !== $where_comparison_operators
-                && '' !== $where_values ) {
+                [] !== $where_fields
+                && [] !== $where_comparison_operators
+                && [] !== $where_values ) {
 
                 $select_statement .=
                     $this->build_where_clause(
@@ -500,10 +500,10 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
          * @return false
          */
         protected function build_having_clause(
-            $fields,
-            $comparison_operators,
-            $values,
-            $conditional_operators = ['AND'],
+            array $fields,
+            array $comparison_operators,
+            array $values,
+            array $conditional_operators = ['AND'],
             bool $use_prepared_statements = true ) {
 
             /* Definition ************************************************/

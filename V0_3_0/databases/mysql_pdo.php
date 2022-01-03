@@ -729,10 +729,10 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
          * @return string
          */
         protected function build_where_clause(
-            $fields,
-            $comparison_operators,
-            $values,
-            $conditional_operators = ['AND'],
+            array $fields,
+            array $comparison_operators,
+            array $values,
+            array $conditional_operators = ['AND'],
             bool $use_prepared_statements = true ) {
 
             /* Definition ************************************************/
@@ -741,28 +741,44 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
-            /* Force $fields to be Array */
-            if ( ! is_array( $fields ) ) {
+            /* Validate $fields Isn't Empty or Invalid */
+            if (
+                [] !== $fields
+                || [''] === $fields
+                || '' === $fields[ array_key_first( $fields ) ] ) {
 
-                $fields = [ $fields ];
+                return false;
+            }
+            
+            /* Validate $comparison_operators Isn't Empty or Invalid */
+            if (
+                [] !== $comparison_operators
+                || [''] === $comparison_operators
+                || '' ===
+                    $comparison_operators[
+                        array_key_first( $comparison_operators ) ] ) {
+
+                return false;
+            }
+            
+            /* Validate $values Isn't Empty or Invalid */
+            if (
+                [] !== $values
+                || [''] === $values
+                || '' === $values[ array_key_first( $values ) ] ) {
+
+                return false;
             }
 
-            /* Force $comparison_operators to be Array */
-            if ( ! is_array( $comparison_operators ) ) {
+            /* Validate $conditional_operators Isn't Empty or Invalid */
+            if (
+                [] !== $conditional_operators
+                || [''] === $conditional_operators
+                || '' ===
+                    $conditional_operators[
+                        array_key_first( $conditional_operators ) ] ) {
 
-                $comparison_operators = [ $comparison_operators ];
-            }
-
-            /* Force $values to be Array */
-            if ( ! is_array( $values ) ) {
-
-                $values = [ $values ];
-            }
-
-            /* Force $conditional_operators to be Array */
-            if ( ! is_array( $conditional_operators ) ) {
-
-                $conditional_operators = [ $conditional_operators ];
+                return false;
             }
 
             /* Conditionally Use PDO Prepared Statement Placeholders ----*/

@@ -104,10 +104,10 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
             string $table,
             array $set_fields,
             array $set_values = [],
-            $where_fields = [],
-            $where_comparison_operators = [],
-            $where_values = [],
-            $where_conditional_operators = ['AND'],
+            array $where_fields = [],
+            array $where_comparison_operators = [],
+            array $where_values = [],
+            array $where_conditional_operators = ['AND'],
             $order_by_fields = [],
             int $limit = -1,
             int $offset = -1,
@@ -468,10 +468,10 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
          */
         function delete_query(
             string $table,
-            $where_fields = '',
-            $where_comparison_operators = '',
-            $where_values = '',
-            $where_conditional_operators = ['AND'],
+            array $where_fields = [],
+            array $where_comparison_operators = [],
+            array $where_values = [],
+            array $where_conditional_operators = ['AND'],
             $order_by_fields = '',
             int $limit_limit = -1,
             int $limit_offset = -1,
@@ -517,9 +517,9 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
 
             /* Conditionally Add WHERE Clause */
             if (
-                '' !== $where_fields
-                || '' !== $where_comparison_operators
-                || '' !== $where_values ) {
+                [] !== $where_fields
+                && [] !== $where_comparison_operators
+                && [] !== $where_values ) {
 
                 $delete_statement .=
                     ' '
