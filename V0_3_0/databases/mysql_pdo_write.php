@@ -140,19 +140,24 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
                 . $this->enclose_database_object_names( $table );
 
             // Add SET Clause
-            $returned_value =
-                $this->build_set_clause(
-                    $set_fields,
-                    $set_values,
-                    $use_prepared_statements );
+            if (
+                [] !== $set_fields
+                && [] !== $set_values ) {
 
-            if ( false !== $returned_value ) {
-        
-                $update_statement .= $returned_value . ' ';
-            }
-            else {
-                
-                return false;
+                $returned_value =
+                    $this->build_set_clause(
+                        $set_fields,
+                        $set_values,
+                        $use_prepared_statements );
+
+                if ( false !== $returned_value ) {
+            
+                    $update_statement .= $returned_value . ' ';
+                }
+                else {
+                    
+                    return false;
+                }
             }
 
             // Conditionally Add WHERE Clause
@@ -633,8 +638,8 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
          * @return string
          */
         protected function build_set_clause(
-            $set_fields,
-            $set_values = [],
+            array $set_fields,
+            array $set_values = [],
             bool $use_prepared_statements = true ) {
 
             /* Definition ************************************************/
@@ -642,18 +647,6 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
-            /* Force $set_fields to be Array */
-            if ( ! is_array( $set_fields ) ) {
-
-                $set_fields = [ $set_fields ];
-            }
-
-            /* Force $set_values to be Array */
-            if ( ! is_array( $set_values ) ) {
-
-                $set_values = [ $set_values ];
-            }
-
             /* Validate $set_fields */
             if (
                 ! $this->arrays->validate_data_types(
