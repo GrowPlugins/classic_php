@@ -919,6 +919,15 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
+            /* Validate Array Lengths */
+            if (
+                count( $fields ) !== count( $comparison_operators )
+                || count( $comparison_operators ) !== count( $values )
+                || count( $values ) !== count( $logic_operators ) ) {
+
+                return false;
+            }
+
             /* Validate $fields */
             if (
                 ! $this->arrays->validate_data_types(
@@ -987,42 +996,6 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
 
                 return false;
             }
-
-            /* Trim Input Arrays to Smallest Input Array Length ---------*/
-            /* Determine the Length of the Smallest Array */
-            $smallest_input_array_length =
-                $this->arrays->shortest_array_length(
-                    [
-                        $fields,
-                        $comparison_operators,
-                        $values
-                    ] );
-                    
-            if (
-                count( $logic_operators ) + 1
-                < $smallest_input_array_length  ) {
-
-                $smallest_input_array_length =
-                    count( $logic_operators ) + 1;
-            }
-
-            /* Trim All Input Arrays */
-            $fields = $this->arrays->trim_to_length(
-                $fields,
-                $smallest_input_array_length );
-
-            $comparison_operators = $this->arrays->trim_to_length(
-                $comparison_operators,
-                $smallest_input_array_length );
-
-            $values = $this->arrays->trim_to_length(
-                $values,
-                $smallest_input_array_length );
-
-            // Trim $logic_operators to One Less Element Than Other Arrays
-            $logic_operators = $this->arrays->trim_to_length(
-                $logic_operators,
-                $smallest_input_array_length - 1 );
 
             /* Build Clause ---------------------------------------------*/
             foreach ( $fields as $key => $field ) {
