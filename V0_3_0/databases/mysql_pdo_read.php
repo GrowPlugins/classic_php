@@ -203,10 +203,10 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
 
             /* Conditionally Add HAVING Clause */
             if (
-                '' !== $group_by_fields
-                && '' !== $having_fields
-                && '' !== $having_comparison_operators
-                && '' !== $having_values ) {
+                [] !== $group_by_fields
+                && [] !== $having_fields
+                && [] !== $having_comparison_operators
+                && [] !== $having_values ) {
 
                 $select_statement .=
                     $this->build_having_clause(
