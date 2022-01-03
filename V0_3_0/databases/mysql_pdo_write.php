@@ -484,6 +484,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
             /* Definition ************************************************/
             $delete_statement;
             $pdo_statement;
+            $where_clause;
 
             /* Processing ************************************************/
             /* Prepare to Build Statement -------------------------------*/
@@ -521,14 +522,19 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
                 && [] !== $where_comparison_operators
                 && [] !== $where_values ) {
 
-                $delete_statement .=
-                    ' '
-                    . $this->build_where_clause(
+                $where_clause =
+                    $this->build_where_clause(
                         $where_fields,
                         $where_comparison_operators,
                         $where_values,
                         $where_conditional_operators,
                         $use_prepared_statements );
+
+                if ( false !== $where_clause ) {
+
+                    $delete_statement .=
+                        ' ' . $where_clause;
+                }
             }
 
             /* Conditionally Add ORDER BY Clause */
