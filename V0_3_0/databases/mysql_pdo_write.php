@@ -108,7 +108,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
             array $where_comparison_operators = [],
             array $where_values = [],
             array $where_conditional_operators = ['AND'],
-            $order_by_fields = [],
+            array $order_by_fields = [],
             int $limit = -1,
             int $offset = -1,
             bool $return_string_only = false,
@@ -287,8 +287,8 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
          */
         function insert_into_query(
             string $table,
-            $set_fields,
-            $set_values = [],
+            array $set_fields,
+            array $set_values = [],
             bool $return_string_only = false,
             bool $use_prepared_statements = true,
 
@@ -485,7 +485,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
             array $where_comparison_operators = [],
             array $where_values = [],
             array $where_conditional_operators = ['AND'],
-            $order_by_fields = '',
+            array $order_by_fields = [],
             int $limit_limit = -1,
             int $limit_offset = -1,
             bool $return_string_only = false,
