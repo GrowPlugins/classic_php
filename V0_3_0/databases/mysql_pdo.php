@@ -777,7 +777,8 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
          * @return string
          */
         protected function build_order_by_clause(
-            array $fields ) {
+            array $fields,
+            array $order_directions = [] ) {
 
             /* Definition ************************************************/
             $order_by_clause = '';
@@ -793,6 +794,15 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
                 $fields = [];
             }
 
+            /* Validate $order_directions Sort Directions */
+            foreach ( $order_directions as $key => $direction ) {
+
+                if ( 'DESC' !== $direction ) {
+
+                    $order_directions[ $key ] = 'ASC';
+                }
+            }
+
             /* Build Clause ---------------------------------------------*/
             /* Process $fields If Fields Exist */
             if ( [] !== $fields ) {
@@ -804,7 +814,15 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO' ) ) {
                     /* Build Fields into ORDER BY Clause */
                     $order_by_clause .=
                         $this->enclose_database_object_names(
-                            $field ) . ', ';
+                            $field );
+                    
+                    // Add Order By Directions, If Provided
+                    if ( isset( $order_directions[ $key ] ) ) {
+
+                        $order_by_clause .= ' ' . $order_directions[ $key ];
+                    }
+                    
+                    $order_by_clause .= ', ';
                 }
 
                 // Remove Trailing ', '

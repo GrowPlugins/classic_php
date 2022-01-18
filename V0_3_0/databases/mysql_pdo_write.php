@@ -109,6 +109,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
             array $where_values = [],
             array $where_conditional_operators = [],
             array $order_by_fields = [],
+            array $order_by_directions = [],
             int $limit = -1,
             int $offset = -1,
             bool $return_string_only = false,
@@ -193,7 +194,9 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
                 && ! empty( $order_by_fields ) ) {
 
                 $returned_value =
-                    $this->build_order_by_clause( $order_by_fields );
+                    $this->build_order_by_clause(
+                        $order_by_fields,
+                        $order_by_directions );
 
                 if ( false !== $returned_value ) {
             
@@ -486,6 +489,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
             array $where_values = [],
             array $where_conditional_operators = [],
             array $order_by_fields = [],
+            array $order_by_directions = [],
             int $limit_limit = -1,
             int $limit_offset = -1,
             bool $return_string_only = false,
@@ -558,7 +562,8 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
 
                 $returned_value =
                     $this->build_order_by_clause(
-                        $order_by_fields );
+                        $order_by_fields,
+                        $order_by_directions );
 
                 if ( false !== $returned_value ) {
     

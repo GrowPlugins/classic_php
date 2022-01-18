@@ -142,6 +142,7 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
             array $having_values = [],
             array $having_conditional_operators = [],
             array $order_by_fields = [],
+            array $order_by_directions = [],
             int $limit_limit = -1,
             int $limit_offset = -1,
             bool $return_string_only = false,
@@ -264,7 +265,8 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
 
                 $returned_value =
                     $this->build_order_by_clause(
-                        $order_by_fields );
+                        $order_by_fields,
+                        $order_by_directions );
 
                 if ( false !== $returned_value ) {
     
