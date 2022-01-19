@@ -5,6 +5,11 @@ TO DO:
 simplify the creation of an SQL update statement.
 
 0.4.0
+- Use ErrorHandling throughout library to throw errors when something
+won't return what is expected. This is a much better way to handle
+errors than to just return false, which often requires searching
+through an entire process just to find out that one array is longer
+than the other, and that this isn't allowed by a certain method.
 - Add more error methods to ErrorHandling, such as for backtracing/var
 dumping, without throwing an error, or for throwing an error without var
 dump. (Consider that some methods might be aimed at manual debugging only,
