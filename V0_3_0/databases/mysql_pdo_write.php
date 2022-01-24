@@ -89,8 +89,8 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
          * @param $where_values
          * @param $where_conditional_operators
          * @param $order_by_fields
-         * @param int $limit
-         * @param int $offset
+         * @param int $limit_limit
+         * @param int $limit_offset
          * @param bool $return_string_only
          * @param bool $use_prepared_statements
          * @return bool|PDOStatement|string
@@ -105,8 +105,8 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
             array $where_conditional_operators = [],
             array $order_by_fields = [],
             array $order_by_directions = [],
-            int $limit = -1,
-            int $offset = -1,
+            int $limit_limit = -1,
+            int $limit_offset = -1,
             bool $return_string_only = false,
             bool $use_prepared_statements = true ) {
 
@@ -204,11 +204,11 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Write' ) ) {
             }
 
             // Conditionally Add LIMIT Clause
-            if ( -1 < $limit ) {
+            if ( -1 < $limit_limit ) {
 
                 $returned_value =
                     $this->build_limit_clause(
-                        $limit,
+                        $limit_limit,
                         $offset );
 
                 if ( false !== $returned_value ) {
