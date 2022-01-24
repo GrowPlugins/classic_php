@@ -9,12 +9,13 @@ namespace ClassicPHP\V0_3_0;
 use \PDO as PDO;
 
 /* Class Includes */
-// Determine ClassicPHP Base Path
-$classic_php_path =
-    strstr( __DIR__, 'classic_php', true ) . 'classic_php/V0_3_0';
-
 // Includes List
-require_once( $classic_php_path . '/databases/mysql_pdo.php' );
+require_once(
+    strstr(
+        __DIR__,
+        'classic_php',
+        true ) .
+    'classic_php/V0_3_0/databases/mysql_pdo.php' );
 
 /* Notes */
 /*
@@ -603,8 +604,12 @@ if ( ! class_exists( '\ClassicPHP\V0_3_0\MySQLPDO_Read' ) ) {
 
             /* JSON Data File Variables */
             $valid_functions_json_file =
-                CLASSIC_PHP_DIR
-                . '/classic_php_data_files/mysql_functions.json';
+                strstr(
+                    __DIR__,
+                    'classic_php',
+                    true ) .
+                'classic_php/V0_3_0' .
+                '/classic_php_data_files/mysql_functions.json';
 
             /* Processing ************************************************/
             /* Validation -----------------------------------------------*/
